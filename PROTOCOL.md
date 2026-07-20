@@ -67,45 +67,88 @@ Code Status: NO PRODUCT CODE
 - 所有时间戳 MUST 使用 **UTC，RFC3339** 格式（如 `2026-07-21T00:00:00Z`）。
 - 每条消息/事件 MUST 携带 `schema_version` 以标识结构版本。
 - **未知字段**：接收方 MUST 保留未知字段用于透传/审计；MUST NOT 因未知字段拒绝合法消息（除非明确 schema 约束禁止）。
-- **必填字段**：`protocol_version`、`message_id`、`sender_role`、`recipient_role`、`message_type`、`created_at` 为 MUST；缺失即校验失败。
-- **canonicalization / hashing 输入规则**：用于完整性校验的哈希 MUST 基于规范化（canonical）JSON（键有序、空白剔除），输入字段集 MUST 在 schema 中固定。
+- **必填字段（公共必填）**：`protocol_version`、`schema_version`、`message_id`、`sender_role`、`recipient_role`、`message_type`、`created_at`、`security_classification` 为 MUST；缺失即校验失败（字段分类见 §4.1）。
+- **canonicalization / hashing 输入规则**：用于完整性校验的哈希 MUST 基于规范化（canonical）JSON（键有序、空白剔除），输入字段集 MUST 在 schema 中固定（见 §4.3）。
 
 ---
 
 ## 4. 消息 Envelope
 
-每条消息 MUST 包含以下信封字段：
+### 4.1 字段分类
 
-```text
-protocol_version
-schema_version
-workflow_id
-workflow_version
-job_id
-message_id
-correlation_id
-idempotency_key
-sender_role
-recipient_role
-message_type
-target
-attempt
-artifacts
-payload
-created_at
-expires_at
-security_classification
-```
+| Field | Requirement | Applicable Message Types | Meaning |
+|---|---|---|---|
+| `protocol_version` | 公共必填 | 所有消息 | 协议版本（见 §1） |
+| `schema_version` | 公共必填 | 所有消息 | 结构版本 |
+| `message_id` | 公共必填 | 所有消息 | 全局唯一，不可复用 |
+| `sender_role` | 公共必填 | 所有消息 | 发送方角色 |
+| `recipient_role` | 公共必填 | 所有消息 | 接收方角色 |
+| `message_type` | 公共必填 | 所有消息 | 消息/事件类型（见 §5） |
+| `created_at` | 公共必填 | 所有消息 | UTC RFC3339 时间戳 |
+| `security_classification` | 公共必填 | 所有消息 | 安全分类（PUBLIC/INTERNAL/CONFIDENTIAL/RESTRICTED，见 SECURITY.md §14） |
+| `workflow_id` | 条件必填（工作流消息） | command / result / status / review.finding / evidence / policy.decision / delivery.status / reconciliation.* / audit.event | 工作流标识 |
+| `workflow_version` | 条件必填（工作流消息） | 同上 | 工作流版本 |
+| `job_id` | 条件必填（工作流消息） | 同上 | 作业标识 |
+| `correlation_id` | 条件必填（工作流消息） | 同上 | 关联上下文 |
+| `delivery_attempt_id` | 条件必填（投递尝试） | delivery.status / reconciliation.* | 投递尝试序号 |
+| `idempotency_key` | 条件必填（投递尝试） | delivery.status / reconciliation.* | 幂等键 |
+| `attempt` | 条件必填（投递尝试） | 同上 | 投递尝试计数 |
+| `target` | 可选 / 按类型必填 | command / cancellation / resume | 作用对象（repository / branch / revision 等） |
+| `artifacts` | 可选 / 按类型必填 | result / evidence | 附件数组，每个 MUST 带 `sha256` 与 `uri`（内容寻址，V1.1 §11、§12.3） |
+| `payload` | 可选 / 按类型必填 | result / command / evidence | 结构化载荷 |
+| `expires_at` | 可选 | 所有（建议） | 消息过期时间；过期消息 MUST NOT 被当作新结果处理（V1.1 §11） |
+| `resume_token` / `checkpoint` | 可选 / resume 必填 | resume | 恢复令牌 / 检查点 |
+| `supersedes_message_id` | 可选 | 修正 / 替代消息 | 关联被替代旧消息（见 §4.4） |
+| `integrity` | 公共必填（至少 content_hash） | 所有消息（Phase 1） | 完整性对象（见 §4.3） |
 
-语义与校验：
+说明：
+
+- **所有消息公共必填**：上述 8 个公共字段 + `integrity`（至少 `content_hash`）为每条消息 MUST 携带。
+- **工作流消息条件必填**：`workflow_id` / `workflow_version` / `job_id` / `correlation_id`；缺失即校验失败。
+- **投递尝试条件必填**：`delivery_attempt_id` / `idempotency_key` / `attempt`；缺失即校验失败。
+- **控制平面消息**（capability negotiation、lifecycle、health_check 等）可以没有 `workflow_id` / `job_id`，但 MUST 绑定 adapter / session identity（如 `adapter_id` / `session_id`），并携带全部公共必填字段。
+
+### 4.2 公共必填字段语义
 
 - `sender_role` / `recipient_role`：MUST 为已定义角色（如 `worker.primary`、`reviewer.security`、`policy.engine`）。
-- `target`：描述作用对象（repository / branch / revision 等）；MUST 在能力/政策允许范围内。
+- `target`：描述作用对象；MUST 在能力 / 政策允许范围内。
 - `attempt`：delivery_attempt 序号，从 1 递增。
-- `artifacts`：附件数组，每个 MUST 带 `sha256` 与 `uri`（内容寻址，V1.1 §11、§12.3）。
 - `expires_at`：消息过期时间；过期消息 MUST NOT 被当作新结果处理（V1.1 §11）。
-- `security_classification`：标记敏感级别；MUST 决定脱敏与存储策略（见 SECURITY.md §12）。
-- **校验失败行为**：缺失必填字段、schema 不匹配或签名/摘要失败的信封 MUST 被拒绝并记录审计；MUST NOT 猜测或静默丢弃。
+- `security_classification`：标记敏感级别；MUST 决定脱敏与存储策略（见 SECURITY.md §14）。
+- `integrity`：完整性对象（见 §4.3）。
+
+### 4.3 integrity 完整性对象
+
+每条消息（Phase 1）MUST 携带 `integrity` 对象，至少含规范化内容哈希：
+
+```text
+integrity:
+  hash_algorithm
+  content_hash
+  signature_algorithm
+  key_id
+  signature
+  key_purpose
+```
+
+规则：
+
+- Phase 1 所有消息**至少** MUST 有规范化内容哈希（`content_hash` + `hash_algorithm`）。
+- 签名是否必需由**信任边界与消息类型**决定（见 SECURITY.md §8 / §14）；非受限边界的内部消息可仅带哈希。
+- canonical hash MUST 覆盖**完整 envelope + payload**，排除 `integrity.signature` 本身。
+- 未知字段若被保留，MUST 也纳入规范化哈希，防止未签名字段被篡改。
+- 文档 MUST NOT 引用不存在的"签名校验字段"；签名验证以 `integrity.signature` + `key_id` + `key_purpose` 为准（见 SECURITY.md §8）。
+
+### 4.4 消息不可原地修改
+
+- 已接受消息**不可原地改写**。
+- 修正或替代消息 MUST 生成新的 `message_id`。
+- 使用 `supersedes_message_id` 关联旧消息。
+- 旧消息仍保留在 Event Ledger。
+
+### 4.5 校验失败行为
+
+缺失公共必填字段、schema 不匹配或签名 / 摘要失败的信封 MUST 被拒绝并按 §12 记录审计；MUST NOT 猜测或静默丢弃。
 
 ---
 
@@ -126,8 +169,9 @@ security_classification
 - `reconciliation.request`：对账请求（状态未知动作）。
 - `reconciliation.result`：对账结论。
 - `audit.event`：审计事件（追加至 Event Ledger 哈希链）。
+- `capability_change`：运行期能力增删事件（须含变更前后 `capability_set` / `adapter_id` / `session_id`）。
 
-所有类型 MUST 绑定 `workflow_id`/`job_id`/目标版本，且消息不可原地修改，只能追加新版本（V1.1 §11）。
+所有类型 MUST 绑定标识：工作流消息绑 `workflow_id` / `job_id` / 目标版本；控制平面消息绑 `adapter_id` / `session_id`；消息不可原地修改，仅可追加新版本（见 §4.4）。
 
 ---
 
@@ -162,8 +206,12 @@ supported_protocol_versions
 规则：
 
 - 工作流引擎 MUST 先检查能力再调度，MUST NOT 依赖运行时猜测。
-- `delivery_semantics` 只能是：`at_least_once` / `idempotent_preferred` / `reconciliation_required` 之一；MUST NOT 声明 `exactly_once`。
+- `delivery_semantics` 取值枚举：**`at_least_once_attempts`** / **`at_most_once_attempt`** / **`unknown`**。
+  - `idempotent_preferred` 与 `reconciliation_required` **不得**作为 `delivery_semantics` 取值——它们已由独立布尔能力字段 `supports_idempotency_key` 与 `supports_reconciliation` 表示，二者非互斥投递语义。
+  - **MUST NOT** 声明 `exactly_once` 或 `exactly_once_claim`。
 - `supports_exactly_once_claim` 为**禁止字段**，任何适配器 MUST NOT 上报。
+
+> ARH 正式保证仍然只是："at-least-once attempts + idempotency + reconciliation + safe stop when uncertain"（V1.1 §16.3）。
 
 ---
 
@@ -190,17 +238,17 @@ FAILED
 | NEGOTIATING | 加载成功，协议/能力协商 | 协商成功且协议兼容 | → READY | 不得跳过 READY |
 | READY | 协商成功且协议兼容 | 接收任务 | → BUSY / → STOPPING | —— |
 | BUSY | 接收任务 | 任务正常结束 | → READY / → DEGRADED / → STOPPING / → FAILED | —— |
-| DEGRADED | 能力部分丢失但仍可服务 | 恢复关键能力 | → READY | —— |
+| DEGRADED | 能力部分丢失但仍可服务 | 恢复关键能力 | → READY / → STOPPING / → FAILED | —— |
 | STOPPING | 收到关闭请求 | 正常关闭完成 | → STOPPED | —— |
 | STOPPED | 正常关闭完成 | —— | （终态） | —— |
-| FAILED | 不可恢复异常 | 重新加载或政策决定替换 | （终态） | **不得自动回到 READY** |
+| FAILED | 不可恢复异常 | 创建新 adapter instance/session 重新加载 | （当前 adapter instance 终态） | **不得同实例自动回到 READY** |
 
 - `LOADING` 是 load **正在执行**状态，不是 load 成功后的状态。
 - `NEGOTIATING` 在加载**成功后**进行。
 - `READY` 才表示可接收任务。
-- `DEGRADED` 恢复关键能力后可回到 `READY`。
-- `FAILED` **MUST NOT** 自动回 `READY`；必须重新加载或由政策决定替换。
-- 运行期能力增删 MUST 主动上报 `capability change event`，调度器据以重路由或降级。
+- `DEGRADED` 恢复关键能力后可回到 `READY`，也允许进入 `STOPPING` 或 `FAILED`。
+- `FAILED` **MUST NOT** 同实例自动回 `READY`；`FAILED` 是当前 adapter instance 的终态，恢复 MUST 创建新的 adapter instance / session，并从 `LOADING` 开始。
+- 运行期能力增删 MUST 主动上报 `capability_change` 事件（见 §5），调度器据以重路由或降级。
 
 ---
 
@@ -227,7 +275,7 @@ terminal_recommendation
 - `authorization`：授权被拒（retriable=false）
 - `capability`：能力不支持（retriable=false）
 - `timeout`：超时（retriable 视是否幂等）
-- `transport`：传输失败（retriable=true，受 attempt 上限约束）
+- `transport`：传输失败（retriable 视上下文；MUST NOT 自动等同可重试）
 - `external_state_unknown`：外部状态未知（retriable=false，须进入 RECONCILIATION_REQUIRED）
 - `policy_denied`：政策拒绝（retriable=false）
 - `budget_exhausted`：预算耗尽（retriable=false，终态）
@@ -240,6 +288,24 @@ terminal_recommendation
 - `external_state_known=false` 时 MUST NOT 自动盲重试；MUST 进入对账或安全终态。
 - `terminal_recommendation` 由政策引擎裁决，MUST 映射到 V1.1 §8.2 已有终态之一。
 
+### 8.1 自动重试前置条件
+
+错误类别**不得自动决定**是否重试。自动重试 **ONLY** 在**同时满足**以下条件时才允许：
+
+1. `retriable=true`；
+2. `safe_to_retry=true`；
+3. 已确认外部动作尚未执行，或适配器提供有效幂等保证；
+4. 未超过 `attempt` 上限；
+5. 政策引擎批准。
+
+明确：
+
+- `transport` / `timeout` 可能发生在外部副作用**已经执行之后**；
+- `external_state_known=false` 时自动盲重试次数 **MUST 为 0**；
+- `authentication` 只有在凭据或认证状态变化后才能重新尝试；
+- `authorization` 只有在有效政策 / 令牌变化后才能重新尝试；
+- 状态未知直接进入查询、对账或安全终态。
+
 ---
 
 ## 9. Cancel / Resume / Heartbeat / Health
@@ -250,7 +316,7 @@ terminal_recommendation
 - **heartbeat 与业务进度分离**：心跳仅表存活与进度；不得因固定轮询超时被打断（V1.1 §16.2）。
 - **BUSY 不得因普通轮询超时被打断**：有心跳的长任务 MUST NOT 因轮询超时被重复提交。
 - **health_check schema**：至少含 `status`、`last_success_time`、`capability_set`、`version`，格式固定。
-- **无心跳先恢复状态，不直接重发**：无心跳时先尝试一次会话恢复/状态查询，不直接重发任务（V1.1 §4.3、§16.2）。
+- **无心跳先恢复状态，不直接重发**：无心跳时先尝试一次会话恢复 / 状态查询，不直接重发任务（V1.1 §4.3、§16.2）。
 
 ---
 
@@ -274,7 +340,10 @@ terminal_recommendation
 - **unresolved reason**：未解决 finding MUST 记录未解决原因。
 - **reevaluation condition**：须定义重新评估触发条件（如目标 SHA 变化）。
 - **HIGH/CRITICAL 无法排除即阻断**：HIGH/CRITICAL 候选不可排除时 MUST 阻断晋级。
-- **worker 的完成只生成待验证事件**：worker 完成 MUST 只生成 `result` / `review.finding` 待验证事件，不直接改变终态。
+- **worker 完成只产生 `result` 待验证事件**：worker 完成 MUST 只生成 `result` 待验证事件，不直接改变终态。
+- **reviewer 才产生 `review.finding`**：审核发现 MUST 由 reviewer 角色生成，关联 finding_id / fingerprint。
+- **evidence_verifier 产生 `evidence`**：可验证证据 MUST 由 evidence_verifier 生成，关联 evidence_id / artifact_id。
+- **任意角色自述均不能直接改变 release gate 或终态**：角色声明 / 结果 / 证据只提交待验证事件，由 Policy Engine 裁决。
 - **release gate 只接受 verifier 或外部可验证证据**：晋级门禁 MUST 仅接受 evidence_verifier 或外部可验证证据，不接受角色自述（V1.1 §15.3、§21）。
 
 ---
@@ -289,4 +358,14 @@ terminal_recommendation
 - 未授权路径或域名（须匹配政策白名单）。
 
 - 凭据 MUST 只以引用形式传递；真实值 MUST 存于 OS 凭据库（见 SECURITY.md §9）。
-- 违反安全约束的消息 MUST 被拒绝并记录审计，MUST NOT 进入事件账本作为事实。
+- 安全分类（`security_classification`）决定日志、持久化、脱敏与导出政策（见 SECURITY.md §14）。
+
+### 12.1 非法 / 违规消息的审计语义
+
+> 拒绝的恶意内容不能成为业务事实，但"发生过一次拒绝事件"必须成为审计事实。
+
+- 原始敏感 payload MUST 被拒绝，不得持久化；
+- 系统 MUST 向 Event Ledger 追加一条脱敏的 `security.validation_rejected` 或 `audit.event`；
+- 该记录 MUST 包含：message_id（如安全）、sender / session、schema / error code、内容哈希、拒绝原因、时间、policy decision ID；
+- MUST NOT 记录 secret、Cookie、storage state 或原始敏感 payload；
+- 旧消息（如已接受后需替代）仍保留在 Event Ledger，新消息用新 `message_id` + `supersedes_message_id` 关联（见 §4.4）。

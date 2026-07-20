@@ -16,6 +16,7 @@ Code Status: NO PRODUCT CODE
 > 当前为 `PROPOSED`，未经 Reviewer-2 审核与 owner 批准前**不属于 Source of Truth**；
 > 不得描述为已批准、已实现或已测试；不得自动关闭 Phase 0。
 > 所有内容必须服从已批准 V1.1，且不与 V1.1 冲突。
+> 本文件中的方案是 Phase 1 **候选安全基线**；本文件经 Reviewer-2 审核与 owner 批准后，其机制成为规范性基线；参数变化必须通过安全 ADR。
 
 ---
 
@@ -90,28 +91,31 @@ flowchart TB
 
 ## 5. 威胁模型（STRIDE）
 
-| Threat ID | Asset | Actor | Boundary | Scenario | Impact | Control | Detection | Residual Risk | Phase |
-|---|---|---|---|---|---|---|---|---|---|
-| T-01 | worker/prompt | malicious prompt/artifact | 外部文本→核心 | prompt injection 篡改任务/权限 | 越权执行 | 分层政策、外部文本不可改权限(§15.3) | Schema 校验、沙箱 | Low | P1 |
-| T-02 | 核心命令 | malicious adapter | adapter→core | command injection 经产物/参数 | 任意命令 | 参数校验、白名单 | 审计异常 | Low | P1 |
-| T-03 | artifact/filesystem | malicious adapter | adapter→core | path traversal 写越权路径 | 文件泄露 | 路径白名单 | 访问审计 | Low | P1 |
-| T-04 | credentials | compromised adapter | adapter→cred | credential theft 窃取引用/值 | 凭据泄漏 | OS 凭据库、仅引用(§15.2) | 凭据使用事件 | Low | P1 |
-| T-05 | policy bundle | local user/attacker | 政策文件 | policy tampering 改授权上限 | 提权 | 签名/锚点校验(§15.5) | 校验失败→safe mode | Low | P0 |
-| T-06 | event ledger | attacker | ledger | ledger tampering 改事实 | 伪造终态 | 哈希链、只读派生 | 哈希不一致 | Low | P0 |
-| T-07 | artifact | malicious adapter | artifact→core | artifact substitution 替换产物 | 错误证据 | SHA256 内容寻址(§12.3) | 哈希不匹配 | Low | P1 |
-| T-08 | adapter host | malicious adapter | adapter process | adapter privilege escalation | 宿主失控 | 独立进程、网络默认拒绝(§10.4) | 超权限拒绝 | Low | P1 |
-| T-09 | sub-agent | worker | worker→subagent | subagent privilege escalation | 隐性提权 | 继承父上限、禁提权(§4.2.2) | 越权留痕 | Low | P1 |
-| T-10 | external action | external service | core→external | replay 重复外部副作用 | 双花/重复 | idempotency_key(§10) | 对账 | Medium | P3 |
-| T-11 | external action | external service | core→external | duplicate external side effect | 重复执行 | RECONCILIATION_REQUIRED(§12.2) | 对账告警 | Medium | P1 |
-| T-12 | release gate | malicious worker | worker→gate | fake completion 谎报完成 | 错误晋级 | worker 只生待验证事件(§11) | verifier 证据校验 | Low | P1 |
-| T-13 | dependency | supply chain | build→core | malicious dependency 植入 | 远端控制 | SBOM 对账、签名(§11) | 哈希/签名失败阻断 | Medium | P1 |
-| T-14 | audit/log | local user | UI→log | log/screenshot leakage | 凭据泄漏 | 默认脱敏、禁明文(§12) | 敏感字段扫描 | Low | P1 |
-| T-15 | desktop UI | unsafe UIA | UI→desktop | unsafe UIA focus 误触 | 误操作 | UIA 仅降级、会话锁(§10.5) | 会话锁检测 | Medium | P3 |
-| T-16 | desktop UI | local user | UI→desktop | session lock / UAC 绕过 | 提权 | 会话锁暂停桌面适配器(§4.3) | 锁状态检测 | Low | P3 |
-| T-17 | budget | malicious adapter | adapter→core | budget abuse 耗尽预算 | 拒绝服务 | 三层预算上限(§9.1) | 预算告警 | Low | P1 |
-| T-18 | approval record | local user/attacker | governance | approval forgery 伪批准 | 非法晋级 | 签名批准记录、可追溯(SoT §10) | 记录校验 | Low | P0 |
+> 所有控制**当前均未实现**，因此 `Validation Status` 统一为 `UNVALIDATED`。
+> `Inherent Risk` 为固有风险估计；`Design Residual Risk Estimate` 为设计预估（**非已验证残余风险**）。
+> `Exposure Phase` 表示真实暴露阶段；`Control Validation Phase` 表示控制是否在模拟/真实环境中验证。
+> 真实外部系统接入（Phase 3+）须重新评估。
 
-> 残余风险等级为 Phase 1 模拟环境下的设计预期；真实外部系统接入（Phase 3+）须重新评估。
+| Threat ID | Asset | Actor | Boundary | Scenario | Impact | Control | Detection | Inherent Risk | Design Residual Risk Estimate | Validation Status | Exposure Phase | Control Validation Phase |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| T-01 | worker/prompt | malicious prompt/artifact | 外部文本→核心 | prompt injection 篡改任务/权限 | 越权执行 | 分层政策、外部文本不可改权限(§15.3) | Schema 校验、沙箱 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock malicious input / Phase 3 真实适配器 | Phase 1 mock / Phase 3 真实模型 |
+| T-02 | 核心命令 | malicious adapter | adapter→core | command injection 经产物/参数 | 任意命令 | 参数校验、白名单 | 审计异常 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock / Phase 3 |
+| T-03 | artifact/filesystem | malicious adapter | adapter→core | path traversal 写越权路径 | 文件泄露 | 路径白名单 | 访问审计 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
+| T-04 | credentials | compromised adapter | adapter→cred | credential theft 窃取引用/值 | 凭据泄漏 | OS 凭据库、仅引用(§15.2) | 凭据使用事件 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock adapter / Phase 3 真实 | Phase 1 mock / Phase 3 |
+| T-05 | policy bundle | local user/attacker | 政策文件 | policy tampering 改授权上限 | 提权 | 签名/锚点校验(§15.5) | 校验失败→safe mode | CRITICAL | Low (设计预估) | UNVALIDATED | Phase 0/1（本地政策文件已存在） | Phase 1 mock 签名/safe-mode 测试 |
+| T-06 | event ledger | attacker | ledger | ledger tampering 改事实 | 伪造终态 | 哈希链、只读派生 | 哈希不一致 | CRITICAL | Low (设计预估) | UNVALIDATED | Phase 1（本地账本） | Phase 1 哈希链测试 |
+| T-07 | artifact | malicious adapter | artifact→core | artifact substitution 替换产物 | 错误证据 | SHA256 内容寻址(§12.3) | 哈希不匹配 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
+| T-08 | adapter host | malicious adapter | adapter process | adapter privilege escalation | 宿主失控 | 独立进程、网络默认拒绝(§10.4) | 超权限拒绝 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
+| T-09 | sub-agent | worker | worker→subagent | subagent privilege escalation | 隐性提权 | 继承父上限、禁提权(§4.2.2) | 越权留痕 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
+| T-10 | external action | external service | core→external | replay 重复外部副作用 | 双花/重复 | idempotency_key(§10) | 对账 | MEDIUM | Medium (设计预估) | UNVALIDATED | Phase 3+（真实外部） | Phase 1 mock replay 测试 |
+| T-11 | external action | external service | core→external | duplicate external side effect | 重复执行 | RECONCILIATION_REQUIRED(§12.2) | 对账告警 | HIGH | Medium (设计预估) | UNVALIDATED | Phase 3+（真实外部副作用） | Phase 1 mock / Phase 3 真实适配器 |
+| T-12 | release gate | malicious worker | worker→gate | fake completion 谎报完成 | 错误晋级 | worker 只生待验证事件(§11) | verifier 证据校验 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
+| T-13 | dependency | supply chain | build→core | malicious dependency 植入 | 远端控制 | SBOM 对账、签名(§11) | 哈希/签名失败阻断 | HIGH | Medium (设计预估) | UNVALIDATED | Phase 1 build / Phase 3 | Phase 1 SBOM 测试 |
+| T-14 | audit/log | local user | UI→log | log/screenshot leakage | 凭据泄漏 | 默认脱敏、禁明文(§12) | 敏感字段扫描 | MEDIUM | Low (设计预估) | UNVALIDATED | Phase 1 / Phase 3 | Phase 1 脱敏测试 |
+| T-15 | desktop UI | unsafe UIA | UI→desktop | unsafe UIA focus 误触 | 误操作 | UIA 仅降级、会话锁(§10.5) | 会话锁检测 | MEDIUM | Medium (设计预估) | UNVALIDATED | Phase 2 probe / Phase 3+ | Phase 3+（UIA 仅在后续阶段） |
+| T-16 | desktop UI | local user | UI→desktop | session lock / UAC 绕过 | 提权 | 会话锁暂停桌面适配器(§4.3) | 锁状态检测 | MEDIUM | Medium (设计预估) | UNVALIDATED | Phase 2 probe / Phase 3+ | Phase 3+ |
+| T-17 | budget | malicious adapter | adapter→core | budget abuse 耗尽预算 | 拒绝服务 | 三层预算上限(§9.1) | 预算告警 | MEDIUM | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
+| T-18 | approval record | local user/attacker | governance | approval forgery 伪批准 | 非法晋级 | 可追溯批准记录（加密签名机制待安全 ADR 明确） | 记录校验 | CRITICAL | Low (设计预估) | UNVALIDATED | Phase 0/1（治理记录已存在） | Phase 1（签名批准机制，待 ADR） |
 
 ---
 
@@ -145,28 +149,39 @@ flowchart TB
 - 只有可信政策重新加载并通过校验后才能退出 safe mode。
 - 篡改政策包后任何外部 API/模型/CLI/浏览器/UIA 调用均被拒绝。
 
+### 7.1 safe mode 执行边界
+
+- ARH 在 safe mode 内**只允许本地 A0 查看和导出脱敏诊断**。
+- 修复、恢复、重新签署政策**必须发生在 ARH safe-mode 执行路径之外**，由 owner 控制的可信治理工具完成。
+- ARH **只能重新加载并验证**新的已批准政策；不得自行生成或替换政策。
+- safe mode **本身不得编辑、签署或自动替换政策**。
+
 ---
 
-## 8. 密钥与信任根
+## 8. 密钥与信任根（Phase 1 候选签名基线）
 
-> 以下为 Phase 1 提出的加密配置，**标记为待审核（pending review）**，尚未经 SECURITY.md 批准流程生效；本文档不写入任何真实密钥或 secret。
+> 以下为 Phase 1 **候选安全基线**，尚未经 Reviewer-2 审核与 owner 批准生效；本文档不写入任何真实密钥或 secret。
+> 本文件经 Reviewer-2 审核与 owner 批准后，该机制成为规范性基线；参数变化必须通过安全 ADR。
 
-- 使用 **OS 保护的非对称签名密钥**（如 Windows CNG / Certificate Store 或等价 OS trust store）。
-- 私钥尽可能 **不可导出**（non-exportable）。
-- 使用 **SHA-256 内容摘要** 校验政策包与 SBOM。
-- 签名 **MUST** 包含 key ID、算法、版本和目标哈希。
-- **key rotation** 须有重叠验证窗口（old+new 同时可信直至窗口结束）。
-- 须维护 **revocation list**；旧密钥撤销后 **MUST NOT** 继续签发。
-- policy bundle 与 SBOM 的签名用途 **MUST** 分离，或通过明确 key purpose 区分。
-- 信任根失败 **MUST NOT** 自动重建；须人工修复并重新签署。
-- 具体签名密钥、信任根机制、轮换与撤销由后续 `SECURITY.md` 批准流程与 `SBOM_POLICY.md` 固定（当前 Phase 0 未关闭前不得定稿）。
+- **签名算法**：ECDSA P-256。
+- **摘要算法**：SHA-256。
+- **私钥保护**：OS 保护（如 Windows CNG / Certificate Store 或等价 OS trust store），尽可能不可导出（non-exportable）。
+- **签名形式**：detached signature manifest（独立签名清单）。
+- **必填签名字段**：`key_id`、`key_purpose`、`algorithm`、`schema_version`、`target_hash`、`signed_at`。
+- **用途分离**：policy bundle 与 SBOM 使用不同 `key_purpose`，建议不同密钥。
+- **算法敏捷性**：保留更换算法能力；未来更换算法 MUST 经 ADR。
+- **key rotation**：须有重叠验证窗口（old+new 同时可信直至窗口结束）。
+- **revocation list**：旧密钥撤销后 MUST NOT 继续签发。
+- **信任根失败**：MUST NOT 自动重建；须人工修复并重新签署。
+- **内容摘要**：SHA-256 校验政策包与 SBOM。
+- **不写入真实密钥**：本文档不包含任何真实私钥、证书或 secret。
 
 ---
 
 ## 9. 凭据
 
 - 使用 **Windows Credential Manager**，后续接 **Vault**（V1.1 §13.3、§15.2）。
-- browser Cookie / storage state / 用户目录 / 会话令牌 **视同凭据**，按 §14.2 隔离处理。
+- browser Cookie / storage state / 用户目录 / 会话令牌 **视同凭据**，按 §14 隔离处理。
 - **不入 Git**、不进 prompt、不进普通日志、不进截图。
 - 最小范围临时注入；使用后清理。
 - 记录凭据使用事件但 **不记录值**。
@@ -210,6 +225,7 @@ flowchart TB
 - **明确禁止字段**：明文 secret、未脱敏 Cookie、browser storage state、完整会话令牌不得入日志。
 - **截图关闭需显式策略授权**：关闭脱敏 MUST 经策略授权并留审计。
 - **audit 不保存明文 secret**：审计记录只存引用与摘要。
+- **脱敏审计事件**：违规/拒绝事件 MUST 以脱敏形式记录（见 PROTOCOL.md §12.1），不记录 secret / Cookie / storage state / 原始敏感 payload。
 
 ---
 
@@ -229,3 +245,32 @@ flowchart TB
 - **ledger/projection corruption**：篡改事件 → 哈希链检测，projection 重建一致。
 - **backup tampering**：备份哈希不一致 → 不得宣称恢复成功。
 - **safe-mode denial tests**：safe mode 下 A1–A5 动作 → 必须全部拒绝。
+
+> 上述测试为 Phase 1 计划执行的验证项；在 Phase 1 实际运行并通过前，任何控制均**不得描述为已实现或已测试**。
+
+---
+
+## 14. 安全分类（Security Classification）
+
+消息与载荷的安全分类由 `security_classification` 字段标记（见 PROTOCOL.md §4）。枚举：
+
+- `PUBLIC`：可公开信息，无敏感内容。
+- `INTERNAL`：仅 ARH 内部使用，不涉凭据或外部敏感。
+- `CONFIDENTIAL`：含受限业务数据，须脱敏后日志 / 导出。
+- `RESTRICTED`：仅含凭据引用、哈希或最小必要元数据。
+
+规则：
+
+- **凭据真实值永远不得放入任何分类的消息**。
+- `RESTRICTED` 只能包含凭据引用、哈希或最小必要元数据。
+- 分类决定日志、持久化、脱敏与导出政策。
+
+---
+
+## 15. 治理批准记录真实性
+
+- 当前批准证据为：**owner 明确指令 + 精确 target commit + append-only 仓库记录**（见 `GOVERNANCE_APPROVAL_0001.md`）。
+- Phase 1 产品机制将对**政策包**和未来**机器可执行授权**采用加密签名。
+- 治理批准记录是否强制加密签名，须在**安全 ADR** 中明确。
+- 在机制批准前，**不得把"signed approval record"当作已经实现的控制**。
+- 任何安全控制（含签名、信任根、safe mode、审计）当前均为**候选 / 未实现**，描述为"已实现"或"已测试"均属错误。

@@ -76,7 +76,7 @@ Code Status: NO PRODUCT CODE
 | Workflow Engine | 编排工作流生命周期与状态迁移 | 事件、政策决策、调度指令 | 状态变更事件、终态归档 | 不得伪造事实；不得绕过政策引擎裁决 |
 | State Machine | 维护工作流状态与允许迁移 | 迁移请求、政策决定 | 状态事件 | 不得进入未在 V1.1 定义的终态；不得停留在无限 RUNNING |
 | Policy Engine | 三层授权裁决、预算/路由/门禁 | 能力自报、政策包、令牌请求 | 授权上限、决策记录 | 不得被插件/模型自行提权；不得保存工作流事实 |
-| Event Ledger | 追加式事件存储，事实 SoT | 状态变更、外部动作四阶段 | 事件流、可重放 | 不得覆盖历史；不得反向被 projection 覆盖 |
+| Event Ledger | 追加式事件存储，事实 SoT | 状态变更、外部动作五状态 | 事件流、可重放 | 不得覆盖历史；不得反向被 projection 覆盖 |
 | Projection Builder | 从事件重建派生视图 | 事件流 | 当前状态视图 | 不得写回权威；不得成为事实来源 |
 | Transactional Outbox | 内部状态与投递意图同事务 | 外部动作意图 | Outbox 记录（PREPARED→…） | 不得盲目重发；不得宣称 exactly-once |
 | Delivery Coordinator | 管理 delivery_attempt 与对账 | Outbox 状态、适配器能力 | 投递指令、对账请求 | 未知外部状态不得盲重试（次数 0） |
@@ -121,7 +121,7 @@ Code Status: NO PRODUCT CODE
 | artifacts | Artifact Store | 产物引用 | Core | 内容寻址 + backup set |
 | projections | （派生，无权威） | —— | Projection Builder（重建） | 从 Event Ledger 重建 |
 | credentials | Credential Store（OS 凭据库） | 凭据引用 | OS / Vault（适配器仅得引用） | OS 凭据库 |
-| policy bundle | Policy Engine（签名，授权 SoT） | —— | owner / governance（签名发布） | 重新签署 + 信任根校验 |
+| policy bundle | Policy Engine（签名，授权 SoT） | —— | owner / governance（签名发布） | 优先恢复最后已批准且签名有效的 policy bundle；修复后的新 bundle 须经治理批准方可签发；不得对未知/被篡改内容直接重新签名；信任根失败不得自动生成新根 |
 
 ---
 
@@ -168,11 +168,24 @@ Code Status: NO PRODUCT CODE
 - 进入 `BLOCKED_*` / `QUARANTINED_*` / `CANCELLED_*` 必须由 Policy Engine 决策记录支撑。
 - 进入 `BLOCKED_NEEDS_POLICY_DECISION` 前必须先执行默认决策阶梯（V1.1 §4.3.1）。
 
-### 6.6 强制终态规则
+### 6.6 强制终态规则（确定性映射）
 
-- **最大执行时间后**：由政策引擎强制进入对应安全终态，不得停留 RUNNING（具体终态由超时上下文映射到 6.2 已有终态）。
+最大执行时间到达时，MUST 依据触发原因进入下列确定终态，不得无限 `RUNNING`：
+
+| Condition | Required Terminal |
+|---|---|
+| 预算耗尽 | `BLOCKED_BUDGET_EXHAUSTED` |
+| 授权/认证过期且无安全恢复 | `BLOCKED_AUTH_EXPIRED` |
+| 修复/循环/重新设计上限耗尽 | `BLOCKED_REDESIGN_REQUIRED` |
+| 外部依赖确定失败 | `FAILED_EXTERNAL_DEPENDENCY` |
+| 发现安全风险或副作用状态存在安全不确定性 | `QUARANTINED_SECURITY_RISK` |
+| 政策未覆盖且完成默认决策阶梯后仍无法继续 | `BLOCKED_NEEDS_POLICY_DECISION` |
+| 政策可信根失败 | `POLICY_INTEGRITY_SAFE_MODE` |
+| 政策主动取消 | `CANCELLED_BY_POLICY` |
+
+- 上表终态均来自 V1.1 §8.2（6.2 清单），**不新增任何 workflow 终态**。
 - **预算耗尽后**：进入 `BLOCKED_BUDGET_EXHAUSTED`（V1.1 §8.2、§9.1）。
-- **reconciliation 终态**：外部动作 `RECONCILIATION_REQUIRED` 无法确认时，工作流由政策引擎映射到 6.2 已有终态（如 `BLOCKED_NEEDS_POLICY_DECISION` / `QUARANTINED_SECURITY_RISK`）。
+- **reconciliation 终态**：外部动作 `RECONCILIATION_REQUIRED` 无法确认时，工作流映射到上表确定终态（如 `BLOCKED_NEEDS_POLICY_DECISION` / `QUARANTINED_SECURITY_RISK`）。
 - **safe mode 下**：仅允许本地 A0 诊断；不得产生任何 A1–A5 状态迁移（V1.1 §15.5）。
 
 ### 6.7 不变量
@@ -194,8 +207,22 @@ VERIFIED
 RECONCILIATION_REQUIRED
 ```
 
+允许迁移（确定性）：
+
+```text
+PREPARED → DISPATCHING
+DISPATCHING → ACKNOWLEDGED
+ACKNOWLEDGED → VERIFIED
+DISPATCHING → RECONCILIATION_REQUIRED
+ACKNOWLEDGED → RECONCILIATION_REQUIRED
+```
+
 规则：
 
+- `VERIFIED` 为终态。
+- `RECONCILIATION_REQUIRED` **不得盲目返回** `DISPATCHING`；只有确定性证据证明外部动作未执行，且政策引擎批准新 attempt，才能创建新的 `delivery_attempt`。
+- 对账证明已执行后进入 `VERIFIED`。
+- 无法证明外部动作状态时，工作流进入安全终态（由政策引擎裁决，见 §6.6）。
 - 内部状态变更与"待投递意图"在**同一数据库事务**提交（Transactional Outbox）。
 - 逻辑 message 唯一（message_id 不可复用；同一逻辑 message 只创建一次）。
 - delivery_attempt 可受控重试（相同 idempotency_key + 递增 attempt 序号，默认上限 3、绝对上限 10，V1.1 §9）。
