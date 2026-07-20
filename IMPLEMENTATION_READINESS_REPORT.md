@@ -1,3 +1,12 @@
+> ⚠️ **状态：Reviewer-1 第一轮审查意见 · 非最终裁决 · 非 Source of Truth**
+>
+> 本文档是 Reviewer-1（WorkBuddy）对《Agent Relay Hub 项目书 V1.0》提交的**第一轮独立审查意见**，仅代表单一审查者视角：
+> - **不是最终裁决**，也**不是当前 Source of Truth**；
+> - 后续 **V1.1 必须经第二位独立审核者对照原始 `AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.0.md` 复核后**才能形成；
+> - 当前**禁止**开始正式编码与任何真实适配器（Git / GitHub / 浏览器 / UIA / Qoder / ChatGPT / WorkBuddy 等）实现；
+> - 三份审查文件彼此间存在至少一处直接矛盾，故**不能直接作为执行指令**。
+> - 已知矛盾示例：本报告 §6 一处要求 Phase 1「包含 1 个真实 Git 适配器」，而同节「明确禁止」又列「真实 GitHub 适配器」实现；原始 V1.0 实际将 Git 探针归入 **Phase 2**（Phase 1 仅为内核 + 模拟适配器 + 假工作流）。该矛盾须由第二位审核者裁定。
+
 # 实施就绪报告（IMPLEMENTATION READINESS REPORT）
 
 > 评估对象：`AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.0.md`
