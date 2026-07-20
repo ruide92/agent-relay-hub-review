@@ -215,14 +215,19 @@ DISPATCHING → ACKNOWLEDGED
 ACKNOWLEDGED → VERIFIED
 DISPATCHING → RECONCILIATION_REQUIRED
 ACKNOWLEDGED → RECONCILIATION_REQUIRED
+RECONCILIATION_REQUIRED → VERIFIED
 ```
 
 规则：
 
 - `VERIFIED` 为终态。
-- `RECONCILIATION_REQUIRED` **不得盲目返回** `DISPATCHING`；只有确定性证据证明外部动作未执行，且政策引擎批准新 attempt，才能创建新的 `delivery_attempt`。
-- 对账证明已执行后进入 `VERIFIED`。
-- 无法证明外部动作状态时，工作流进入安全终态（由政策引擎裁决，见 §6.6）。
+- `RECONCILIATION_REQUIRED → VERIFIED` 的进入条件 **MUST 严格限定**为：
+  1. 对账获得**确定性、可验证证据**，证明原外部动作已经执行；
+  2. 该证据写入 Event Ledger / Artifact Store；
+  3. 政策引擎批准该状态迁移。
+- `RECONCILIATION_REQUIRED` **不得盲目返回** `DISPATCHING`；若确定性证据证明原动作**未执行**，原 `delivery_attempt` 保持其历史状态，政策引擎可以批准创建新的 `delivery_attempt`，新 attempt 从 `PREPARED` 开始。
+- **不得**把原 attempt 直接从 `RECONCILIATION_REQUIRED` 返回 `DISPATCHING`。
+- 当状态仍无法证明时，工作流进入安全终态（由政策引擎裁决，见 §6.6）。
 - 内部状态变更与"待投递意图"在**同一数据库事务**提交（Transactional Outbox）。
 - 逻辑 message 唯一（message_id 不可复用；同一逻辑 message 只创建一次）。
 - delivery_attempt 可受控重试（相同 idempotency_key + 递增 attempt 序号，默认上限 3、绝对上限 10，V1.1 §9）。

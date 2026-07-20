@@ -53,6 +53,8 @@ Code Status: NO PRODUCT CODE
 | `finding_id` | 全局唯一 | 审核上下文 | 不可复用 | 关联 evidence_id |
 | `evidence_id` | 全局唯一 | 证据上下文 | 不可复用 | 关联 artifact_id |
 | `policy_decision_id` | 全局唯一 | 政策引擎 | 不可复用 | 引用政策版本 |
+| `adapter_id` | 适配器注册周期内稳定 | 该适配器注册 | 不跨注册周期复用 | 控制平面消息必绑（negotiation/lifecycle/heartbeat/health_check/capability_change） |
+| `session_id` | 一次加载/连接实例唯一 | 该 adapter 实例 | 不跨重启复用 | 控制平面消息必绑；adapter 进入 `FAILED` 后新建实例 MUST 产生新 `session_id` |
 
 规则：
 
@@ -100,13 +102,16 @@ Code Status: NO PRODUCT CODE
 | `resume_token` / `checkpoint` | 可选 / resume 必填 | resume | 恢复令牌 / 检查点 |
 | `supersedes_message_id` | 可选 | 修正 / 替代消息 | 关联被替代旧消息（见 §4.4） |
 | `integrity` | 公共必填（至少 content_hash） | 所有消息（Phase 1） | 完整性对象（见 §4.3） |
+| `adapter_id` | 控制平面/所有消息（条件） | capability negotiation / lifecycle / heartbeat / health_check / capability_change / workflow 消息可选 | 适配器逻辑身份，注册周期内稳定 |
+| `session_id` | 控制平面/所有消息（条件） | 同上 | 一次加载/连接实例身份，不跨重启复用 |
 
 说明：
 
 - **所有消息公共必填**：上述 8 个公共字段 + `integrity`（至少 `content_hash`）为每条消息 MUST 携带。
 - **工作流消息条件必填**：`workflow_id` / `workflow_version` / `job_id` / `correlation_id`；缺失即校验失败。
 - **投递尝试条件必填**：`delivery_attempt_id` / `idempotency_key` / `attempt`；缺失即校验失败。
-- **控制平面消息**（capability negotiation、lifecycle、health_check 等）可以没有 `workflow_id` / `job_id`，但 MUST 绑定 adapter / session identity（如 `adapter_id` / `session_id`），并携带全部公共必填字段。
+- **控制平面消息**（capability negotiation、lifecycle、heartbeat、health_check 等）可以没有 `workflow_id` / `job_id`，但 MUST 绑定 `adapter_id` / `session_id`，并携带全部公共必填字段；adapter 进入 `FAILED` 后新建实例 MUST 产生新的 `session_id`（旧 `session_id` 不再复用）。
+- **工作流消息**可以同时携带 `adapter_id` / `session_id`（如执行的适配器实例身份），但不是工作流消息的必填项。
 
 ### 4.2 公共必填字段语义
 
@@ -133,10 +138,24 @@ integrity:
 
 规则：
 
-- Phase 1 所有消息**至少** MUST 有规范化内容哈希（`content_hash` + `hash_algorithm`）。
+- **哈希预映像（hash preimage）**：canonical hash 的输入为完整 envelope + payload，但 **MUST 排除** `integrity.content_hash` 与 `integrity.signature`：
+
+  ```text
+  hash_preimage = canonical_json(
+    complete_message_without(
+      integrity.content_hash,
+      integrity.signature
+    )
+  )
+  ```
+
+- `hash_algorithm`、`signature_algorithm`、`key_id`、`key_purpose` 等**元数据 MUST 纳入**规范化哈希（即使不签名）。
+- **先计算 `content_hash`**，再对 `content_hash` 及规定的签名元数据签名（如需签名）。
+- **MUST NOT** 把 `content_hash` 自身放入其计算输入。
+- 未知但被保留的字段仍 MUST 纳入 canonical hash（防止未签名字段被篡改）。
+- Phase 1 所有消息 **MUST** 携带 `hash_algorithm` + `content_hash`（必填）。
+- `signature_algorithm`、`key_id`、`signature`、`key_purpose` **仅在该信任边界或消息类型要求签名时必填**；不要求签名时这些字段 **MUST 省略**，不得伪造空签名。
 - 签名是否必需由**信任边界与消息类型**决定（见 SECURITY.md §8 / §14）；非受限边界的内部消息可仅带哈希。
-- canonical hash MUST 覆盖**完整 envelope + payload**，排除 `integrity.signature` 本身。
-- 未知字段若被保留，MUST 也纳入规范化哈希，防止未签名字段被篡改。
 - 文档 MUST NOT 引用不存在的"签名校验字段"；签名验证以 `integrity.signature` + `key_id` + `key_purpose` 为准（见 SECURITY.md §8）。
 
 ### 4.4 消息不可原地修改

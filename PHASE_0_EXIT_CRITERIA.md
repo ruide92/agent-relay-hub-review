@@ -2,7 +2,7 @@
 Document Status: PROPOSED
 Normative Status: 未批准，当前不是 Source of Truth
 Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
-Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee691fca460
+Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
 Governance Baseline Commit: cf8e66b431b36103fb7c049048521c15df2e3701
 Governance Approval Record: GOVERNANCE_APPROVAL_0001.md
 Current Phase: Phase 0
@@ -89,7 +89,15 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 ## 4. 第二包状态（Phase 0 Source of Truth package #2：实施契约、安全与退出门禁）
 
 以下四份新增规范性文档在证据矩阵（第 5 节）中的初始状态 MUST 为 `DRAFT`；**不得提前写 `REVIEW_PASSED` 或 `OWNER_APPROVED`**（须先经 Reviewer-2 审核与 owner 批准）。
-其精确 target commit 均为第二包草案提交 `98412a1970fdc78ef771918068908ee691fca460`。
+* Initial Draft Commit：`98412a1970fdc78ef771918068908ee691fca460`
+* Round-1 Revision Commit：`225b39948e3d2fa18402d8789013282b51feb8f8`
+* Final Review Target：`PENDING_FINAL_CORRECTION_COMMIT`
+
+说明：
+
+* 当前文件无法预先写入"包含自身的未来 commit SHA"；
+* 最终精确审核 commit 必须由 Reviewer-2 审核记录和未来 owner 批准记录携带；
+* 不得继续把初始草案 commit 描述为当前四份文档的精确内容 commit。
 
 | Criterion ID | 文档 | 初始状态 |
 |---|---|---|
@@ -110,23 +118,23 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 | Criterion ID | Requirement | Normative Source | Artifact | Exact Commit | Reviewer | Review Decision | Approval Record | Status | Blocker | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| P0-V11 | V1.1 产品设计批准 | V1.1 全文（已批准 SoT） | AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md | c9cc522b4ab01008fed390c282d6bd5a816ee779 | Reviewer-2 | PASS | REVIEWER_2_FINAL_APPROVAL.md / GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 已批准生效 |
+| P0-V11 | V1.1 产品设计批准 | V1.1 全文（已批准 SoT） | AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md | c9cc522b4ab01008fed390c282d6bd5a816ee779 | Reviewer-2 | PASS | REVIEWER_2_FINAL_APPROVAL.md；governance promotion commit f24993148a5754e12502eb38dbf566dcbb54c2c1 | OWNER_APPROVED | — | 已批准生效 |
 | P0-PKG1 | 第一包（治理与权威体系）批准 | SOURCE_OF_TRUTH.md / 第一包全部文件 | 第一包 7 文件 | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | effective 93dbdbbfbe630740eff5a39850576dd993e6450e |
 | P0-P2-SOT | 第二包 SOURCE_OF_TRUTH.md §5.1 治理记录分类增量 | SOURCE_OF_TRUTH.md §5.1 | SOURCE_OF_TRUTH.md | 98412a1970fdc78ef771918068908ee691fca460 | Reviewer-2 | PASS | —（待第二包整体 owner 批准） | REVIEW_PASSED | — | §5.1 已通过本轮审核，本轮不得再修改该文件 |
-| P2-ARCH | ARCHITECTURE.md 实施架构契约批准 | ARCHITECTURE.md 全文 | ARCHITECTURE.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 本轮按 Reviewer-2 一审意见修订中 |
-| P2-PROTO | PROTOCOL.md 规范性协议批准 | PROTOCOL.md 全文 | PROTOCOL.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 同上 |
-| P2-SEC | SECURITY.md 安全与威胁模型批准 | SECURITY.md 全文 | SECURITY.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 同上 |
-| P2-EXIT | PHASE_0_EXIT_CRITERIA.md 退出门禁批准 | 本文件全文 | PHASE_0_EXIT_CRITERIA.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 同上 |
-| P2-THREAT | 威胁模型批准 | SECURITY.md §5（STRIDE） | SECURITY.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 控制均未实现，Validation Status=UNVALIDATED |
-| P2-SDK | SDK contract 批准 | PROTOCOL.md §1/§6/§7/§8/§9/§10；ARCHITECTURE.md §3/§4（注：ARCHITECTURE.md §6 为 workflow 状态机，非完整 SDK contract） | PROTOCOL.md + ARCHITECTURE.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 须引用上述全部章节 |
-| P2-SIGN | signing / trust-root 机制批准 | SECURITY.md §8（Phase 1 候选签名基线） | SECURITY.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 须先经 SECURITY.md 批准 |
+| P2-ARCH | ARCHITECTURE.md 实施架构契约批准 | ARCHITECTURE.md 全文 | ARCHITECTURE.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 本轮按 Reviewer-2 一审意见修订中 |
+| P2-PROTO | PROTOCOL.md 规范性协议批准 | PROTOCOL.md 全文 | PROTOCOL.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 同上 |
+| P2-SEC | SECURITY.md 安全与威胁模型批准 | SECURITY.md 全文 | SECURITY.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 同上 |
+| P2-EXIT | PHASE_0_EXIT_CRITERIA.md 退出门禁批准 | 本文件全文 | PHASE_0_EXIT_CRITERIA.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 同上 |
+| P2-THREAT | 威胁模型批准 | SECURITY.md §5（STRIDE） | SECURITY.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 控制均未实现，Validation Status=UNVALIDATED |
+| P2-SDK | SDK contract 批准 | PROTOCOL.md §1/§6/§7/§8/§9/§10；ARCHITECTURE.md §3/§4（注：ARCHITECTURE.md §6 为 workflow 状态机，非完整 SDK contract） | PROTOCOL.md + ARCHITECTURE.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 须引用上述全部章节 |
+| P2-SIGN | signing / trust-root 机制批准 | SECURITY.md §8（Phase 1 候选签名基线） | SECURITY.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 须先经 SECURITY.md 批准 |
 | P0-LICENSE | license policy 批准 | LICENSE.md | LICENSE.md | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 第一包 |
 | P0-TPL | third-party license policy 批准 | THIRD_PARTY_LICENSES.md | THIRD_PARTY_LICENSES.md | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 第一包 |
 | P0-SBOM | SBOM policy 批准 | SBOM_POLICY.md | SBOM_POLICY.md | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 第一包 |
-| P2-BACKUP | backup / recovery contract 批准 | ARCHITECTURE.md §8 | ARCHITECTURE.md | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 审核与 owner 批准 | 第二包 |
-| P0-NOCONFLICT | 无未解决 P0 设计冲突 | V1.1 设计冲突全部关闭 | V1.1_CHANGESET_FINAL.md / REVIEWER_2_ADJUDICATION.md | c9cc522b4ab01008fed390c282d6bd5a816ee779 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | V1.1 冲突已裁决关闭 |
-| P0-NOCODE | 授权前无产品代码 | Code Status: NO PRODUCT CODE | 仓库根（无 src/ 产品代码） | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 确认 | 当前无产品代码 |
-| P2-REVIEW | 第二包独立审核 | Reviewer-2 对第二包全部文件 PASS | 本矩阵 + Reviewer-2 审核记录 | 98412a1970fdc78ef771918068908ee691fca460 | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 完成第二包独立审核 | 本轮为一审意见修订 |
+| P2-BACKUP | backup / recovery contract 批准 | ARCHITECTURE.md §8 | ARCHITECTURE.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 第二包 |
+| P0-NOCONFLICT | 无未解决 P0 设计冲突 | V1.1 设计冲突全部关闭 | V1.1_CHANGESET_FINAL.md / REVIEWER_2_ADJUDICATION.md | c9cc522b4ab01008fed390c282d6bd5a816ee779 | Reviewer-2 | PASS | V1.1_CHANGESET_FINAL.md / REVIEWER_2_ADJUDICATION.md / REVIEWER_2_FINAL_APPROVAL.md；governance promotion commit f24993148a5754e12502eb38dbf566dcbb54c2c1 | OWNER_APPROVED | — | V1.1 冲突已裁决关闭 |
+| P0-NOCODE | 授权前无产品代码 | Code Status: NO PRODUCT CODE | 仓库根（无 src/ 产品代码） | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 当前无产品代码 |
+| P2-REVIEW | 第二包独立审核 | Reviewer-2 对第二包全部文件 PASS | 本矩阵 + Reviewer-2 审核记录 | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 本轮为一审意见修订 |
 | P2-OWNER | 第二包 owner 批准 | owner 或有效 governance_approver 批准第二包 | GOVERNANCE_APPROVAL_0002.md（待创建） | （空） | （空） | PENDING | （空） | DRAFT | 等待 owner 批准（须先 Reviewer-2 PASS） | 尚未创建批准记录 |
 
 ---
