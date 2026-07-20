@@ -1,10 +1,11 @@
 ```text
-Document Status: PROPOSED
-Normative Status: 未批准，当前不是 Source of Truth
+Document Status: APPROVED
+Normative Status: 已批准，当前为 Phase 0 Source of Truth
+Approval Target Commit: b8ef21978544e1261081389ecf736e72b80e49d7
 Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
 Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
 Governance Baseline Commit: cf8e66b431b36103fb7c049048521c15df2e3701
-Governance Approval Record: GOVERNANCE_APPROVAL_0001.md
+Governance Approval Record: GOVERNANCE_APPROVAL_0002.md
 Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
@@ -13,10 +14,11 @@ Code Status: NO PRODUCT CODE
 # SECURITY.md（安全与威胁模型）
 
 > 本文件建立 ARH 安全目标、资产、信任边界、威胁模型与安全控制。
-> 当前为 `PROPOSED`，未经 Reviewer-2 审核与 owner 批准前**不属于 Source of Truth**；
-> 不得描述为已批准、已实现或已测试；不得自动关闭 Phase 0。
+> 本文件已通过 Reviewer-2 对 target commit `b8ef21978544e1261081389ecf736e72b80e49d7` 的独立审核，
+> 并已由 `GOVERNANCE_APPROVAL_0002.md` 批准，当前为 **Phase 0 Source of Truth**。
+> 批准表示设计契约生效，**不表示**产品代码、安全控制或测试已经实现；Phase 0 仍未关闭，Phase 1 仍未授权。
 > 所有内容必须服从已批准 V1.1，且不与 V1.1 冲突。
-> 本文件中的方案是 Phase 1 **候选安全基线**；本文件经 Reviewer-2 审核与 owner 批准后，其机制成为规范性基线；参数变化必须通过安全 ADR。
+> 本文件所定义的安全基线已成为规范性基线；后续参数变化必须通过安全 ADR。
 
 ---
 

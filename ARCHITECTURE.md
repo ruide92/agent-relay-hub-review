@@ -1,10 +1,11 @@
 ```text
-Document Status: PROPOSED
-Normative Status: 未批准，当前不是 Source of Truth
+Document Status: APPROVED
+Normative Status: 已批准，当前为 Phase 0 Source of Truth
+Approval Target Commit: b8ef21978544e1261081389ecf736e72b80e49d7
 Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
 Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
 Governance Baseline Commit: cf8e66b431b36103fb7c049048521c15df2e3701
-Governance Approval Record: GOVERNANCE_APPROVAL_0001.md
+Governance Approval Record: GOVERNANCE_APPROVAL_0002.md
 Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
@@ -13,9 +14,11 @@ Code Status: NO PRODUCT CODE
 # ARCHITECTURE.md（Phase 1 Core Prototype 实施架构契约）
 
 > 本文档定义 **Phase 1 Core Prototype** 的实施架构契约（implementation architecture contract）。
-> 它**不是**完整产品实现说明，也不是 Phase 3+ 生产架构。本文档当前为 `PROPOSED`，
-> 未经 Reviewer-2 审核与 owner 批准前**不属于 Source of Truth**；不得描述为已批准、已实现或已测试；
-> 不得自动关闭 Phase 0。所有内容必须服从已批准 V1.1，且不与 V1.1 冲突。
+> 它**不是**完整产品实现说明，也不是 Phase 3+ 生产架构。
+> 本文档已通过 Reviewer-2 对 target commit `b8ef21978544e1261081389ecf736e72b80e49d7` 的独立审核，
+> 并已由 `GOVERNANCE_APPROVAL_0002.md` 批准，当前为 **Phase 0 Source of Truth**。
+> 批准表示设计契约生效，**不表示**产品代码、安全控制或测试已经实现；Phase 0 仍未关闭，Phase 1 仍未授权。
+> 所有内容必须服从已批准 V1.1，且不与 V1.1 冲突。
 
 ---
 

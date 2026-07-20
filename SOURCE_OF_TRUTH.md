@@ -98,7 +98,9 @@
 
 - 上述记录**全部只增不改（append-only）**；不得修改已发生的批准/授权事实，如需更正或撤销只能新增记录，并在新记录中写明 `Supersedes: <被取代记录>`。
 - 上述记录**不得覆盖已批准 V1.1**；与 V1.1 冲突时以 V1.1 为准。
-- 当前有效记录：`GOVERNANCE_APPROVAL_0001.md`（批准 Phase 0 Source of Truth 第一包，target commit `cf8e66b…`，effective commit `93dbdbb…`）。
+- 当前有效记录：
+  - `GOVERNANCE_APPROVAL_0001.md`：批准 Phase 0 Source of Truth **第一包**，target commit `cf8e66b…`，effective commit `93dbdbb…`；
+  - `GOVERNANCE_APPROVAL_0002.md`：批准 Phase 0 Source of Truth **第二包**，target commit `b8ef219…`。
 - 本小节仅补充治理记录分类规则，**不修改 SOURCE_OF_TRUTH.md 的其他设计规则**（第 1–4、6–10 节保持不变）。
 
 ---

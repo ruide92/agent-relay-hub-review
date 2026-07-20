@@ -1,10 +1,11 @@
 ```text
-Document Status: PROPOSED
-Normative Status: 未批准，当前不是 Source of Truth
+Document Status: APPROVED
+Normative Status: 已批准，当前为 Phase 0 Source of Truth
+Approval Target Commit: b8ef21978544e1261081389ecf736e72b80e49d7
 Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
 Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
 Governance Baseline Commit: cf8e66b431b36103fb7c049048521c15df2e3701
-Governance Approval Record: GOVERNANCE_APPROVAL_0001.md
+Governance Approval Record: GOVERNANCE_APPROVAL_0002.md
 Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
@@ -17,7 +18,7 @@ Phase 0: OPEN
 > 本文件定义 Phase 0 关闭所必须满足的退出条件、证据要求、状态与批准程序。
 > **创建本文件不代表 Phase 0 已通过**；在全部条件满足并经独立审核与 owner 批准前，
 > `Overall Status` 不得标记为就绪，`Phase 0` 不得关闭，`Phase 1` 不得授权。
-> 本文件当前为草案；其自身状态的演进见第 1、5、6 节。
+> 本文件（作为退出门禁契约本身）已通过 Reviewer-2 对 target commit `b8ef21978544e1261081389ecf736e72b80e49d7` 的独立审核，并已由 `GOVERNANCE_APPROVAL_0002.md` 批准，当前为 **Phase 0 Source of Truth**；批准表示门禁契约生效，**不表示** Phase 0 已满足退出条件——Phase 0 仍为 `OPEN` / `NOT READY`，Phase 1 仍未授权。其自身状态与各条件的演进见第 1、5、6 节。
 
 ---
 
@@ -88,16 +89,20 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 ## 4. 第二包状态（Phase 0 Source of Truth package #2：实施契约、安全与退出门禁）
 
-以下四份新增规范性文档在证据矩阵（第 5 节）中的初始状态 MUST 为 `DRAFT`；**不得提前写 `REVIEW_PASSED` 或 `OWNER_APPROVED`**（须先经 Reviewer-2 审核与 owner 批准）。
+以下四份新增规范性文档的第二包提交链（已由 Reviewer-2 独立审核 `PASS`，并由 owner 经 `GOVERNANCE_APPROVAL_0002.md` 批准）：
+
 * Initial Draft Commit：`98412a1970fdc78ef771918068908ee691fca460`
 * Round-1 Revision Commit：`225b39948e3d2fa18402d8789013282b51feb8f8`
-* Final Review Target：`PENDING_FINAL_CORRECTION_COMMIT`
+* Mechanical Correction Commit：`154638bdba30675d67739228d9cf48be2ef9c8a4`
+* Final Review Target：`b8ef21978544e1261081389ecf736e72b80e49d7`
+* Reviewer Decision：`PASS`
+* Owner Approval Record：`GOVERNANCE_APPROVAL_0002.md`
 
 说明：
 
-* 当前文件无法预先写入"包含自身的未来 commit SHA"；
-* 最终精确审核 commit 必须由 Reviewer-2 审核记录和未来 owner 批准记录携带；
-* 不得继续把初始草案 commit 描述为当前四份文档的精确内容 commit。
+* 上述四份文档已由 Reviewer-2 对 Final Review Target `b8ef219…` 完成独立审核并给出 `PASS`；
+* owner 已通过 `GOVERNANCE_APPROVAL_0002.md` 批准其成为 Phase 0 当前规范性 Source of Truth；
+* 批准表示设计契约生效，**不表示**产品代码、安全控制或测试已实现；Phase 0 仍未关闭，Phase 1 仍未授权。
 
 | Criterion ID | 文档 | 初始状态 |
 |---|---|---|
@@ -106,7 +111,7 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 | P2-SEC | `SECURITY.md` | `DRAFT` |
 | P2-EXIT | `PHASE_0_EXIT_CRITERIA.md` | `DRAFT` |
 
-> 第二包 `SOURCE_OF_TRUTH.md` §5.1 治理记录分类增量已由 Reviewer-2 本轮审核通过（见第 5 节 `P0-P2-SOT`），但本轮不得再修改 `SOURCE_OF_TRUTH.md`。
+> 第二包 `SOURCE_OF_TRUTH.md` §5.1 治理记录分类增量已由 Reviewer-2 审核通过（见第 5 节 `P0-P2-SOT`），并随第二包一并由 `GOVERNANCE_APPROVAL_0002.md` 批准生效。
 
 ---
 
@@ -114,28 +119,28 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 每一行 MUST 含：Criterion ID | Requirement | Normative Source | Artifact | Exact Commit | Reviewer | Review Decision | Approval Record | Status | Blocker | Notes。
 
-第二包所有相关草案行（P2-* 与待审核项）当前 MUST 为：Reviewer=PENDING、Review Decision=PENDING、Approval Record=（空）、Status=`DRAFT`、Blocker=等待 Reviewer-2 审核与 owner 批准；**不得提前写 `REVIEW_PASSED` 或 `OWNER_APPROVED`**。
+第二包相关行已由 Reviewer-2 对 target commit `b8ef21978544e1261081389ecf736e72b80e49d7` 审核 `PASS`，并由 owner 经 `GOVERNANCE_APPROVAL_0002.md` 批准，Status 晋级为 `OWNER_APPROVED`；本次晋级**不改变** Phase 0 总体状态（仍 `NOT READY` / `OPEN`），亦**不表示**任何产品代码或安全控制已实现。
 
 | Criterion ID | Requirement | Normative Source | Artifact | Exact Commit | Reviewer | Review Decision | Approval Record | Status | Blocker | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
 | P0-V11 | V1.1 产品设计批准 | V1.1 全文（已批准 SoT） | AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md | c9cc522b4ab01008fed390c282d6bd5a816ee779 | Reviewer-2 | PASS | REVIEWER_2_FINAL_APPROVAL.md；governance promotion commit f24993148a5754e12502eb38dbf566dcbb54c2c1 | OWNER_APPROVED | — | 已批准生效 |
 | P0-PKG1 | 第一包（治理与权威体系）批准 | SOURCE_OF_TRUTH.md / 第一包全部文件 | 第一包 7 文件 | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | effective 93dbdbbfbe630740eff5a39850576dd993e6450e |
-| P0-P2-SOT | 第二包 SOURCE_OF_TRUTH.md §5.1 治理记录分类增量 | SOURCE_OF_TRUTH.md §5.1 | SOURCE_OF_TRUTH.md | 98412a1970fdc78ef771918068908ee691fca460 | Reviewer-2 | PASS | —（待第二包整体 owner 批准） | REVIEW_PASSED | — | §5.1 已通过本轮审核，本轮不得再修改该文件 |
-| P2-ARCH | ARCHITECTURE.md 实施架构契约批准 | ARCHITECTURE.md 全文 | ARCHITECTURE.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 本轮按 Reviewer-2 一审意见修订中 |
-| P2-PROTO | PROTOCOL.md 规范性协议批准 | PROTOCOL.md 全文 | PROTOCOL.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 同上 |
-| P2-SEC | SECURITY.md 安全与威胁模型批准 | SECURITY.md 全文 | SECURITY.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 同上 |
-| P2-EXIT | PHASE_0_EXIT_CRITERIA.md 退出门禁批准 | 本文件全文 | PHASE_0_EXIT_CRITERIA.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 同上 |
-| P2-THREAT | 威胁模型批准 | SECURITY.md §5（STRIDE） | SECURITY.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 控制均未实现，Validation Status=UNVALIDATED |
-| P2-SDK | SDK contract 批准 | PROTOCOL.md §1/§6/§7/§8/§9/§10；ARCHITECTURE.md §3/§4（注：ARCHITECTURE.md §6 为 workflow 状态机，非完整 SDK contract） | PROTOCOL.md + ARCHITECTURE.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 须引用上述全部章节 |
-| P2-SIGN | signing / trust-root 机制批准 | SECURITY.md §8（Phase 1 候选签名基线） | SECURITY.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 须先经 SECURITY.md 批准 |
+| P0-P2-SOT | 第二包 SOURCE_OF_TRUTH.md §5.1 治理记录分类增量 | SOURCE_OF_TRUTH.md §5.1 | SOURCE_OF_TRUTH.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 内容最初落在 98412a1…，当前第二包批准锚点统一为 b8ef219… |
+| P2-ARCH | ARCHITECTURE.md 实施架构契约批准 | ARCHITECTURE.md 全文 | ARCHITECTURE.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 第二包，Reviewer-2 PASS + owner 批准生效 |
+| P2-PROTO | PROTOCOL.md 规范性协议批准 | PROTOCOL.md 全文 | PROTOCOL.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 第二包，Reviewer-2 PASS + owner 批准生效 |
+| P2-SEC | SECURITY.md 安全与威胁模型批准 | SECURITY.md 全文 | SECURITY.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 第二包，Reviewer-2 PASS + owner 批准生效；控制均未实现，Validation Status=UNVALIDATED |
+| P2-EXIT | PHASE_0_EXIT_CRITERIA.md 退出门禁批准 | 本文件全文 | PHASE_0_EXIT_CRITERIA.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 门禁契约批准生效；Phase 0 仍 OPEN / NOT READY |
+| P2-THREAT | 威胁模型批准 | SECURITY.md §5（STRIDE） | SECURITY.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 威胁模型契约批准生效；控制均未实现，Validation Status=UNVALIDATED |
+| P2-SDK | SDK contract 批准 | PROTOCOL.md §1/§6/§7/§8/§9/§10；ARCHITECTURE.md §3/§4（注：ARCHITECTURE.md §6 为 workflow 状态机，非完整 SDK contract） | PROTOCOL.md + ARCHITECTURE.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 已引用上述全部章节，契约批准生效 |
+| P2-SIGN | signing / trust-root 机制批准 | SECURITY.md §8（Phase 1 签名基线） | SECURITY.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 签名基线契约批准生效；机制尚未实现或测试 |
 | P0-LICENSE | license policy 批准 | LICENSE.md | LICENSE.md | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 第一包 |
 | P0-TPL | third-party license policy 批准 | THIRD_PARTY_LICENSES.md | THIRD_PARTY_LICENSES.md | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 第一包 |
 | P0-SBOM | SBOM policy 批准 | SBOM_POLICY.md | SBOM_POLICY.md | cf8e66b431b36103fb7c049048521c15df2e3701 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0001.md | OWNER_APPROVED | — | 第一包 |
-| P2-BACKUP | backup / recovery contract 批准 | ARCHITECTURE.md §8 | ARCHITECTURE.md | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 第二包 |
+| P2-BACKUP | backup / recovery contract 批准 | ARCHITECTURE.md §8 | ARCHITECTURE.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 第二包，契约批准生效 |
 | P0-NOCONFLICT | 无未解决 P0 设计冲突 | V1.1 设计冲突全部关闭 | V1.1_CHANGESET_FINAL.md / REVIEWER_2_ADJUDICATION.md | c9cc522b4ab01008fed390c282d6bd5a816ee779 | Reviewer-2 | PASS | V1.1_CHANGESET_FINAL.md / REVIEWER_2_ADJUDICATION.md / REVIEWER_2_FINAL_APPROVAL.md；governance promotion commit f24993148a5754e12502eb38dbf566dcbb54c2c1 | OWNER_APPROVED | — | V1.1 冲突已裁决关闭 |
-| P0-NOCODE | 授权前无产品代码 | Code Status: NO PRODUCT CODE | 仓库根（无 src/ 产品代码） | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 当前无产品代码 |
-| P2-REVIEW | 第二包独立审核 | Reviewer-2 对第二包全部文件 PASS | 本矩阵 + Reviewer-2 审核记录 | PENDING_FINAL_CORRECTION_COMMIT | PENDING | PENDING | （空） | DRAFT | 等待 Reviewer-2 最终审核与 owner 批准 | 本轮为一审意见修订 |
-| P2-OWNER | 第二包 owner 批准 | owner 或有效 governance_approver 批准第二包 | GOVERNANCE_APPROVAL_0002.md（待创建） | （空） | （空） | PENDING | （空） | DRAFT | 等待 owner 批准（须先 Reviewer-2 PASS） | 尚未创建批准记录 |
+| P0-NOCODE | 授权前无产品代码 | Code Status: NO PRODUCT CODE | 仓库根（无 src/ 产品代码） | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 当前无产品代码；批准不授权编码 |
+| P2-REVIEW | 第二包独立审核 | Reviewer-2 对第二包全部文件 PASS | 本矩阵 + Reviewer-2 审核记录 | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | Reviewer-2 对 b8ef219 完成独立审核 PASS |
+| P2-OWNER | 第二包 owner 批准 | owner 或有效 governance_approver 批准第二包 | GOVERNANCE_APPROVAL_0002.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | owner 批准的内容目标是 b8ef219；批准记录从包含 GOVERNANCE_APPROVAL_0002.md 的治理晋级提交推送至 main 后生效 |
 
 ---
 
