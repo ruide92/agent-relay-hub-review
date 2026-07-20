@@ -149,7 +149,10 @@ integrity:
   )
   ```
 
-- `hash_algorithm`、`signature_algorithm`、`key_id`、`key_purpose` 等**元数据 MUST 纳入**规范化哈希（即使不签名）。
+- `hash_algorithm` 始终存在，并且 MUST 纳入规范化哈希。
+- 除 `integrity.content_hash` 与 `integrity.signature` 外，所有实际存在于消息中的 integrity 元数据 MUST 纳入规范化哈希。
+- 当消息要求签名时，`signature_algorithm`、`key_id`、`key_purpose` MUST 在计算 content_hash 前确定，并纳入 hash preimage；`signature` 本身始终排除在 hash preimage 之外。
+- 当消息不要求签名时，`signature_algorithm`、`key_id`、`key_purpose`、`signature` MUST 全部省略，因此这些不存在的字段不进入 hash preimage。
 - **先计算 `content_hash`**，再对 `content_hash` 及规定的签名元数据签名（如需签名）。
 - **MUST NOT** 把 `content_hash` 自身放入其计算输入。
 - 未知但被保留的字段仍 MUST 纳入 canonical hash（防止未签名字段被篡改）。
