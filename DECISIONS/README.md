@@ -30,6 +30,15 @@
 4. **后果（Consequences）**：正负面影响、风险与后续义务。
 5. **证据（Evidence）**：支撑决策的验证、探针结果或引用。
 6. **批准 commit（Approval commit）**：批准该 ADR 时的 commit SHA。
+7. **Decision Owner（决策所有者）**：对应治理角色 `owner` 或其有效委派；对决策负最终责任。
+8. **Reviewer（独立审核者）**：提出通过/否决意见的角色；不得为 proposer/executor 本人。
+9. **Governance Approver（治理批准者）**：`owner` 或有效委派的 `governance_approver`；其批准使决策生效。
+10. **Approval Record（批准记录）**：仓库内可追溯的批准记录引用（如 `REVIEWER_2_FINAL_APPROVAL.md` 或本仓库批准记录）。
+11. **Effective Commit（生效 commit）**：该决策实际生效的 commit SHA。
+12. **Affected Normative Documents（受影响的规范性文档）**：列出被本 ADR 影响的 A 类文档（见 `SOURCE_OF_TRUTH.md` 第 4 节）。
+13. **Supersedes / Superseded By（取代 / 被取代）**：彼此引用的 ADR 编号。
+
+**状态规则**：没有有效 `Approval Record` 时，ADR 状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见 `SOURCE_OF_TRUTH.md` 第 10 节）。
 
 ## 4. 与已批准 V1.1 的关系
 
@@ -55,3 +64,14 @@
 ---
 
 > 新增 ADR 时：在本目录创建 `ADR-NNNN-*.md`，并在上表登记编号、标题、状态与批准 commit。
+
+---
+
+## 7. 治理角色与批准约束
+
+治理角色（`owner` / `governance_approver` / `reviewer` / `executor`）与批准规则（精确目标 commit、独立 reviewer 结论、owner 或有效委派 governance_approver 批准、仓库内可追溯批准记录、无批准记录则状态只能为 `PROPOSED`）的权威定义见 `SOURCE_OF_TRUTH.md` 第 10 节。
+
+约束：
+
+- **AI reviewer、worker、messenger 或 coordinator 不得自行批准自己提出或实施的变更。**
+- 权限、安全、协议、阶段边界、许可类 ADR（见第 5 节）除满足第 3 节必填字段外，还须满足 `SOURCE_OF_TRUTH.md` 第 10.2 节的批准四要素，并走独立审核。

@@ -19,7 +19,18 @@
 - **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准。
 - **明确不包含**：任何产品代码实现；任何真实适配器。
 - **进入条件**：项目启动（已满足）。
-- **退出门禁**：无代码实现；设计冲突清零；许可证路线明确；SDK 生命周期/错误码/取消/恢复/健康检查文档化（V1.1 §20.1）；Phase 0 Source of Truth 文档集补齐。
+- **退出门禁**：
+  - V1.1 已批准（commit `c9cc522…`，Source of Truth）；
+  - 治理与权威文档包（SOURCE_OF_TRUTH / PRODUCT_PROPOSAL / ROADMAP / LICENSE / THIRD_PARTY_LICENSES / SBOM_POLICY / DECISIONS）通过审核；
+  - `ARCHITECTURE.md` 已创建并批准；
+  - `PROTOCOL.md` 已创建并批准；
+  - `SECURITY.md` 已创建并批准；
+  - `PHASE_0_EXIT_CRITERIA.md` 已创建并批准；
+  - SDK 契约（生命周期/错误码/取消/恢复/健康检查，V1.1 §20.1）文档化；
+  - 威胁模型已建立；
+  - 许可与 SBOM 政策已落地（`LICENSE.md` / `SBOM_POLICY.md`）；
+  - 全部 Phase 0 设计冲突关闭；
+  - 明确批准进入 Phase 1（独立授权记录）。
 - **禁止跳阶段**：Phase 0 未关闭前不得进入 Phase 1。
 
 ## Phase 1：Core Prototype（仅内核与模拟）
@@ -28,7 +39,21 @@
 - **交付物**：状态机、SQLite、事件账本、政策引擎、**模拟**适配器、**模拟**工作流、自动化测试。
 - **明确不包含**：任何真实适配器（Git/GitHub/浏览器/UIA/Qoder/ChatGPT/WorkBuddy）；任何真实外部工具。
 - **进入条件**：Phase 0 退出门禁全部满足并获显式授权。
-- **退出门禁**：崩溃恢复、去重、循环上限、预算、终态、Outbox 对账、safe mode 全部通过自动化测试。
+- **退出门禁**（全部通过自动化测试）：
+  - 崩溃恢复；
+  - 去重；
+  - 循环上限；
+  - 预算；
+  - 终态（无无限 RUNNING）；
+  - Outbox 对账；
+  - policy safe mode；
+  - SQLite 一致性备份；
+  - WAL checkpoint；
+  - 备份恢复演练；
+  - 事件重放一致性；
+  - projection 重建一致性；
+  - Outbox 故障注入与对账；
+  - 不接入任何真实外部工具（仅模拟）。
 - **禁止跳阶段**：不得在 Phase 1 引入真实适配器或提前进入 Phase 2 生产组件。
 
 ## Phase 2：真实工具可行性探针（一次性隔离）
@@ -46,7 +71,14 @@
 - **交付物**：正式产品适配器与第一个真实代码开发闭环（如正式 worker 适配器（优先 Qoder CLI/稳定 SDK）+ reviewer 适配器（优先 API/SDK）+ repository 适配器 + notifier）。
 - **明确不包含**：Phase 4 的完整多审核与夜间自治。
 - **进入条件**：Phase 2 探针通过门禁。
-- **退出门禁**：仅在测试仓库完成端到端闭环；同一逻辑 message 只创建一次（允许受控 delivery_attempt 重试，默认最多 3 次）；工具繁忙不打断。
+- **退出门禁**：
+  - 仅在测试仓库完成端到端闭环；
+  - **release gate 只接受 verifier / 外部可验证证据**；
+  - worker 的"完成"只能生成**待验证事件**；
+  - 未确认外部副作用进入 `RECONCILIATION_REQUIRED`；
+  - 同一逻辑 message 不重复创建，但允许受控 delivery attempt（默认最多 3 次）；
+  - 工具繁忙不打断；
+  - **Phase 3 只要求一个独立 reviewer**；双 reviewer、evidence_verifier、adjudicator 与夜间无人值守属于 Phase 4，不得作为 Phase 3 进入或退出条件。
 - **禁止跳阶段**：未形成稳定首个闭环不得进入 Phase 4。
 
 ## Phase 4：多审核委员会与自主夜间运行
