@@ -1,11 +1,13 @@
 # Agent Relay Hub（智能体中继台）项目书 V1.1
 
-> **文档状态**：V1.1 审核候选稿（尚未成为 Source of Truth）
+> **文档状态**：V1.1 已批准产品设计基线（Source of Truth）
+> **最终批准基线 commit**：`c9cc522b4ab01008fed390c282d6bd5a816ee779`
 > **基线**：V1.0 blob `31b7287764e4eaf008b0f87852596e33bcfb4af3`
 > **修订依据**：冻结 changeset commit `3e9a0598aba2e8963c8a7ea8ac9b3dbfe271ff76`（`V1.1_CHANGESET_FINAL.md`，经 Reviewer-2 冻结验收）
 > **当前阶段**：仍处于 **Phase 0 产品设计冻结**，未进入 Phase 1
-> **一致性审核**：本文档尚须经过独立一致性审核（对照 V1.0 与冻结 changeset）后才能成为 Source of Truth
-> **代码状态**：未编写或授权实现任何产品代码；本文档仅为设计候选稿
+> **Reviewer-2 最终一致性审核**：通过（审核对象 commit `c9cc522b4ab01008fed390c282d6bd5a816ee779`）
+> **Phase 0 状态**：Phase 0 尚未关闭；尚未授权进入 Phase 1；未编写或授权任何产品代码
+> **代码状态**：未编写或授权实现任何产品代码；V1.1 现已成为批准的产品设计基线
 > 项目代号：ARH ｜ 产品定位：供应商无关、可插拔、可审计的智能体中继与自主工作流平台
 
 ---
