@@ -86,6 +86,21 @@
 - B 类文件**不等于当前产品正文**；与 V1.1 冲突时以 V1.1 为准。
 - B 类文件在优先级链中位于 V1.1 之下（见第 2 节），其作用是解释批准依据，而非提供高于 V1.1 的当前约束力。
 
+### 5.1 治理批准与授权记录分类
+
+以下模式文件名均为 **B 类解释性治理记录**（与第 5 节同类），用于记录 owner / 有效 governance_approver 的批准与授权决策，解释"为何批准/授权某治理事项"：
+
+- `GOVERNANCE_APPROVAL_*.md`：owner 或有效 governance_approver 对治理事项（如 Phase 0 Source of Truth 文档包）的批准记录；
+- `PHASE_0_CLOSURE_APPROVAL_*.md`：未来 Phase 0 关闭记录；
+- `PHASE_1_AUTHORIZATION_*.md`：未来 Phase 1 进入授权记录。
+
+约束：
+
+- 上述记录**全部只增不改（append-only）**；不得修改已发生的批准/授权事实，如需更正或撤销只能新增记录，并在新记录中写明 `Supersedes: <被取代记录>`。
+- 上述记录**不得覆盖已批准 V1.1**；与 V1.1 冲突时以 V1.1 为准。
+- 当前有效记录：`GOVERNANCE_APPROVAL_0001.md`（批准 Phase 0 Source of Truth 第一包，target commit `cf8e66b…`，effective commit `93dbdbb…`）。
+- 本小节仅补充治理记录分类规则，**不修改 SOURCE_OF_TRUTH.md 的其他设计规则**（第 1–4、6–10 节保持不变）。
+
 ---
 
 ## 6. C. 历史审查记录（Historical Review Records — 仅供追溯）
