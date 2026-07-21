@@ -16,7 +16,7 @@
 ## Phase 0：产品设计与契约冻结（当前所处）
 
 - **目标**：冻结产品设计、协议、角色、权限、状态机、适配器 SDK 契约、威胁模型与验收标准。
-- **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准。
+- **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准、**机器可读契约（JSON Schema bundle，提案 #0007 PROPOSED）**、**capability token 签名契约（ADR-0003 PROPOSED）**。
 - **视觉设计包（第四包方向，非 Phase 0 关闭前置）**：视觉设计基线与视觉资产治理包（精确视觉设计任务书 `VISUAL_DESIGN_BRIEF.md`、Control Room 高保真基准、视觉资产清单 `VISUAL_ASSET_MANIFEST.md`、独立审核 `VISUAL_PACKAGE_REVIEW_0001.md`、owner 批准 `GOVERNANCE_APPROVAL_0005.md`）经 `ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）登记为 **Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道**，**不再是 Phase 0 关闭前置条件**。因此本包不阻塞 Phase 0 关闭；Phase 0 仍为 `NOT_READY` / `OPEN` 是因为其他未满足条件（如机器可读契约、capability token 契约），而非视觉包；Phase 1 仍 `NOT AUTHORIZED`。
 - **明确不包含**：任何产品代码实现；任何真实适配器。
 - **进入条件**：项目启动（已满足）。

@@ -71,6 +71,7 @@
 - `PHASE_1_IMPLEMENTATION_PLAN.md` 属实施计划，层级不高于上述规范性文档。
 - 任何规范性文档的**未批准草稿都不是 Source of Truth**。
 - `ROADMAP.md` 属 A 类规范性文档，但其描述的是 Phase 0–7 **未来意图**；其中 `ROADMAP_ONLY` 条目（P2×3）及"闭环""多审核""夜间无人值守""NAS 控制中心""商业化"等均为目标能力，**当前 Phase 0 未实现，不得描述为已实现**。
+- **机器可读契约（提案 #0007，PROPOSED）**：`MACHINE_READABLE_CONTRACTS.md` 与 `CONTRACTS/` 下的 JSON Schema 文件为 Phase 0 治理提案，状态 **PROPOSED**，未经独立审核与 owner 批准前**不是** Source of Truth。经批准（预期 `GOVERNANCE_APPROVAL_0007`，本轮未创建）后方可列为 A 类规范性文档的细化实现契约。`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 
 ---
 
