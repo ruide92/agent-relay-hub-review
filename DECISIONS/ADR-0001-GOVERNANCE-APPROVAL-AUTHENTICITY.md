@@ -4,7 +4,8 @@ Status: PROPOSED
 ADR Number: ADR-0001
 Title: 治理批准真实性（Phase 0 人工治理批准证据构成与签名边界）
 Date: 2026-07-21
-Proposed By: executor（WorkBuddy，依据 owner 治理指令）
+Proposed By: Phase 0 design lead / external product architect
+Implemented By: executor（WorkBuddy）
 
 > 本 ADR 当前为 `PROPOSED`；没有有效 `Approval Record` 前不得标记 `ACCEPTED`（见 `SOURCE_OF_TRUTH.md` 第 10 节与 `DECISIONS/README.md` 第 3 节）。
 
@@ -21,7 +22,7 @@ Phase 0 的治理批准目前由 owner 的明确书面指令、精确 target com
 
 1. Phase 0 当前人类治理批准证据由"owner 明确书面指令 + 精确 target commit + 内容寻址 commit + append-only 治理记录"构成。
 2. 当前 Markdown 治理批准记录**不得虚假声称已经具有加密签名**。
-3. Phase 1 中任何机器可执行的 policy bundle、capability token 和机器授权**必须**采用 `SECURITY.md` 已规定的签名基线（ECDSA P-256 / SHA-256，detached signature manifest，key purpose 区分 policy bundle / SBOM）。
+3. Phase 1 中任何机器可执行的 policy bundle、capability token 与其他机器授权**必须**采用 `SECURITY.md` §8 已规定的签名设计基线（ECDSA P-256 / SHA-256，detached signature manifest）。其中 policy bundle 与 SBOM 使用不同 `key_purpose`（§8 已定义）；**capability token 不得与 policy bundle 或 SBOM 共用含糊的 `key_purpose`**，其独立的 `key_purpose` 与验证用途**必须在 Phase 1 实现前明确**；不得虚假声称 `SECURITY.md` §8 已经完整定义 capability token 的 purpose schema（§8 当前仅定义 policy bundle / SBOM 的用途分离，未定义 capability token 的 purpose）。
 4. Markdown 治理记录是**解释性治理证据**，不直接作为运行时权限令牌。
 5. 是否对未来人类治理记录附加加密签名，可以后续升级，但**不能削弱**机器授权签名要求。
 6. 本 ADR 在独立审核和 owner 批准前**不生效**。
@@ -52,7 +53,7 @@ Phase 0 的治理批准目前由 owner 的明确书面指令、精确 target com
 - **Governance Approver（治理批准者）**：owner（待批准）
 - **Approval Record**：—
 - **Effective Commit（生效 commit）**：—
-- **Affected Normative Documents**：`SOURCE_OF_TRUTH.md`（§5.1）、`SECURITY.md`（§8）
+- **Affected Normative Documents**：`SOURCE_OF_TRUTH.md` §5.1、`SECURITY.md` §15（治理批准记录真实性）。`SECURITY.md` §8 为签名算法依据（referenced baseline；仅定义 policy bundle / SBOM 用途分离，未定义 capability token 的 purpose schema）。
 - **Supersedes / Superseded By**：无 / 无
 
 ## 7. 状态规则声明

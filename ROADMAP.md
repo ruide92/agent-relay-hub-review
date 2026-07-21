@@ -17,6 +17,7 @@
 
 - **目标**：冻结产品设计、协议、角色、权限、状态机、适配器 SDK 契约、威胁模型与验收标准。
 - **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准。
+- **第四包交付物（Phase 0 实质性退出条件，当前均未完成）**：视觉设计基线与视觉资产治理包，含精确视觉设计任务书（`VISUAL_DESIGN_BRIEF.md`）、Control Room 高保真基准、视觉资产清单（`VISUAL_ASSET_MANIFEST.md`）、独立审核（`VISUAL_PACKAGE_REVIEW_0001.md`）、owner 批准（`GOVERNANCE_APPROVAL_0004.md`）。以上当前均**未完成**，因此 Phase 0 仍为 `NOT_READY` / `OPEN`，Phase 1 仍 `NOT AUTHORIZED`。
 - **明确不包含**：任何产品代码实现；任何真实适配器。
 - **进入条件**：项目启动（已满足）。
 - **退出门禁（实质性条件）**：
@@ -29,7 +30,8 @@
   - SDK 契约（生命周期/错误码/取消/恢复/健康检查，V1.1 §20.1）文档化；
   - 威胁模型已建立；
   - 许可与 SBOM 政策已落地（`LICENSE.md` / `SBOM_POLICY.md`）；
-  - 全部 Phase 0 设计冲突关闭。
+  - 全部 Phase 0 设计冲突关闭；
+  - 第四包（视觉设计基线与视觉资产治理包）完成并经独立审核与 owner 批准：精确视觉设计任务书（`VISUAL_DESIGN_BRIEF.md`）、Control Room 高保真基准、视觉资产清单（`VISUAL_ASSET_MANIFEST.md`）、独立审核记录（`VISUAL_PACKAGE_REVIEW_0001.md`）、owner 批准记录（`GOVERNANCE_APPROVAL_0004.md`）——当前均**未完成**，故 Phase 0 仍为 `NOT_READY` / `OPEN`。
 - **Phase 0 关闭与 Phase 1 授权（两阶段、相互独立，不得合并或自动触发）**：
   1. 上述实质性条件全部满足后，Phase 0 状态进入 `READY_FOR_CLOSURE`；
   2. owner 通过**独立** `PHASE_0_CLOSURE_APPROVAL_*` 记录关闭 Phase 0；
