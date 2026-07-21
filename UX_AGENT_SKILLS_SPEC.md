@@ -9,6 +9,7 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Implementation Status: DESIGN ONLY
+Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 ```
 
 # UX_AGENT_SKILLS_SPEC.md（UX 设计 Skills 规范）
@@ -106,6 +107,7 @@ user intent
 - 是否存在**只有正常状态的页面**（违反 UI_STATE_ACCEPTANCE_MATRIX.md §2 覆盖要求）；
 - 是否有 **A5 绕过**（SECURITY.md §6、UI_STATE_ACCEPTANCE_MATRIX.md §4）；
 - 是否有**未经证据支持的绿色成功状态**（违反防伪完成）；
+- 是否让 **reviewer 直接确认 evidence / 终态**（违反职责分离：reviewer→`review.finding`，evidence_verifier→`evidence`，Policy Engine→release gate，UX_INTERACTION.md §2、§5）；
 - 是否将**未来 Phase 3/4 功能宣称为 Phase 1 已实现**（违反 UI_INFORMATION_ARCHITECTURE.md §1）。
 
 > 审查结论 MUST 以 `review.finding` 形式提交（PROTOCOL.md §11），关联 finding_id / fingerprint，不自行改写权威状态。

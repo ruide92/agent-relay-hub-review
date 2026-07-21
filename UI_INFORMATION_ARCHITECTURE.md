@@ -9,6 +9,7 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Implementation Status: DESIGN ONLY
+Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 ```
 
 # UI_INFORMATION_ARCHITECTURE.md（信息架构）
@@ -73,18 +74,45 @@ Implementation Status: DESIGN ONLY
 |---|---|---|---|---|---|---|---|---|---|
 | PAGE-CTRL | `/control-room` | 1 | 全局态势总览 | Workflow/Adapter/Budget projection | 创建模拟、查看异常/结果/证据 | 无运行工作流提示 | Skeleton | 核心不可用时 Global Health Banner 降级 | A0 可见 |
 | PAGE-WF-LIST | `/workflows` | 1 | 工作流列表与筛选 | Workflow projection | 创建、打开详情、取消 | 空列表提示 | Skeleton | 投影陈旧提示 | A0 可见 |
-| PAGE-WF-DETAIL | `/workflows/:id` | 1 | 证据化时间线详情 | Workflow + Evidence + Finding projection | 暂停/取消/恢复/查看证据 | 无节点提示 | Skeleton | stale projection 提示 | A0 可见；命令受 A 档限制 |
-| PAGE-EVID | `/evidence/:id` | 1 | 证据详情 | Evidence + Artifact projection | 查看、请求重新验证 | 证据缺失提示 | Skeleton | 校验失败提示 | A0 可见；A5 受控 |
+| PAGE-WF-DETAIL | `/workflows/:id` | 1 | 证据化时间线详情 | Workflow + Evidence + Finding projection | 取消/恢复(仅 STALLED 后)/查看证据 | 无节点提示 | Skeleton | stale projection 提示 | A0 可见；命令受 A 档限制 |
+| PAGE-EVID | `/evidence/:id` | 1 | 证据详情 | Evidence + Artifact projection | 查看(A0)、请求重新验证(A1) | 证据缺失提示 | Skeleton | 校验失败提示 | A0 查看证据；A1 请求重新验证；不涉及 A5 |
 | PAGE-FIND | `/findings/:id` | 1 | finding 详情 | Finding projection | 查看、请求 reverify | 无 finding 提示 | Skeleton | —— | A0/A1（reviewer） |
 | PAGE-RECON | `/reconciliation/:id` | 1 | 对账案例 | Reconciliation projection | 查看、查询 | 无对账提示 | Skeleton | —— | A0 可见 |
 | PAGE-ADAPT | `/adapters/:id` | 1 | 适配器详情 | Adapter lifecycle projection | 查看健康、能力 | 无 adapter 提示 | Skeleton | adapter FAILED 显著 | A0 可见 |
 | PAGE-POLICY | `/policies` | 1 | 政策查看 | Policy projection（签名引用） | 查看政策版本 | 无政策提示 | Skeleton | safe mode 提示 | A0 可见 |
-| PAGE-AUTH | `/authorization/request` | 1/3 | A5 授权请求 | Policy decision projection | 提交 A5 请求 | 无请求提示 | Skeleton | —— | 须 owner |
+| PAGE-AUTH | `/authorization/request` | 1/3 | A5 授权请求（Phase 1 仅 mock 流程） | Policy decision projection | 提交 A5 请求（mock，无真实外部副作用） | 无请求提示 | Skeleton | —— | 须 owner；真实 A5 外部操作至少 Phase 3+，仍受政策与 owner 批准 |
 | PAGE-BUDGET | `/budgets` | 1 | 预算详情 | Budget projection | 查看 | 无预算提示 | Skeleton | 耗尽提示 | A0 可见 |
 | PAGE-AUDIT | `/audit` | 1 | 审计浏览 | Audit hash-chain projection | 查询、导出脱敏 | 无记录提示 | Skeleton | —— | A0 可见 |
-| PAGE-BACKUP | `/audit/backup` | 1 | 备份与恢复演练 | Backup/Recovery projection | 触发备份/演练 | 无备份提示 | Skeleton | 哈希不一致提示 | A0/A4 预授权 |
+| PAGE-BACKUP | `/audit/backup` | 1 | 备份与恢复演练（Phase 1 本地 mock） | Backup/Recovery projection | 触发备份/演练 | 无备份提示 | Skeleton | 哈希不一致提示 | A0 查看；A2 触发备份/恢复演练；A4 保留给未来真实非生产部署 |
 | PAGE-SAFE | `/safe-mode` | 1 | 安全模式面板 | Safe mode state | 查看、导出诊断 | 未进入提示 | Skeleton | —— | A0 仅本地 |
 | PAGE-SETTINGS | `/settings` | 1 | 设置 | 本地配置 projection | 查看（改配置须治理） | 默认提示 | Skeleton | —— | A0 可见 |
+
+### 3.1 Action Traceability（操作追溯）
+
+每个可见操作 MUST 追溯到 Interaction ID；只读/导航链接标记为 NAV，不要求 Core Command。
+
+| Page/Component | Visible Action | Interaction ID | Core Command | Required Permission | Phase |
+|---|---|---|---|---|---|
+| 一级导航 | 各导航项跳转 | NAV | （无） | A0 | 1 |
+| Control Room | [Create Simulation Workflow] | UX-CREATE-SIM | `workflow.create_simulation` | A2 | 1 |
+| Control Room | [View Anomalies] / [View Evidence] | NAV | （无） | A0 | 1 |
+| Workflow Detail | [Cancel] | UX-CANCEL | `workflow.cancel_request` | A1 | 1 |
+| Workflow Detail | [View Evidence] | UX-VIEW-EVIDENCE | `evidence.query` | A0 | 1 |
+| Workflow Detail | [Resume]（仅 STALLED 后） | UX-RESUME | `workflow.resume` | A1 | 1 |
+| Evidence Detail | [Request Reverify] | UX-REQUEST-REVERIFY | `evidence.reverify_request` | A1 | 1 |
+| Findings Detail | [Request Reverify] | UX-REQUEST-REVERIFY | `evidence.reverify_request` | A1 | 1 |
+| Reconciliation | [Query Status] | UX-VIEW-RECON | `reconciliation.query` | A0 | 1 |
+| Reconciliation | [View Result] | NAV | （无） | A0 | 1 |
+| Adapter Detail | [View Health] | NAV | （无） | A0 | 1 |
+| Adapter Detail | [Recreate Mock Adapter] | UX-RECREATE-MOCK-ADAPTER | `adapter.recreate_mock_instance` | A2 | 1 |
+| Policy & Authorization | [Submit A5 Request] | UX-REQUEST-A5 | `auth.a5_request` | A5（owner 批准） | 1/3 |
+| Policy Viewer | [View Policy] | UX-VIEW-POLICY | `policy.query` | A0 | 1 |
+| Budget | [View Budget] | UX-VIEW-BUDGET | `budget.query` | A0 | 1 |
+| Audit & Recovery | [Export Diagnostic] | UX-EXPORT-DIAG | `diagnostic.export` | A0 | 1 |
+| Audit & Recovery | [Trigger Backup] | UX-TRIGGER-BACKUP | `backup.trigger` | A2 | 1 |
+| Audit & Recovery | [Trigger Restore Drill] | UX-TRIGGER-RESTORE-DRILL | `restore.drill` | A2 | 1 |
+| Safe Mode | [Export Diagnostic] | UX-EXPORT-DIAG | `diagnostic.export` | A0 | 1 |
+| Safe Mode | [Reload Approved Policy] | UX-RELOAD-APPROVED-POLICY | `policy.reload_approved_bundle` | 本地 safe-mode 恢复（不提权） | 1 |
 
 ---
 
@@ -124,7 +152,7 @@ Node: 执行
   artifact: artifact-77 (sha256:…)  attempt: 2
   policy_decision: pd-33  budget: 12/50
   evidence: pending  finding: none
-[Pause] [Cancel] [View Evidence]  (collapsed: message_id/job_id/hashes)
+[Cancel] [View Evidence]  (collapsed: message_id/job_id/hashes)
 ```
 
 ### 4.3 Evidence & Findings
@@ -158,7 +186,7 @@ Adapter: mock-01
   lifecycle: READY  session: s-9
   capabilities: send, receive, supports_idempotency_key, …
   last_health: 2026-07-20T23:00Z
-[View Health]  (FAILED → 新 session 须重建)
+[View Health]  [Recreate Mock Adapter]  (FAILED 时须新 session 重建，UX-RECREATE-MOCK-ADAPTER, A2, 仅 mock)
 ```
 
 ### 4.6 Policy & Authorization
@@ -189,9 +217,12 @@ Backup & Restore
 ```text
 Safe Mode Panel
   state: POLICY_INTEGRITY_SAFE_MODE
-  allowed: view / export diagnostic (A0 only)
-  blocked: A1–A5 / external / model
-[Export Diagnostic]
+  allowed: view / export diagnostic (A0 only) / reload approved policy (local read-only validation, no privilege escalation)
+  blocked: A1–A5 / external / model / edit or sign policy / auto new trust root
+[Export Diagnostic] [Reload Approved Policy]
+  (reload: select owner-controlled trusted governance tool's provided approved bundle;
+   verify hash + governance approval ref + signature + key_id + key purpose + trust-root;
+   on failure stay in safe mode)
 ```
 
 ---
