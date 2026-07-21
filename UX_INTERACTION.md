@@ -1,10 +1,11 @@
 ```text
-Document Status: PROPOSED
-Normative Status: 未批准，当前不是 Source of Truth
+Document Status: APPROVED
+Normative Status: 已批准，当前为 Phase 0 Source of Truth
+Approval Target Commit: b74e4076ce59e567de52d67916133a5d9ca26596
 Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
 Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
 Architecture Baseline Approval Target: b8ef21978544e1261081389ecf736e72b80e49d7
-Governance Approval Record: GOVERNANCE_APPROVAL_0002.md
+Governance Approval Record: GOVERNANCE_APPROVAL_0003.md
 Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
@@ -15,8 +16,13 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 2, mechanical cleanup)
 # UX_INTERACTION.md（用户体验与交互契约）
 
 > 本文档定义 ARH 的整体用户体验与交互契约。
-> 当前为 `PROPOSED`，未经 Reviewer-2 审核与 owner 批准前**不属于 Source of Truth**；
-> 不得描述为已批准、已实现或已测试；不得因完成 UI 设计就关闭 Phase 0。
+> 本文档已通过 Reviewer-2 对 target commit `b74e4076ce59e567de52d67916133a5d9ca26596` 的独立审核；
+> 已由 `GOVERNANCE_APPROVAL_0003.md` 批准；
+> 当前为 Phase 0 Source of Truth；
+> 批准只表示设计契约生效；
+> 不表示 UI、代码、组件、skill、依赖或验收已经实现；
+> Phase 0 仍为 OPEN / NOT_READY；
+> Phase 1 仍为 NOT AUTHORIZED。
 > 所有内容必须服从已批准 V1.1、ARCHITECTURE.md、PROTOCOL.md、SECURITY.md，且不与它们冲突。
 > 权威事实仅来自 Event Ledger（ARCHITECTURE.md §2、§4）；UI 只是派生视图与本地操作入口。
 

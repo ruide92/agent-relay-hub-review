@@ -115,6 +115,28 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 ---
 
+## 第三包状态（Phase 0 Source of Truth package #3：UX、UI 与交互契约）
+
+以下五份设计契约文档的第三包提交链（已由 Reviewer-2 对 Final Review Target `b74e4076ce59e567de52d67916133a5d9ca26596` 独立审核 `PASS`，并由 owner 经 `GOVERNANCE_APPROVAL_0003.md` 批准）：
+
+* Initial Draft Commit：`aca2fd972fea958919b320c346262615c605e7b7`
+* Round-1 Revision Commit：`919e6697a5570f4a48c3f153724c867fa76378a5`
+* Round-2 Mechanical Cleanup Commit：`1a231f424949ae0728edf1c3feaba991a26d305f`
+* Final Review Target：`b74e4076ce59e567de52d67916133a5d9ca26596`
+* Reviewer：Reviewer-2
+* Review Decision：PASS
+* Owner Approval Record：`GOVERNANCE_APPROVAL_0003.md`
+* Status：OWNER_APPROVED
+
+明确：
+
+* 批准的是设计契约；
+* 当前没有实现；
+* 不关闭 Phase 0；
+* 不授权 Phase 1。
+
+---
+
 ## 5. 证据矩阵（主矩阵）
 
 每一行 MUST 含：Criterion ID | Requirement | Normative Source | Artifact | Exact Commit | Reviewer | Review Decision | Approval Record | Status | Blocker | Notes。
@@ -141,6 +163,13 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 | P0-NOCODE | 授权前无产品代码 | Code Status: NO PRODUCT CODE | 仓库根（无 src/ 产品代码） | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | 当前无产品代码；批准不授权编码 |
 | P2-REVIEW | 第二包独立审核 | Reviewer-2 对第二包全部文件 PASS | 本矩阵 + Reviewer-2 审核记录 | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | Reviewer-2 对 b8ef219 完成独立审核 PASS |
 | P2-OWNER | 第二包 owner 批准 | owner 或有效 governance_approver 批准第二包 | GOVERNANCE_APPROVAL_0002.md | b8ef21978544e1261081389ecf736e72b80e49d7 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0002.md | OWNER_APPROVED | — | owner 批准的内容目标是 b8ef219；批准记录从包含 GOVERNANCE_APPROVAL_0002.md 的治理晋级提交推送至 main 后生效 |
+| P3-UX | 整体 UX、角色、无人值守原则、Interaction Contract、完成与异常语义已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UX_INTERACTION.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | DESIGN ONLY；未实现 |
+| P3-IA | 导航、页面、低保真结构和 Action Traceability 已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UI_INFORMATION_ARCHITECTURE.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | DESIGN ONLY；未实现 |
+| P3-DESIGN-SYSTEM | 视觉语义、设计 token、组件状态和 Accessibility Contract 已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UI_DESIGN_SYSTEM.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 候选技术不是已批准依赖；DESIGN ONLY；未实现 |
+| P3-STATE-MATRIX | UI 状态、防伪完成、权限和 mock 验收矩阵已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UI_STATE_ACCEPTANCE_MATRIX.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 34 状态行；尚未执行实现验收；DESIGN ONLY；未实现 |
+| P3-UX-SKILLS | 供应商无关的 UX Agent skills 工作规范已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UX_AGENT_SKILLS_SPEC.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 只是规范；未创建真实 skill；DESIGN ONLY；未实现 |
+| P3-REVIEW | 第三包通过独立 Reviewer-2 审核 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | 第三包五份文档及 `GOVERNANCE_APPROVAL_0003.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 最终审核目标为 b74e407 |
+| P3-OWNER | owner 对第三包作出明确批准 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `GOVERNANCE_APPROVAL_0003.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 批准记录随原子 governance-only commit 推送 main 后生效 |
 
 ---
 
