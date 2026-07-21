@@ -141,7 +141,7 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 ## 第四包状态（视觉设计基线与视觉资产治理：Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道）
 
-> 本包**仅为方向登记**，当前**未开始**；本轮不得创建其正文、图片、资产清单或批准记录。经 `ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）登记，**本包不是 Phase 0 关闭前置条件**，而是 **Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道**。其条件已登记于第 5 节主矩阵（`P4-VISUAL-BRIEF` / `P4-CONTROL-ROOM-BASELINE` / `P4-VISUAL-ASSET-MANIFEST` / `P4-REVIEW` / `P4-OWNER`，状态均为 `NOT_STARTED`），并在 Phase 1 授权前/准备阶段进行，不阻塞 Phase 0 关闭。本包登记三项设计产物与两项治理证据（仅登记预期名称，不创建文件）：
+> 本包**仅为方向登记**，当前**未开始**；本轮不得创建其正文、图片、资产清单或批准记录。经 `ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）登记，**本包不是 Phase 0 关闭前置条件**，而是 **Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道**。其条件登记于本节（§4）、ROADMAP 与 ADR-0002（视觉基线作为 Phase 1 UI 实现入口门禁），不在 Phase 0 主矩阵中，状态均为 `NOT_STARTED`，并在 Phase 1 授权前/准备阶段进行，不阻塞 Phase 0 关闭。本包登记三项设计产物与两项治理证据（仅登记预期名称，不创建文件）：
 
 **三项设计产物（design artifacts，非治理记录）**：
 - `VISUAL_DESIGN_BRIEF.md`（精确的视觉设计任务书）；
