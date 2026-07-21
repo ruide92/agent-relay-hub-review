@@ -282,3 +282,32 @@ RECONCILIATION_REQUIRED → VERIFIED
 - **Phase 4**：才引入多审核（双 reviewer / evidence_verifier / adjudicator）与夜间无人值守。
 - **Phase 1 架构不得将 Qoder、ChatGPT 或 WorkBuddy 写成内核依赖**：它们是未来的外部角色/适配器，Phase 1 内核只认识 mock adapter 与标准角色契约。
 - 演进架构（NAS Control Plane / Windows Runner / Cloud Runners）见 V1.1 §13.2，不属于 Phase 1 范围。
+
+---
+
+## 11. 机器可读契约模块边界（提案 #0007，PROPOSED）
+
+> 本节为 **Phase 0 治理提案 #0007** 的新增内容，状态 **PROPOSED**，未经独立审核与 owner 批准。
+> 所有运行时机制当前 **未实现**，`Validation Status` 仍为 `UNVALIDATED`。
+
+### 11.1 Schema Bundle 职责
+
+- `CONTRACTS/` 下的 JSON Schema 决义件是**设计契约**，不是运行时代码。
+- Phase 1 运行时**负责加载**这些 Schema（通过 JSON Schema validator 库）并执行结构校验（见 `MACHINE_READABLE_CONTRACTS.md` §8 校验顺序）。
+- Schema bundle 的加载与校验属于 **Policy Engine** 的职责边界（§3 组件表），不是 Adapter Host 或 Mock Adapter 的职责。
+- Phase 1 中 validator 尚未引入；当前为纯设计契约。
+
+### 11.2 校验责任分配
+
+| 组件 | 校验职责 | 禁止事项 |
+|---|---|---|
+| Policy Engine | 加载 Schema bundle、校验 policy bundle / capability token / revocation list | 不得自行定义新 Schema 或绕过 fail-closed |
+| Workflow Engine | Envelope 结构校验委托给 Schema validator | 不得在 envelope 层伪造 token 或跳过完整性校验 |
+| Adapter Host | 将适配器能力上报与生命周期事件提交给核心校验 | 不得自行解释 Schema |
+| Mock Adapter | 产生符合/违反 Schema 的模拟数据用于测试 | 不得发起真实网络/模型/外部调用（§1.1 不变） |
+
+### 11.3 Phase 边界
+
+- Phase 1 **仅加载 mock adapter**（§1.1 不变）；Schema 系统的运行时验证也仅在 mock 环境内执行。
+- 真实适配器在 Phase 3 引入后，校验链自动适用于真实数据。
+- 本节不得描述为已实现；当前为 Phase 0 设计提案。
