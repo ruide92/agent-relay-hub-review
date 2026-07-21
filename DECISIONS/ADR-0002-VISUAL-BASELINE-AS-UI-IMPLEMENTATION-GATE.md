@@ -11,8 +11,9 @@ Governance Approver: owner
 Approval Record: GOVERNANCE_APPROVAL_0004.md
 Approval commit: d5947db83513f5e11c1ac264944382dcfe1ebcbe
 Effective Commit: 5dfb881ae6e2b36b742b3c0187c377762d1c85cd
+Corrective Record: GOVERNANCE_APPROVAL_0006.md
 
-> 本 ADR 已由独立 Reviewer-2 审核（`PASS`，review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准（`GOVERNANCE_APPROVAL_0004.md`）；Status 为 `ACCEPTED`，且仅表示“视觉包是 Phase 1 UI 实现入口门禁”决策生效，不表示视觉产物已完成或获 `GOVERNANCE_APPROVAL_0005` 批准；待晋级 PR 合并并可从 main 到达后生效。
+> 本 ADR 已由独立 Reviewer-2 审核（`PASS`，review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准（`GOVERNANCE_APPROVAL_0004.md`）；Status 为 `ACCEPTED`，批准已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达生效；且仅表示“视觉包是 Phase 1 UI 实现入口门禁”决策生效，不表示视觉产物已完成或获 `GOVERNANCE_APPROVAL_0005` 批准——第四包视觉产物当前未获批准，`GOVERNANCE_APPROVAL_0005.md` 编号保留、当前不存在、未创建；PR #2 越权合并由 `GOVERNANCE_APPROVAL_0006.md` 追认并登记纠正。
 
 ---
 
@@ -53,16 +54,19 @@ Effective Commit: 5dfb881ae6e2b36b742b3c0187c377762d1c85cd
 - V1.1 全文（已批准 SoT）与第三包（UX / UI / 交互契约）。
 - `ROADMAP.md`（第四包登记为 Phase 1 UI 入口门禁 / 并行准备轨道）。
 - `PHASE_0_EXIT_CRITERIA.md` 第 4、5 节（第四包状态与主矩阵 `P4-*` 作为 Phase 1 并行准备轨道）。
-- 本 ADR 提出前尚未通过独立审核与 owner 批准，故无生效证据。
+- Reviewer-2 独立审核 `PASS`：review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，正式审核产物 PR #1 评论 `5035425502`（https://github.com/ruide92/agent-relay-hub-review/pull/1#issuecomment-5035425502），review target `fd2574c28843ee2885460cb191c735dd0d257d1a`。
+- owner 批准记录 `GOVERNANCE_APPROVAL_0004.md`（approval commit `d5947db83513f5e11c1ac264944382dcfe1ebcbe`，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`），已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达生效。
+- 纠正性追认记录 `GOVERNANCE_APPROVAL_0006.md`（PR #2 越权合并登记、GOV-APP-0004 限定纠正、PR 合并授权规则）。
 
-## 6. 批准字段（待审批后填写）
+## 6. 批准字段
 
-- **批准 commit（Approval commit）**：—
+- **批准 commit（Approval commit）**：`d5947db83513f5e11c1ac264944382dcfe1ebcbe`
 - **Decision Owner**：owner
-- **Reviewer（独立审核者）**：待独立审核（不得填写当前设计负责人）
-- **Governance Approver（治理批准者）**：owner（待批准）
-- **Approval Record**：—（本 ADR 与本次治理一致性修订未来由 `GOVERNANCE_APPROVAL_0004.md` 批准；第四包视觉设计产物另由 `GOVERNANCE_APPROVAL_0005.md` 批准）
-- **Effective Commit（生效 commit）**：—
+- **Reviewer（独立审核者）**：Reviewer-2（产品身份 WorkBuddy，模型版本 UNKNOWN；review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`；正式审核评论 `5035425502`）
+- **Governance Approver（治理批准者）**：owner
+- **Approval Record**：`GOVERNANCE_APPROVAL_0004.md`（本 ADR 与本次治理一致性修订已由 `GOVERNANCE_APPROVAL_0004.md` 批准；第四包视觉设计产物另由未来 `GOVERNANCE_APPROVAL_0005.md` 批准——该编号保留、当前不存在）
+- **Corrective Record（纠正记录）**：`GOVERNANCE_APPROVAL_0006.md`
+- **Effective Commit（生效 commit）**：`5dfb881ae6e2b36b742b3c0187c377762d1c85cd`
 - **Affected Normative Documents**：`ROADMAP.md`、`PHASE_0_EXIT_CRITERIA.md`
 - **Supersedes / Superseded By**：无 / 无
 

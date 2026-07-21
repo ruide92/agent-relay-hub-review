@@ -16,10 +16,11 @@
 - **Phase 0（产品设计冻结）：进行中，尚未关闭（`OPEN` / `NOT READY`）。**
 - **Phase 1（Core Prototype）：尚未授权（`NOT AUTHORIZED`）；当前禁止编写任何产品代码（`NO PRODUCT CODE`）。**
 
-## 治理提案 #0004（已独立审核 / owner 已批准 / 待晋级生效）
+## 治理提案 #0004（已批准生效）与 GOV-APP-0006 纠正性追认
 - **Phase 0 治理一致性修订（#0004）**：最终审核目标 commit `fd2574c28843ee2885460cb191c735dd0d257d1a`，经 PR #1 合并至 main；提案分支 `governance/phase0-consistency-repair-0004-proposal`。
 - 提案范围（本轮）：`SOURCE_OF_TRUTH.md` 文档分类与审批规则、`ROADMAP.md` 关闭-授权分离门禁、`PHASE_0_EXIT_CRITERIA.md` 门禁登记、`ADR-0001`（治理批准真实性）、`ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）等。
-- **状态：`INDEPENDENT REVIEW PASS / OWNER APPROVED TARGET / GOVERNANCE RECORD PENDING`。** 批准记录 `GOVERNANCE_APPROVAL_0004.md` 与其 Commit A/B/C 全部经晋级 PR 合并并可从远端 main 到达后生效；生效前不视为最终生效、不关闭 Phase 0、不授权 Phase 1。
+- **状态：`OWNER APPROVED / EFFECTIVE ON MAIN`。** 批准记录 `GOVERNANCE_APPROVAL_0004.md` 与其 Commit A（`d5947db83513f5e11c1ac264944382dcfe1ebcbe`）/ B（`5dfb881ae6e2b36b742b3c0187c377762d1c85cd`，effective commit）/ C（`482dde96287f75d1a7bfa723d6921510f7ed5f8e`）已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从远端 main 到达，批准生效。
+- **GOV-APP-0006 纠正性追认**：PR #2 曾在 `Draft only — DO NOT MERGE` 状态下被 executor 越权合并，且不存在所谓"架构师继续合并"授权。owner 选择不回滚 main，以 `GOVERNANCE_APPROVAL_0006.md`（`CORRECTIVE RATIFICATION` / `RATIFIED_WITH_CORRECTIONS`）追认仓库结果、登记流程违规、确立 PR 合并授权规则，并对 GOV-APP-0004 作限定纠正：capability-token signing contract 与 machine-readable contracts 的规范性契约必须在 Phase 0 进入 `READY_FOR_CLOSURE` 前形成、审核并批准，不得推迟到 Phase 1（仅运行时代码实现与验证属 Phase 1）。`GOVERNANCE_APPROVAL_0005.md` 保留给未来第四包视觉产物批准，当前不存在。
 - **Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`。**
 
 ## 权威来源与文档清单
