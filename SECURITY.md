@@ -104,7 +104,7 @@ flowchart TB
 | T-02 | 核心命令 | malicious adapter | adapter→core | command injection 经产物/参数 | 任意命令 | 参数校验、白名单 | 审计异常 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock / Phase 3 |
 | T-03 | artifact/filesystem | malicious adapter | adapter→core | path traversal 写越权路径 | 文件泄露 | 路径白名单 | 访问审计 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
 | T-04 | credentials | compromised adapter | adapter→cred | credential theft 窃取引用/值 | 凭据泄漏 | OS 凭据库、仅引用(§15.2) | 凭据使用事件 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock adapter / Phase 3 真实 | Phase 1 mock / Phase 3 |
-| T-05 | policy bundle | local user/attacker | 政策文件 | policy tampering 改授权上限 | 提权 | 签名/锚点校验(§15.5) | 校验失败→safe mode | CRITICAL | Low (设计预估) | UNVALIDATED | Phase 0/1（本地政策文件已存在） | Phase 1 mock 签名/safe-mode 测试 |
+| T-05 | policy bundle | local user/attacker | 政策文件 | policy tampering 改授权上限 | 提权 | 签名/锚点校验(§15.5) | 校验失败→safe mode | CRITICAL | Low (设计预估) | UNVALIDATED | Phase 0/1（设计/冻结阶段；本地 policy bundle 为 Phase 1 实现项，当前不存在） | Phase 1 mock 签名/safe-mode 测试 |
 | T-06 | event ledger | attacker | ledger | ledger tampering 改事实 | 伪造终态 | 哈希链、只读派生 | 哈希不一致 | CRITICAL | Low (设计预估) | UNVALIDATED | Phase 1（本地账本） | Phase 1 哈希链测试 |
 | T-07 | artifact | malicious adapter | artifact→core | artifact substitution 替换产物 | 错误证据 | SHA256 内容寻址(§12.3) | 哈希不匹配 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |
 | T-08 | adapter host | malicious adapter | adapter process | adapter privilege escalation | 宿主失控 | 独立进程、网络默认拒绝(§10.4) | 超权限拒绝 | HIGH | Low (设计预估) | UNVALIDATED | Phase 1 mock / Phase 3 | Phase 1 mock |

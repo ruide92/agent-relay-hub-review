@@ -76,3 +76,19 @@
 
 - **AI reviewer、worker、messenger 或 coordinator 不得自行批准自己提出或实施的变更。**
 - 权限、安全、协议、阶段边界、许可类 ADR（见第 5 节）除满足第 3 节必填字段外，还须满足 `SOURCE_OF_TRUTH.md` 第 10.2 节的批准四要素，并走独立审核。
+
+---
+
+## 8. 独立审核证据要求（前瞻，自 GOVERNANCE_APPROVAL_0004 起适用）
+
+自 `GOVERNANCE_APPROVAL_0004.md` 起，所有治理批准所依赖的独立审核 MUST 在审核产物中记录以下要素（细则与 `ADR-0001` 第 8 节一致）：
+
+1. **review target**：被审核的精确 commit 范围（base..head）与受影响文件清单；
+2. **reviewer / model identity**：独立审核者身份，含模型标识与版本（如适用）；
+3. **independent session / task ID**：与变更实施不同的独立会话或任务 ID；
+4. **not-participated-in-modification statement**：审核者未参与被审变更的实施；
+5. **direct-read-repo statement**：审核者直接读取仓库原文（commit / 文件正文 / diff），未依赖执行者报告；
+6. **complete review artifact / verdict**：完整审核产物（逐条 finding、严重度、修订要求）与明确结论（PASS / FIX_REQUIRED）。
+
+- 上述要求**自 `GOVERNANCE_APPROVAL_0004.md` 起前瞻适用**，**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md`。
+- 缺少上述要素的独立审核证据时，相关决策状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见第 3 节与 `SOURCE_OF_TRUTH.md` 第 10 节）。

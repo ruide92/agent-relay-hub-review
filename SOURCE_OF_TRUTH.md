@@ -167,6 +167,7 @@
   4. **仓库内可追溯的批准记录**（如 `REVIEWER_2_FINAL_APPROVAL.md`、ADR 的 Approval Record）。
 - **owner 可提前委派治理批准角色**以避免每次人工介入，但委派本身必须明确：范围、期限、可撤销条件；委派记录须在仓库内可追溯。
 - **没有有效批准记录时，状态只能是 `PROPOSED`，不得标记 `ACCEPTED`**（适用于 ADR 与任何决策状态）。
+- **独立审核证据要求（前瞻，自 `GOVERNANCE_APPROVAL_0004.md` 起适用）**：自该记录起，治理批准所依赖的独立审核 MUST 在审核产物中记录——review target（精确 commit 范围与受影响文件）、reviewer / model identity、与变更实施不同的 independent session / task ID、未参与修改声明、直接读取仓库原文声明、完整审核产物与结论（PASS / FIX_REQUIRED）；要素细则见 `DECISIONS/README.md` 第 8 节。该要求**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md`。
 
 ### 10.3 与 ADR 的衔接
 

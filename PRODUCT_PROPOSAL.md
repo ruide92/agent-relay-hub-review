@@ -29,5 +29,5 @@
 
 - 产品设计正文只在 `AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md` 中维护；本入口文件仅更新指针（版本号、commit、路径）。
 - V1.1 已冻结：不再修改 V1.1 产品设计正文；实质性设计变更须走新的 changeset + 独立一致性审核（见 `SOURCE_OF_TRUTH.md` 第 9 节）。
-- 文档优先级：`已批准 V1.1 > 冻结 changeset > Reviewer-2 裁决 > 历史 Reviewer-1 文件`。
+- 文档优先级：以 `SOURCE_OF_TRUTH.md` 第 2 节为准——已批准 V1.1 为规范性 apex；冻结 changeset 与 Reviewer-2 文件归入 B 类（解释性批准记录），位于 V1.1 之下、仅解释批准依据，不具有高于 V1.1 的约束力，也非"无作用历史"；历史 Reviewer-1 文件为 C 类仅供追溯，不得作为当前设计依据。
 - 权威定义、冲突处理、规范性/历史/路线图分类详见 `SOURCE_OF_TRUTH.md`。

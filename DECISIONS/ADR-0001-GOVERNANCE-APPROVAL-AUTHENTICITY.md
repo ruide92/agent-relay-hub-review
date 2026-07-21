@@ -59,3 +59,19 @@ Phase 0 的治理批准目前由 owner 的明确书面指令、精确 target com
 ## 7. 状态规则声明
 
 没有有效 `Approval Record` 时，本 ADR 状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见 `SOURCE_OF_TRUTH.md` 第 10 节与 `DECISIONS/README.md` 第 3 节）。
+
+## 8. 独立审核证据要求（前瞻规则，自 GOVERNANCE_APPROVAL_0004 起适用）
+
+本 ADR 前瞻约定：自 `GOVERNANCE_APPROVAL_0004.md` 起，所有治理批准所依赖的独立审核 MUST 在审核产物中记录以下要素，且不得依赖执行者自报：
+
+1. **review target**：被审核的精确 commit 范围（base..head）与受影响文件清单；
+2. **reviewer / model identity**：独立审核者身份，含模型标识与版本（如适用）；
+3. **independent session / task ID**：与变更实施不同的独立会话或任务 ID，证明审核与修改不在同一上下文；
+4. **not-participated-in-modification statement**：审核者声明未参与被审变更的实施；
+5. **direct-read-repo statement**：审核者声明直接读取仓库原文（commit / 文件正文 / diff），未依赖执行者报告；
+6. **complete review artifact / verdict**：完整审核产物（逐条 finding、严重度、修订要求）与明确结论（PASS / FIX_REQUIRED）。
+
+约束：
+- 上述要求**自 `GOVERNANCE_APPROVAL_0004.md` 起前瞻适用**；
+- **不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md` 的既有审核证据形式；
+- 没有满足上述要素的独立审核证据时，状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见第 7 节与 `SOURCE_OF_TRUTH.md` 第 10 节）。
