@@ -44,7 +44,7 @@
 
 ## 4. A. 规范性文档（Normative — 具当前约束力）
 
-以下文件为当前具约束力的设计、治理、路线图、许可与契约文档：
+以下文件为当前具约束力的 A 类规范性文档（具当前约束力，已批准生效）：
 
 - `AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md`（已批准 V1.1，最高权威）
 - `V1.1_TRACEABILITY_MATRIX.md`
@@ -55,17 +55,19 @@
 - `THIRD_PARTY_LICENSES.md`
 - `SBOM_POLICY.md`
 - `DECISIONS/README.md` 及经批准的 ADR
-
-以下文件**已预先登记为后续规范性文档，创建并经审批后生效**（生效前不是 Source of Truth）：
-
-- `ARCHITECTURE.md`（创建并批准后生效）
-- `PROTOCOL.md`（创建并批准后生效）
-- `SECURITY.md`（创建并批准后生效）
-- `PHASE_0_EXIT_CRITERIA.md`（创建并批准后生效）
+- `ARCHITECTURE.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
+- `PROTOCOL.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
+- `SECURITY.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
+- `PHASE_0_EXIT_CRITERIA.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`；其自身总体状态仍为 `NOT READY` / `OPEN`，不表示 Phase 0 已关闭）
+- `UX_INTERACTION.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UI_INFORMATION_ARCHITECTURE.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UI_DESIGN_SYSTEM.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UI_STATE_ACCEPTANCE_MATRIX.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UX_AGENT_SKILLS_SPEC.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
 
 规范性文档约束规则：
 
-- 上述预先登记的文档**必须服从已批准 V1.1**；只能细化实现契约，不得静默更改产品范围、权限、阶段边界或许可。
+- 所有 A 类规范性文档**必须服从已批准 V1.1**；只能细化实现契约，不得静默更改产品范围、权限、阶段边界或许可。
 - `PHASE_1_IMPLEMENTATION_PLAN.md` 属实施计划，层级不高于上述规范性文档。
 - 任何规范性文档的**未批准草稿都不是 Source of Truth**。
 - `ROADMAP.md` 属 A 类规范性文档，但其描述的是 Phase 0–7 **未来意图**；其中 `ROADMAP_ONLY` 条目（P2×3）及"闭环""多审核""夜间无人值守""NAS 控制中心""商业化"等均为目标能力，**当前 Phase 0 未实现，不得描述为已实现**。

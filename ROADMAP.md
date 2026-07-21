@@ -19,7 +19,7 @@
 - **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准。
 - **明确不包含**：任何产品代码实现；任何真实适配器。
 - **进入条件**：项目启动（已满足）。
-- **退出门禁**：
+- **退出门禁（实质性条件）**：
   - V1.1 已批准（commit `c9cc522…`，Source of Truth）；
   - 治理与权威文档包（SOURCE_OF_TRUTH / PRODUCT_PROPOSAL / ROADMAP / LICENSE / THIRD_PARTY_LICENSES / SBOM_POLICY / DECISIONS）通过审核；
   - `ARCHITECTURE.md` 已创建并批准；
@@ -29,9 +29,14 @@
   - SDK 契约（生命周期/错误码/取消/恢复/健康检查，V1.1 §20.1）文档化；
   - 威胁模型已建立；
   - 许可与 SBOM 政策已落地（`LICENSE.md` / `SBOM_POLICY.md`）；
-  - 全部 Phase 0 设计冲突关闭；
-  - 明确批准进入 Phase 1（独立授权记录）。
-- **禁止跳阶段**：Phase 0 未关闭前不得进入 Phase 1。
+  - 全部 Phase 0 设计冲突关闭。
+- **Phase 0 关闭与 Phase 1 授权（两阶段、相互独立，不得合并或自动触发）**：
+  1. 上述实质性条件全部满足后，Phase 0 状态进入 `READY_FOR_CLOSURE`；
+  2. owner 通过**独立** `PHASE_0_CLOSURE_APPROVAL_*` 记录关闭 Phase 0；
+  3. Phase 0 关闭**不自动**授权 Phase 1；
+  4. Phase 0 关闭后，再通过**另一份独立** `PHASE_1_AUTHORIZATION_*` 记录授权进入 Phase 1；
+  5. 任何 closure / authorization 记录均不得提前创建（见 `SOURCE_OF_TRUTH.md` §5.1），本轮亦不创建。
+- **禁止跳阶段**：Phase 0 未关闭前不得进入 Phase 1；Phase 0 关闭不等于 Phase 1 已授权。
 
 ## Phase 1：Core Prototype（仅内核与模拟）
 
