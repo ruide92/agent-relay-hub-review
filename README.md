@@ -16,10 +16,11 @@
 - **Phase 0（产品设计冻结）：进行中，尚未关闭（`OPEN` / `NOT READY`）。**
 - **Phase 1（Core Prototype）：尚未授权（`NOT AUTHORIZED`）；当前禁止编写任何产品代码（`NO PRODUCT CODE`）。**
 
-## 待审批治理提案
-- 当前存在一项未决治理提案：**Phase 0 治理一致性修订（#0004）**，位于提案分支 `governance/phase0-consistency-repair-0004-proposal`。
+## 治理提案 #0004（已独立审核 / owner 已批准 / 待晋级生效）
+- **Phase 0 治理一致性修订（#0004）**：最终审核目标 commit `fd2574c28843ee2885460cb191c735dd0d257d1a`，经 PR #1 合并至 main；提案分支 `governance/phase0-consistency-repair-0004-proposal`。
 - 提案范围（本轮）：`SOURCE_OF_TRUTH.md` 文档分类与审批规则、`ROADMAP.md` 关闭-授权分离门禁、`PHASE_0_EXIT_CRITERIA.md` 门禁登记、`ADR-0001`（治理批准真实性）、`ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）等。
-- **状态：`PROPOSAL ONLY / NOT INDEPENDENTLY REVIEWED / NOT APPROVED`。** 须经独立审核与 owner 批准（预期 `GOVERNANCE_APPROVAL_0004.md`）后方可生效；在批准前不视为已批准、不关闭 Phase 0、不授权 Phase 1。
+- **状态：`INDEPENDENT REVIEW PASS / OWNER APPROVED TARGET / GOVERNANCE RECORD PENDING`。** 批准记录 `GOVERNANCE_APPROVAL_0004.md` 与其 Commit A/B/C 全部经晋级 PR 合并并可从远端 main 到达后生效；生效前不视为最终生效、不关闭 Phase 0、不授权 Phase 1。
+- **Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`。**
 
 ## 权威来源与文档清单
 - 权威定义、文档优先级与分类见 `SOURCE_OF_TRUTH.md`。

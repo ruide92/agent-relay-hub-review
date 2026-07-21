@@ -1,13 +1,18 @@
 # ADR-0002 — 视觉设计基线作为 Phase 1 UI 实现入口门禁（Visual Baseline as Phase 1 UI Implementation Gate）
 
-Status: PROPOSED
+Status: ACCEPTED
 ADR Number: ADR-0002
 Title: 视觉设计基线作为 Phase 1 UI 实现入口门禁（第四包阶段边界治理）
 Date: 2026-07-21
 Proposed By: Phase 0 design lead / external product architect
 Implemented By: executor（WorkBuddy）
+Reviewer: Reviewer-2（产品身份 WorkBuddy，模型版本 UNKNOWN；review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`；正式审核评论 `5035425502`）
+Governance Approver: owner
+Approval Record: GOVERNANCE_APPROVAL_0004.md
+Approval commit: d5947db83513f5e11c1ac264944382dcfe1ebcbe
+Effective Commit: PENDING_EFFECTIVE_COMMIT_BACKFILL
 
-> 本 ADR 当前为 `PROPOSED`；没有有效 `Approval Record` 前不得标记 `ACCEPTED`（见 `SOURCE_OF_TRUTH.md` 第 10 节与 `DECISIONS/README.md` 第 3 节）。
+> 本 ADR 已由独立 Reviewer-2 审核（`PASS`，review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准（`GOVERNANCE_APPROVAL_0004.md`）；Status 为 `ACCEPTED`，且仅表示“视觉包是 Phase 1 UI 实现入口门禁”决策生效，不表示视觉产物已完成或获 `GOVERNANCE_APPROVAL_0005` 批准；待晋级 PR 合并并可从 main 到达后生效。
 
 ---
 
