@@ -150,7 +150,7 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 **两项治理证据（governance evidence，独立审核与批准记录，非设计产物）**：
 - `VISUAL_PACKAGE_REVIEW_0001.md`（独立审核记录，预期由独立于 Reviewer-2 的 visual design lead / Phase 0 design lead 完成设计后，由 Reviewer-2 独立审核）；
-- `GOVERNANCE_APPROVAL_0004.md`（owner 批准记录，预期由 owner 最终批准）。因其尚未满足，Phase 0 仍为 `OPEN` / `NOT_READY`，Phase 1 仍 `NOT AUTHORIZED`。
+- `GOVERNANCE_APPROVAL_0005.md`（owner 批准记录，预期由 owner 最终批准）。因其尚未满足，Phase 0 仍为 `OPEN` / `NOT_READY`，Phase 1 仍 `NOT AUTHORIZED`。
 
 ---
 
@@ -187,13 +187,14 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 | P3-UX-SKILLS | 供应商无关的 UX Agent skills 工作规范已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UX_AGENT_SKILLS_SPEC.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 只是规范；未创建真实 skill；DESIGN ONLY；未实现 |
 | P3-REVIEW | 第三包通过独立 Reviewer-2 审核 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | 第三包五份文档及 `GOVERNANCE_APPROVAL_0003.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 最终审核目标为 b74e407 |
 | P3-OWNER | owner 对第三包作出明确批准 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `GOVERNANCE_APPROVAL_0003.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 批准记录随原子 governance-only commit 推送 main 后生效 |
-| P0-GOV-CONSISTENCY | Phase 0 治理一致性修订（§4 文档分类 / ROADMAP 关闭-授权分离门禁 / 本矩阵门禁登记） | SOURCE_OF_TRUTH.md §4 / ROADMAP.md / 本文件 | SOURCE_OF_TRUTH.md、ROADMAP.md、PHASE_0_EXIT_CRITERIA.md（本轮提案） | PENDING_PROPOSAL | — | — | — | DRAFT | 等待 Reviewer-2 独立审核与 owner 批准 | 本轮为治理一致性提案，仅登记条件，不预填 PASS / OWNER_APPROVED |
+| P0-GOV-CONSISTENCY | Phase 0 治理一致性修订（§4 文档分类 / ROADMAP 关闭-授权分离门禁与第四包登记 / 本矩阵门禁登记 / ADR-0001 治理批准真实性 / ADR-0002 视觉基线门禁 / SECURITY.md 批准状态一致性） | SOURCE_OF_TRUTH.md §4 / §5.1、ROADMAP.md、PHASE_0_EXIT_CRITERIA.md、DECISIONS/README.md、SECURITY.md（§8 / §15）、DECISIONS/ADR-0001、DECISIONS/ADR-0002 | SOURCE_OF_TRUTH.md、ROADMAP.md、PHASE_0_EXIT_CRITERIA.md、DECISIONS/README.md、SECURITY.md、ADR-0001、ADR-0002（本轮提案；target commit 于最终提案 head 形成后由独立审核与批准记录精确绑定，本提交不得伪造自引用 SHA） | PENDING_PROPOSAL | — | — | — | DRAFT | 等待 Reviewer-2 独立审核与 owner 批准；ADR-0001 直接依据 SOURCE_OF_TRUTH.md §5.1 与 SECURITY.md §15，SECURITY.md §8 为 referenced signing baseline；ADR-0002 依据阶段边界治理规则、ROADMAP 与退出矩阵 | 本轮为治理一致性提案，仅登记条件，不预填 PASS / OWNER_APPROVED |
 | P0-APPROVAL-AUTHENTICITY-ADR | 治理批准真实性 ADR（人工批准证据构成 / 不得虚假声称加密签名 / 机器授权签名基线） | SOURCE_OF_TRUTH.md §5.1 / SECURITY.md §8 | DECISIONS/ADR-0001-GOVERNANCE-APPROVAL-AUTHENTICITY.md（PROPOSED） | PENDING_PROPOSAL | — | — | — | DRAFT | ADR 未经独立审核与 owner 批准前不得标记完成 |
+| P0-CAPABILITY-TOKEN-SIGNING-CONTRACT | capability token 完整签名契约（规范化 payload / issuer / audience / 最小权限 scope / issued_at / expires_at / token ID 或 nonce / 防重放 / 撤销 / 签名算法引用 / 签名预映像 / 独立 key_purpose / 校验失败 fail-closed） | V1.1 §4.2.1；SECURITY.md §8 / §15；PROTOCOL.md §4.3；ADR-0001 | （待后续批准的 PROTOCOL.md / SECURITY.md 契约修订或专门规范文件） | — | — | — | — | NOT_STARTED | capability token 完整签名与防重放契约尚未形成；Phase 0 不得进入 READY_FOR_CLOSURE | 本轮只登记缺口，不修改 PROTOCOL 或实现 token |
 | P4-VISUAL-BRIEF | 精确的视觉设计任务书（第四包设计产物之一） | V1.1 / 第三包 / ROADMAP | （未创建：待独立于 Reviewer-2 的 visual design lead / Phase 0 design lead 产出视觉任务书；Reviewer-2 只负责独立审核；owner 只负责最终批准） | — | — | — | — | NOT_STARTED | 第四包方向已登记；任务书尚未产出 |
 | P4-CONTROL-ROOM-BASELINE | owner 认可的 Control Room 高保真基准 | 第三包 `UI_INFORMATION_ARCHITECTURE.md`（Control Room 页面） | （未创建：待高保真基准） | — | — | — | — | NOT_STARTED | 第四包方向已登记；高保真基准尚未产出 |
 | P4-VISUAL-ASSET-MANIFEST | 视觉资产清单（尺寸 / 文件 hash / 版本 / 契约映射） | 第三包 `UI_STATE_ACCEPTANCE_MATRIX.md` / `UX_INTERACTION.md` | （未创建：待资产清单） | — | — | — | — | NOT_STARTED | 第四包方向已登记；资产清单尚未产出 |
 | P4-REVIEW | 第四包独立 Reviewer-2 审核 | `VISUAL_DESIGN_BRIEF.md`、Control Room 高保真基准资产、`VISUAL_ASSET_MANIFEST.md`（三项设计产物） | （未创建：预期审核记录 `VISUAL_PACKAGE_REVIEW_0001.md`，待三项设计产物完成后由 Reviewer-2 独立审核） | — | — | — | — | NOT_STARTED | 第四包方向已登记；审核尚未进行，不得标为 DRAFT |
-| P4-OWNER | owner 对第四包批准 | `VISUAL_DESIGN_BRIEF.md`、Control Room 高保真基准资产、`VISUAL_ASSET_MANIFEST.md`（三项设计产物）及独立审核结果（`VISUAL_PACKAGE_REVIEW_0001.md`） | （未创建：预期批准记录 `GOVERNANCE_APPROVAL_0004.md`，待三项设计产物完成并经独立审核后由 owner 最终批准） | — | — | — | — | NOT_STARTED | 第四包方向已登记；批准尚未进行，不得标为 DRAFT |
+| P4-OWNER | owner 对第四包批准 | `VISUAL_DESIGN_BRIEF.md`、Control Room 高保真基准资产、`VISUAL_ASSET_MANIFEST.md`（三项设计产物）及独立审核结果（`VISUAL_PACKAGE_REVIEW_0001.md`） | （未创建：预期批准记录 `GOVERNANCE_APPROVAL_0005.md`，待三项设计产物完成并经独立审核后由 owner 最终批准） | — | — | — | — | NOT_STARTED | 第四包方向已登记；批准尚未进行，不得标为 DRAFT |
 
 ---
 

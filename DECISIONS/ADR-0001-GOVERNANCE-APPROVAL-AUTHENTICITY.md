@@ -22,7 +22,7 @@ Phase 0 的治理批准目前由 owner 的明确书面指令、精确 target com
 
 1. Phase 0 当前人类治理批准证据由"owner 明确书面指令 + 精确 target commit + 内容寻址 commit + append-only 治理记录"构成。
 2. 当前 Markdown 治理批准记录**不得虚假声称已经具有加密签名**。
-3. Phase 1 中任何机器可执行的 policy bundle、capability token 与其他机器授权**必须**采用 `SECURITY.md` §8 已规定的签名设计基线（ECDSA P-256 / SHA-256，detached signature manifest）。其中 policy bundle 与 SBOM 使用不同 `key_purpose`（§8 已定义）；**capability token 不得与 policy bundle 或 SBOM 共用含糊的 `key_purpose`**，其独立的 `key_purpose` 与验证用途**必须在 Phase 1 实现前明确**；不得虚假声称 `SECURITY.md` §8 已经完整定义 capability token 的 purpose schema（§8 当前仅定义 policy bundle / SBOM 的用途分离，未定义 capability token 的 purpose）。
+3. `SECURITY.md` §8 已批准的签名设计基线包括：ECDSA P-256、SHA-256，以及 policy bundle / SBOM 的签名设计基线（含两者不同的 `key_purpose` 用途分离）。该基线**未定义** capability token 的 wire format 或 purpose schema。Phase 1 中任何机器可执行的 policy bundle、capability token 与其他机器授权**必须**采用上述签名算法（ECDSA P-256 / SHA-256，detached signature manifest）。capability token 属机器可执行授权，**必须**加密签名，且**不得**与 policy bundle 或 SBOM 共用含糊的 `key_purpose`。**本 ADR 不负责定义 capability token 的 wire format。** capability token 的规范化 payload、签名预映像（signing preimage）、必填 claims、issuer、audience、issued_at / expires_at、nonce / jti、防重放（replay protection）、撤销（revocation）语义及独立 `key_purpose`**必须在 Phase 0 关闭前**形成规范性契约并通过审核；**在该契约完成前，Phase 0 不得进入 `READY_FOR_CLOSURE`**；不得把这一义务推迟成"Phase 1 实现时再决定"。
 4. Markdown 治理记录是**解释性治理证据**，不直接作为运行时权限令牌。
 5. 是否对未来人类治理记录附加加密签名，可以后续升级，但**不能削弱**机器授权签名要求。
 6. 本 ADR 在独立审核和 owner 批准前**不生效**。

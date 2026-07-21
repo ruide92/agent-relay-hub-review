@@ -1,7 +1,7 @@
 # DECISIONS — 架构决策记录（ADR）索引与规则
 
 > 本目录收录 Agent Relay Hub（ARH）的架构决策记录（Architecture Decision Records, ADR）。
-> **本轮只创建 ADR 规则与索引，不创建任何具体 ADR。**
+> 本目录包含 ADR 规则、索引及具体 ADR；具体 ADR 在获得有效 `Approval Record` 前只能是 `PROPOSED`，ADR 不得因进入索引就被视为已批准。
 > 依据与优先级见 `SOURCE_OF_TRUTH.md`。
 
 ---
@@ -60,6 +60,7 @@
 | ADR | 标题 | 状态 | 批准 commit |
 |-----|------|------|-------------|
 | ADR-0001 | 治理批准真实性 | PROPOSED | — |
+| ADR-0002 | 视觉设计基线作为 Phase 0 退出门禁 | PROPOSED | — |
 
 ---
 
