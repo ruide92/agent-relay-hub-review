@@ -70,7 +70,7 @@ SBOM 必须覆盖以下全部组件类型，不得遗漏：
 
 - 每份 SBOM 必须计算**哈希**并进行**签名**，以保证完整性与来源可验证。
 - 篡改或哈希不匹配视为门禁失败。
-- **SBOM 签名密钥、信任根（trust root）、密钥轮换与撤销机制由后续 `SECURITY.md` 固定**（见第 9 节）。在 `SECURITY.md` 未定义该机制前，Phase 0 不得关闭。
+- **SBOM 签名基线（算法、信任根与 `key_purpose` 分离）已由 `SECURITY.md` §8 定义并经 `GOVERNANCE_APPROVAL_0002.md` 批准**；但签名密钥实例化、信任根、密钥轮换与撤销等机制当前**尚未实现、尚未验证**（见 `SECURITY.md` §15，`Validation Status=UNVALIDATED`）。SBOM 签名机制须待 Phase 1 实现与验证后方可投入使用；本文件仅确立政策，不生成 SBOM（见第 10 节）。
 
 ---
 

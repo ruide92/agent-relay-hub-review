@@ -104,12 +104,14 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 * owner 已通过 `GOVERNANCE_APPROVAL_0002.md` 批准其成为 Phase 0 当前规范性 Source of Truth；
 * 批准表示设计契约生效，**不表示**产品代码、安全控制或测试已实现；Phase 0 仍未关闭，Phase 1 仍未授权。
 
-| Criterion ID | 文档 | 初始状态 |
+> 以下表格记录第二包各文档的**历史初始状态（`DRAFT`）**，仅用于追溯；其当前状态已晋级为 `OWNER_APPROVED`（见第 5 节主矩阵 `P2-ARCH` / `P2-PROTO` / `P2-SEC` / `P2-EXIT`），不代表当前状态。
+
+| Criterion ID | 文档 | 历史初始状态 |
 |---|---|---|
-| P2-ARCH | `ARCHITECTURE.md` | `DRAFT` |
-| P2-PROTO | `PROTOCOL.md` | `DRAFT` |
-| P2-SEC | `SECURITY.md` | `DRAFT` |
-| P2-EXIT | `PHASE_0_EXIT_CRITERIA.md` | `DRAFT` |
+| P2-ARCH | `ARCHITECTURE.md` | `DRAFT`（历史初始） |
+| P2-PROTO | `PROTOCOL.md` | `DRAFT`（历史初始） |
+| P2-SEC | `SECURITY.md` | `DRAFT`（历史初始） |
+| P2-EXIT | `PHASE_0_EXIT_CRITERIA.md` | `DRAFT`（历史初始） |
 
 > 第二包 `SOURCE_OF_TRUTH.md` §5.1 治理记录分类增量已由 Reviewer-2 审核通过（见第 5 节 `P0-P2-SOT`），并随第二包一并由 `GOVERNANCE_APPROVAL_0002.md` 批准生效。
 
@@ -134,6 +136,21 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 * 当前没有实现；
 * 不关闭 Phase 0；
 * 不授权 Phase 1。
+
+---
+
+## 第四包状态（视觉设计基线与视觉资产治理：Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道）
+
+> 本包**仅为方向登记**，当前**未开始**；本轮不得创建其正文、图片、资产清单或批准记录。经 `ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）登记，**本包不是 Phase 0 关闭前置条件**，而是 **Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道**。其条件登记于本节（§4）、ROADMAP 与 ADR-0002（视觉基线作为 Phase 1 UI 实现入口门禁），不在 Phase 0 主矩阵中，状态均为 `NOT_STARTED`，并在 Phase 1 授权前/准备阶段进行，不阻塞 Phase 0 关闭。本包登记三项设计产物与两项治理证据（仅登记预期名称，不创建文件）：
+
+**三项设计产物（design artifacts，非治理记录）**：
+- `VISUAL_DESIGN_BRIEF.md`（精确的视觉设计任务书）；
+- Control Room 高保真基准资产（owner 认可的 Control Room 高保真基准）；
+- `VISUAL_ASSET_MANIFEST.md`（视觉资产清单：尺寸 / 文件 hash / 版本 / 契约映射）。
+
+**两项治理证据（governance evidence，独立审核与批准记录，非设计产物）**：
+- `VISUAL_PACKAGE_REVIEW_0001.md`（独立审核记录，预期由独立于 Reviewer-2 的 visual design lead / Phase 0 design lead 完成设计后，由 Reviewer-2 独立审核）；
+- `GOVERNANCE_APPROVAL_0005.md`（owner 批准记录，预期由 owner 最终批准，专用于第四包视觉设计产物；与批准本次治理一致性修订 / ADR-0001 / ADR-0002 的 `GOVERNANCE_APPROVAL_0004.md` 区分）。Phase 0 仍为 `OPEN` / `NOT READY`、Phase 1 仍 `NOT AUTHORIZED` 是因为其他未满足条件（机器可读契约、capability token 契约等），而非视觉包。
 
 ---
 
@@ -170,6 +187,11 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 | P3-UX-SKILLS | 供应商无关的 UX Agent skills 工作规范已冻结 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `UX_AGENT_SKILLS_SPEC.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 只是规范；未创建真实 skill；DESIGN ONLY；未实现 |
 | P3-REVIEW | 第三包通过独立 Reviewer-2 审核 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | 第三包五份文档及 `GOVERNANCE_APPROVAL_0003.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 最终审核目标为 b74e407 |
 | P3-OWNER | owner 对第三包作出明确批准 | V1.1 / ARCHITECTURE / PROTOCOL / SECURITY | `GOVERNANCE_APPROVAL_0003.md` | b74e4076ce59e567de52d67916133a5d9ca26596 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0003.md | OWNER_APPROVED | — | 批准记录随原子 governance-only commit 推送 main 后生效 |
+| P0-GOV-CONSISTENCY | Phase 0 治理一致性修订（§2/§4 文档分类与优先级 / §10.2 独立审核证据规则 / ROADMAP 关闭-授权分离门禁与第四包改登记为 Phase 1 UI 入口门禁 / 本矩阵门禁登记 / ADR-0001 治理批准真实性 / ADR-0002 视觉基线作为 Phase 1 UI 实现入口门禁 / SECURITY.md §8–§15 与 T-05 一致性 / SBOM_POLICY §8 签名基线一致性 / V1.1_TRACEABILITY_MATRIX §5 表述修正 / PRODUCT_PROPOSAL 优先级链修正 / README 当前状态描述） | README.md、SOURCE_OF_TRUTH.md（§2 / §4 / §5.1 / §10.2）、PRODUCT_PROPOSAL.md、ROADMAP.md、V1.1_TRACEABILITY_MATRIX.md、SBOM_POLICY.md、SECURITY.md（§8 / §15 / T-05）、PHASE_0_EXIT_CRITERIA.md、DECISIONS/README.md、DECISIONS/ADR-0001、DECISIONS/ADR-0002（已重命名为 ...UI-IMPLEMENTATION-GATE.md） | README.md、SOURCE_OF_TRUTH.md、PRODUCT_PROPOSAL.md、ROADMAP.md、V1.1_TRACEABILITY_MATRIX.md、SBOM_POLICY.md、SECURITY.md、PHASE_0_EXIT_CRITERIA.md、DECISIONS/README.md、ADR-0001、ADR-0002（本轮提案；target commit 于最终提案 head 形成后由独立审核与批准记录精确绑定，本提交不得伪造自引用 SHA；PROTOCOL.md 经核查无重复 §5 标题，本轮未改） | PENDING_PROPOSAL | — | — | — | DRAFT | 等待 Reviewer-2 独立审核与 owner 批准（预期 `GOVERNANCE_APPROVAL_0004.md`）；自该记录起独立审核须满足 SOURCE_OF_TRUTH.md §10.2 / DECISIONS/README.md §8 的证据要素；ADR-0001 直接依据 SOURCE_OF_TRUTH.md §5.1 与 SECURITY.md §15，SECURITY.md §8 为 referenced signing baseline；ADR-0002 依据阶段边界治理规则、ROADMAP 与退出矩阵 | 本轮为治理一致性提案，仅登记条件，不预填 PASS / OWNER_APPROVED |
+| P0-APPROVAL-AUTHENTICITY-ADR | 治理批准真实性 ADR（人工批准证据构成 / 不得虚假声称加密签名 / 机器授权签名边界） | SOURCE_OF_TRUTH.md §5.1；SECURITY.md §15；SECURITY.md §8（referenced signing baseline）；DECISIONS/README.md §3 / §5 / §7 | DECISIONS/ADR-0001-GOVERNANCE-APPROVAL-AUTHENTICITY.md（PROPOSED） | PENDING_PROPOSAL | — | — | — | DRAFT | ADR 未经独立审核与 owner 批准前不得标记完成 | 未来由 `GOVERNANCE_APPROVAL_0004.md` 绑定最终 target commit 并批准 |
+| P0-VISUAL-GATE-ADR | 将视觉设计基线与视觉资产治理包登记为 Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道（非 Phase 0 关闭前置）的阶段边界决策 | SOURCE_OF_TRUTH.md §9 / §10；DECISIONS/README.md §5 / §7 / §8；ROADMAP.md；本文件 | DECISIONS/ADR-0002-VISUAL-BASELINE-AS-UI-IMPLEMENTATION-GATE.md（PROPOSED） | PENDING_PROPOSAL | — | — | — | DRAFT | ADR-0002 未经独立审核与 owner 批准前，第四包只能是 proposed gate，不得声称已生效；视觉包不阻塞 Phase 0 关闭 | 本 ADR 与本次治理一致性修订未来由 `GOVERNANCE_APPROVAL_0004.md` 批准；第四包视觉产物另由 `GOVERNANCE_APPROVAL_0005.md` 批准 |
+| P0-CAPABILITY-TOKEN-SIGNING-CONTRACT | capability token 完整签名契约（规范化 payload / issuer / audience / 最小权限 scope / issued_at / expires_at / token ID 或 nonce / 防重放 / 撤销 / 签名算法引用 / 签名预映像 / 独立 key_purpose / 校验失败 fail-closed） | V1.1 §4.2.1；SECURITY.md §8 / §15；PROTOCOL.md §4.3；ADR-0001 | （待后续批准的 PROTOCOL.md / SECURITY.md 契约修订或专门规范文件） | — | — | — | — | NOT_STARTED | capability token 完整签名与防重放契约尚未形成；Phase 0 不得进入 READY_FOR_CLOSURE | 本轮只登记缺口，不修改 PROTOCOL 或实现 token |
+| P0-MACHINE-READABLE-CONTRACTS | 机器可读契约（ARP envelope / message types、adapter capability / lifecycle、health_check、policy bundle、signature manifest、capability token Schema）形成规范性文件 | V1.1 §4.2.1 / §10 / §11 / §20.1；PROTOCOL.md §1–§12；SECURITY.md §8 / §15；ADR-0001 | （待后续批准的 PROTOCOL.md / SECURITY.md 契约修订或专门规范文件） | — | — | — | — | NOT_STARTED | 机器可读契约（含 capability token Schema、policy bundle、signature manifest 等）尚未形成规范性文件；Phase 0 不得进入 READY_FOR_CLOSURE | 本轮只登记缺口，不创建 Schema 或实现 |
 
 ---
 

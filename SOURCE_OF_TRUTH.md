@@ -44,7 +44,7 @@
 
 ## 4. A. 规范性文档（Normative — 具当前约束力）
 
-以下文件为当前具约束力的设计、治理、路线图、许可与契约文档：
+以下文件为当前具约束力的 A 类规范性文档（具当前约束力，已批准生效）：
 
 - `AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md`（已批准 V1.1，最高权威）
 - `V1.1_TRACEABILITY_MATRIX.md`
@@ -55,17 +55,19 @@
 - `THIRD_PARTY_LICENSES.md`
 - `SBOM_POLICY.md`
 - `DECISIONS/README.md` 及经批准的 ADR
-
-以下文件**已预先登记为后续规范性文档，创建并经审批后生效**（生效前不是 Source of Truth）：
-
-- `ARCHITECTURE.md`（创建并批准后生效）
-- `PROTOCOL.md`（创建并批准后生效）
-- `SECURITY.md`（创建并批准后生效）
-- `PHASE_0_EXIT_CRITERIA.md`（创建并批准后生效）
+- `ARCHITECTURE.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
+- `PROTOCOL.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
+- `SECURITY.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
+- `PHASE_0_EXIT_CRITERIA.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`；其自身总体状态仍为 `NOT READY` / `OPEN`，不表示 Phase 0 已关闭）
+- `UX_INTERACTION.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UI_INFORMATION_ARCHITECTURE.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UI_DESIGN_SYSTEM.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UI_STATE_ACCEPTANCE_MATRIX.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `UX_AGENT_SKILLS_SPEC.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
 
 规范性文档约束规则：
 
-- 上述预先登记的文档**必须服从已批准 V1.1**；只能细化实现契约，不得静默更改产品范围、权限、阶段边界或许可。
+- 所有 A 类规范性文档**必须服从已批准 V1.1**；只能细化实现契约，不得静默更改产品范围、权限、阶段边界或许可。
 - `PHASE_1_IMPLEMENTATION_PLAN.md` 属实施计划，层级不高于上述规范性文档。
 - 任何规范性文档的**未批准草稿都不是 Source of Truth**。
 - `ROADMAP.md` 属 A 类规范性文档，但其描述的是 Phase 0–7 **未来意图**；其中 `ROADMAP_ONLY` 条目（P2×3）及"闭环""多审核""夜间无人值守""NAS 控制中心""商业化"等均为目标能力，**当前 Phase 0 未实现，不得描述为已实现**。
@@ -165,6 +167,7 @@
   4. **仓库内可追溯的批准记录**（如 `REVIEWER_2_FINAL_APPROVAL.md`、ADR 的 Approval Record）。
 - **owner 可提前委派治理批准角色**以避免每次人工介入，但委派本身必须明确：范围、期限、可撤销条件；委派记录须在仓库内可追溯。
 - **没有有效批准记录时，状态只能是 `PROPOSED`，不得标记 `ACCEPTED`**（适用于 ADR 与任何决策状态）。
+- **独立审核证据要求（前瞻，自 `GOVERNANCE_APPROVAL_0004.md` 起适用）**：自该记录起，治理批准所依赖的独立审核 MUST 在审核产物中记录 `independent review context identifier`（平台无关：原生 session/task ID 可得时记真实值、不得编造；平台不暴露时允许 fallback review context evidence，须同时含——平台原生 ID 不可得声明、`review_run_id`(UUIDv4，审核前生成)、UTC ISO-8601 开始时间、独立干净工作区绝对路径或平台可见 workspace 标识、repository URL、精确 base/target SHA、reviewer/product/model identity（版本不可见写 `UNKNOWN`，不猜测）、未参与被审修改或指导声明、直接读取仓库/git 对象声明、完整审核产物与明确 verdict、正式记录后 PR review/comment URL 或仓库审核产物路径）、review target、未参与修改声明、直接读取仓库原文声明、完整审核产物与结论（PASS / FIX_REQUIRED / PROVENANCE_INCOMPLETE / REVIEWER NOT INDEPENDENT）；同一执行会话自审 MUST 判 `REVIEWER NOT INDEPENDENT`，原生 ID 与完整 fallback 均缺失 MUST 为 `PROVENANCE_INCOMPLETE`，fallback 仅解决平台不暴露 ID 的可追溯性、不得使 executor 或原执行会话获独立 Reviewer 资格；要素细则见 `DECISIONS/README.md` 第 8 节。该要求**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md。
 
 ### 10.3 与 ADR 的衔接
 
