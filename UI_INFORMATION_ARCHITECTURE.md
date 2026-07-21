@@ -80,7 +80,7 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 2, mechanical cleanup)
 | PAGE-RECON | `/reconciliation/:id` | 1 | 对账案例 | Reconciliation projection | 查看、查询 | 无对账提示 | Skeleton | —— | A0 可见 |
 | PAGE-ADAPT | `/adapters/:id` | 1 | 适配器详情 | Adapter lifecycle projection | 查看健康、查看能力；FAILED 时可请求重建 mock adapter | 无 adapter 提示 | Skeleton | adapter FAILED 显著 | 查看 A0；重建 mock adapter A2（仅 Phase 1 mock，不得加载真实 adapter，不得同 session FAILED→READY） |
 | PAGE-POLICY | `/policies` | 1 | 政策查看 | Policy projection（签名引用） | 查看政策版本 | 无政策提示 | Skeleton | safe mode 提示 | A0 可见 |
-| PAGE-AUTH | `/authorization/request` | 1/3 | A5 授权请求（Phase 1 仅 mock 流程） | Policy decision projection | 提交 A5 请求（mock，无真实外部副作用） | 无请求提示 | Skeleton | —— | 须 owner；真实 A5 外部操作至少 Phase 3+，仍受政策与 owner 批准 |
+| PAGE-AUTH | `/authorization/request` | 1/3 | A5 授权请求（Phase 1 仅 mock 流程） | Policy decision projection | 提交 A5 请求（mock，无真实外部副作用） | 无请求提示 | Skeleton | —— | A1 可提交本地授权申请；提交申请本身不授予 A5；目标 A5 操作仍默认禁止，须 owner 批准且由 Policy Engine 签发有效 capability token；Phase 1 仅 mock，无真实外部副作用 |
 | PAGE-BUDGET | `/budgets` | 1 | 预算详情 | Budget projection | 查看 | 无预算提示 | Skeleton | 耗尽提示 | A0 可见 |
 | PAGE-AUDIT | `/audit` | 1 | 审计浏览 | Audit hash-chain projection | 查询、导出脱敏 | 无记录提示 | Skeleton | —— | A0 可见 |
 | PAGE-BACKUP | `/audit/backup` | 1 | 备份与恢复演练（Phase 1 本地 mock） | Backup/Recovery projection | 触发备份/演练 | 无备份提示 | Skeleton | 哈希不一致提示 | A0 查看；A2 触发备份/恢复演练；A4 保留给未来真实非生产部署 |
@@ -95,6 +95,7 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 2, mechanical cleanup)
 |---|---|---|---|---|---|
 | 一级导航 | 各导航项跳转 | NAV | （无） | A0 | 1 |
 | Workflow List | [Cancel] | UX-CANCEL | `workflow.cancel_request` | A1 | 1 |
+| Workflow List | [Create Simulation Workflow] | UX-CREATE-SIM | `workflow.create_simulation` | A2 | 1 |
 | Control Room | [Create Simulation Workflow] | UX-CREATE-SIM | `workflow.create_simulation` | A2 | 1 |
 | Control Room | [View Anomalies] / [View Evidence] | NAV | （无） | A0 | 1 |
 | Workflow Detail | [Cancel] | UX-CANCEL | `workflow.cancel_request` | A1 | 1 |
