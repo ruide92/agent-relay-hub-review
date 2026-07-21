@@ -1,7 +1,11 @@
 {
-  "fixture_id": "cap-claims-valid",
+  "fixture_id": "invalid-tier-scope-mismatch",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
-  "expected": "valid",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "max_authorization_tier=A3 but scope does not contain any of git:commit/git:push/pr:create (allOf if-then co-occurrence)"
+  },
   "note": "结构示例，非密码学有效证据",
   "instance": {
     "iss": "arh:policy-engine",
@@ -12,10 +16,7 @@
     "exp": 1784679300,
     "jti": "01234567-89ab-4def-8123-abcdef1234567",
     "scope": [
-      "workflow:execute",
-      "git:commit",
-      "git:push",
-      "pr:create"
+      "workflow:read"
     ],
     "max_authorization_tier": "A3",
     "workflow_id": "WF-001",

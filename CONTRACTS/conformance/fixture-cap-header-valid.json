@@ -1,14 +1,10 @@
 {
-  "fixture_id": "invalid-alg-none",
+  "fixture_id": "cap-header-valid",
   "target_schema": "CONTRACTS/capability-token-protected-header.schema.json",
-  "expected": "invalid",
-  "expected_violation": {
-    "layer": "schema",
-    "rule": "alg must be const ES256; alg=none is FORBIDDEN"
-  },
+  "expected": "valid",
   "note": "",
   "instance": {
-    "alg": "none",
+    "alg": "ES256",
     "typ": "arh-cap+jwt",
     "kid": "arh-key-01",
     "key_purpose": "capability_token"

@@ -2,14 +2,18 @@
   "fixture_id": "health-check-valid",
   "target_schema": "CONTRACTS/health-check.schema.json",
   "expected": "valid",
-  "note": "Valid health check result with healthy status and non-empty capability_set. No hash or signature fields.",
+  "note": "",
   "instance": {
     "schema_version": "1.0.0",
-    "adapter_id": "adapter.worker.primary",
-    "session_id": "sess-0004",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
     "status": "healthy",
     "last_success_time": "2026-07-22T00:00:00Z",
-    "capability_set": ["send", "receive", "health_check"],
+    "capability_set": [
+      "send",
+      "receive",
+      "execute"
+    ],
     "version": "1.0.0"
   }
 }

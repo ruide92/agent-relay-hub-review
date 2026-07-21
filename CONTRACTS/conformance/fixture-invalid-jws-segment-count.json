@@ -1,0 +1,11 @@
+{
+  "fixture_id": "invalid-jws-segment-count",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "JWS compact must have 3 dot-separated segments; this has 2"
+  },
+  "note": "结构示例，非密码学有效证据",
+  "instance": "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9"
+}

@@ -1,7 +1,11 @@
 {
-  "fixture_id": "cap-claims-valid",
+  "fixture_id": "invalid-unknown-scope",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
-  "expected": "valid",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "scope contains evil:hack not in closed scope_registry enum"
+  },
   "note": "结构示例，非密码学有效证据",
   "instance": {
     "iss": "arh:policy-engine",
@@ -12,12 +16,9 @@
     "exp": 1784679300,
     "jti": "01234567-89ab-4def-8123-abcdef1234567",
     "scope": [
-      "workflow:execute",
-      "git:commit",
-      "git:push",
-      "pr:create"
+      "evil:hack"
     ],
-    "max_authorization_tier": "A3",
+    "max_authorization_tier": "A2",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",

@@ -2,20 +2,20 @@
   "fixture_id": "sig-manifest-valid",
   "target_schema": "CONTRACTS/signature-manifest.schema.json",
   "expected": "valid",
-  "note": "Valid detached signature manifest covering a policy bundle. target_hash and signature_value are structural examples (patterned hex / placeholder), not cryptographically valid; 结构示例，非密码学有效证据.",
+  "note": "结构示例，非密码学有效证据",
   "instance": {
     "schema_version": "1.0.0",
-    "manifest_id": "sigman-0030",
+    "manifest_id": "sm-001",
     "signatures": [
       {
-        "key_id": "key-policy-0002",
+        "target_type": "policy_bundle",
+        "target_id": "pb-001",
+        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+        "key_id": "arh-key-01",
         "key_purpose": "policy_bundle",
         "algorithm": "ES256",
-        "schema_version": "1.0.0",
-        "target_type": "policy_bundle",
-        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
         "signed_at": "2026-07-22T00:00:00Z",
-        "signature_value": "MEUCIFB0cnVjdHVyZV9leGFtcGxlX3NpZ25hdHVyZV92YWx1ZV9ub3RfY3J5cHRvZ3JhcGhpY2FsbHlfdmFsaWQK"
+        "signature_value": "STRUCTURAL_EXAMPLE_NOT_REAL_SIGNATURE"
       }
     ]
   }

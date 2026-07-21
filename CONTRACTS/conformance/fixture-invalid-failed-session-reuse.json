@@ -4,16 +4,16 @@
   "expected": "invalid",
   "expected_violation": {
     "layer": "business",
-    "rule": "session_id MUST NOT be reused after FAILED; once an adapter session_id has reached FAILED, the same session_id MUST NOT appear in any subsequent lifecycle event (PROTOCOL §2 / §7 session reuse prohibition)"
+    "rule": "session_id reused after FAILED; recovery must create new session_id and start from LOADING"
   },
-  "note": "Schema-level fields are valid (LOADING is a legal start state), but session_id sess-0051 was previously used for a session that ended in FAILED. Reusing a session_id after FAILED violates the business-layer session reuse prohibition. No hash or signature fields.",
+  "note": "business-layer session history enforcement",
   "instance": {
     "schema_version": "1.0.0",
-    "adapter_id": "adapter.worker.primary",
-    "session_id": "sess-0051",
+    "adapter_id": "ad-01",
+    "session_id": "s-old-failed",
     "from_state": "LOADING",
     "to_state": "NEGOTIATING",
     "timestamp": "2026-07-22T00:00:00Z",
-    "reason": "post-failure restart attempted to reuse session_id sess-0051"
+    "reason": "session reused after FAILED — business rule violation"
   }
 }

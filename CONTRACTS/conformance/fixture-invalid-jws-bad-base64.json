@@ -1,0 +1,11 @@
+{
+  "fixture_id": "invalid-jws-bad-base64",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "contains non-base64url characters (! and spaces)"
+  },
+  "note": "结构示例，非密码学有效证据",
+  "instance": "inva!id.inva!id.inva!id"
+}

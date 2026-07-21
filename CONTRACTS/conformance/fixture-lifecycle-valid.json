@@ -2,14 +2,14 @@
   "fixture_id": "lifecycle-valid",
   "target_schema": "CONTRACTS/adapter-lifecycle-event.schema.json",
   "expected": "valid",
-  "note": "Valid READY->BUSY lifecycle transition per PROTOCOL §7 transition table. No hash or signature fields.",
+  "note": "READY→BUSY legal transition",
   "instance": {
     "schema_version": "1.0.0",
-    "adapter_id": "adapter.worker.primary",
-    "session_id": "sess-0005",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
     "from_state": "READY",
     "to_state": "BUSY",
     "timestamp": "2026-07-22T00:00:00Z",
-    "reason": "job accepted wf-0001/job-0001"
+    "reason": "task received"
   }
 }

@@ -4,24 +4,26 @@
   "expected": "invalid",
   "expected_violation": {
     "layer": "business",
-    "rule": "token MUST be rejected because jti appears in the latest valid capability token revocation list even if signature and time window are valid (MACHINE_READABLE_CONTRACTS.md §7.6)"
+    "rule": "jti appears in valid revocation list"
   },
-  "note": "All schema-level fields are valid, but jti 00000000-0000-4000-8000-000000000034 is present in the latest valid revocation list, so the business-layer revocation check rejects the token. policy_bundle_hash is structural; 结构示例，非密码学有效证据.",
+  "note": "结构示例，非密码学有效证据; business-layer revocation rejection",
   "instance": {
     "iss": "arh:policy-engine",
     "aud": "arh:core",
-    "sub": "adapter.worker.primary",
-    "iat": "2026-07-22T00:00:00Z",
-    "nbf": "2026-07-22T00:00:00Z",
-    "exp": "2026-07-22T01:00:00Z",
-    "jti": "00000000-0000-4000-8000-000000000034",
-    "scope": ["repo:read"],
-    "max_authorization_tier": "A1",
-    "workflow_id": "wf-0034",
-    "job_id": "job-0034",
-    "adapter_id": "adapter.worker.primary",
-    "session_id": "sess-0034",
-    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-    "policy_decision_id": "pd-0034"
+    "sub": "adapter-01",
+    "iat": 1784678400,
+    "nbf": 1784678400,
+    "exp": 1784679300,
+    "jti": "01234567-89ab-4def-8123-abcdef1234567",
+    "scope": [
+      "workflow:execute"
+    ],
+    "max_authorization_tier": "A2",
+    "workflow_id": "WF-001",
+    "job_id": "JOB-001",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+    "policy_decision_id": "pd-01"
   }
 }

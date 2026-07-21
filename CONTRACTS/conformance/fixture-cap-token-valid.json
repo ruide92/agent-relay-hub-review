@@ -2,31 +2,6 @@
   "fixture_id": "cap-token-valid",
   "target_schema": "CONTRACTS/capability-token.schema.json",
   "expected": "valid",
-  "note": "Structural JWS compact serialization container with ES256 protected header. No real keys, no cryptographically valid signature; 结构示例，非密码学有效证据.",
-  "instance": {
-    "protected_header": {
-      "alg": "ES256",
-      "typ": "JWT",
-      "kid": "key-cap-token-0001",
-      "key_purpose": "capability_token"
-    },
-    "payload": {
-      "iss": "arh:policy-engine",
-      "aud": "arh:core",
-      "sub": "adapter.worker.primary",
-      "iat": "2026-07-22T00:00:00Z",
-      "nbf": "2026-07-22T00:00:00Z",
-      "exp": "2026-07-22T01:00:00Z",
-      "jti": "00000000-0000-4000-8000-000000000002",
-      "scope": ["repo:read"],
-      "max_authorization_tier": "A1",
-      "workflow_id": "wf-0002",
-      "job_id": "job-0002",
-      "adapter_id": "adapter.worker.primary",
-      "session_id": "sess-0002",
-      "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-      "policy_decision_id": "pd-0002"
-    },
-    "signature": "ARYzAQAEeGFBQkNOWThfZHVtbXlfc2lnbmF0dXJlX3ZhbHVlX3N0cnVjdHVyYWxfZXhhbXBsZV9ub190X2NyeXB0b2dyYXBoaWNhbGx5X3ZhbGlk"
-  }
+  "note": "结构示例，非密码学有效信号; JWS compact string with 3 base64url segments",
+  "instance": "eyJhbGciOiJFUzI1NiIsInR5cCI6ImFyaC1jYXArand0Iiwia2lkIjoiYXJoLWtleS0wMSIsImtleV9wdXJwb3NlIjoiY2FwYWJpbGl0eV90b2tlbiJ9.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSIsImF1ZCI6ImFyaDpjb3JlIn0.ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789-AB"
 }

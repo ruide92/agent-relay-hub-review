@@ -4,29 +4,24 @@
   "expected": "invalid",
   "expected_violation": {
     "layer": "business",
-    "rule": "target_hash MUST equal the canonical SHA-256 of the bundle content (excluding target_hash and signature_manifest.target_hash from preimage); mismatch triggers POLICY_INTEGRITY_SAFE_MODE (V1.1 §15.5)"
+    "rule": "sidecar signature-manifest target_hash does not match content JCS canonical bytes SHA-256"
   },
-  "note": "Schema-level fields all conform, but the target_hash value sha256:0000000000000000000000000000000000000000000000000000000000000000 does not equal the canonical SHA-256 of the bundle content. Valid format but wrong value, so verification is a business-layer hash check. target_hash examples are structural; 结构示例，非密码学有效证据.",
+  "note": "结构示例，非密码学有效证据; business-layer hash verification",
   "instance": {
     "schema_version": "1.0.0",
-    "bundle_id": "bundle-0070",
+    "bundle_id": "pb-002",
     "policy_version": "1.0.0",
-    "rules": [
+    "authorization_tiers": [
       {
-        "rule_id": "rule-allow-read-0070",
-        "effect": "allow",
-        "authorization_tier_ceiling": "A2",
-        "scope": ["repo:read"]
+        "tier": "A0",
+        "allowed_scopes": [
+          "workflow:read"
+        ]
       }
     ],
-    "target_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-    "signature_manifest": {
-      "manifest_id": "sigman-0070",
-      "key_id": "key-policy-0070",
-      "key_purpose": "policy_bundle",
-      "algorithm": "ES256",
-      "target_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-      "signed_at": "2026-07-22T00:00:00Z"
-    }
+    "scope_registry": [
+      "workflow:read"
+    ],
+    "default_decision": "deny"
   }
 }

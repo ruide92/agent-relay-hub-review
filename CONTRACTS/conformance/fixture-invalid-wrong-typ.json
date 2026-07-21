@@ -1,15 +1,15 @@
 {
-  "fixture_id": "invalid-alg-none",
+  "fixture_id": "invalid-wrong-typ",
   "target_schema": "CONTRACTS/capability-token-protected-header.schema.json",
   "expected": "invalid",
   "expected_violation": {
     "layer": "schema",
-    "rule": "alg must be const ES256; alg=none is FORBIDDEN"
+    "rule": "typ must be const arh-cap+jwt, not generic JWT"
   },
   "note": "",
   "instance": {
-    "alg": "none",
-    "typ": "arh-cap+jwt",
+    "alg": "ES256",
+    "typ": "JWT",
     "kid": "arh-key-01",
     "key_purpose": "capability_token"
   }

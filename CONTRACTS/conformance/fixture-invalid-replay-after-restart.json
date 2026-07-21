@@ -1,8 +1,12 @@
 {
-  "fixture_id": "cap-claims-valid",
+  "fixture_id": "invalid-replay-after-restart",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "jti replayed after process restart; durable replay persistence in Event Ledger must reject"
+  },
+  "note": "结构示例，非密码学有效证据; business-layer durable replay rejection after restart",
   "instance": {
     "iss": "arh:policy-engine",
     "aud": "arh:core",
@@ -12,12 +16,9 @@
     "exp": 1784679300,
     "jti": "01234567-89ab-4def-8123-abcdef1234567",
     "scope": [
-      "workflow:execute",
-      "git:commit",
-      "git:push",
-      "pr:create"
+      "workflow:read"
     ],
-    "max_authorization_tier": "A3",
+    "max_authorization_tier": "A1",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",
