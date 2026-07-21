@@ -2,18 +2,18 @@
   "fixture_id": "invalid-lifecycle-transition",
   "target_schema": "CONTRACTS/adapter-lifecycle-event.schema.json",
   "expected": "invalid",
+  "note": "STOPPED→READY is not a legal transition",
   "expected_violation": {
     "layer": "schema",
-    "rule": "FAILED→READY not in oneOf legal transitions"
+    "rule": "oneOf: STOPPED→READY is not in transition whitelist"
   },
-  "note": "",
   "instance": {
     "schema_version": "1.0.0",
     "adapter_id": "ad-01",
     "session_id": "s-01",
-    "from_state": "FAILED",
+    "from_state": "STOPPED",
     "to_state": "READY",
     "timestamp": "2026-07-22T00:00:00Z",
-    "reason": "invalid direct recovery"
+    "reason": "recovery"
   }
 }

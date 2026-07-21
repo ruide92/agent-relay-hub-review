@@ -2,10 +2,10 @@
   "fixture_id": "invalid-jws-segment-count",
   "target_schema": "CONTRACTS/capability-token.schema.json",
   "expected": "invalid",
+  "note": "Only 2 segments (missing signature segment)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "JWS compact must have 3 dot-separated segments; this has 2"
+    "rule": "JWS pattern requires exactly 3 dot-separated base64url segments"
   },
-  "note": "结构示例，非密码学有效证据",
   "instance": "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9"
 }

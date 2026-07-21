@@ -2,11 +2,11 @@
   "fixture_id": "invalid-non-uuidv4-jti",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
+  "note": "jti has 13-char last segment (not valid UUIDv4)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "jti must match UUIDv4 pattern; not-a-uuid fails"
+    "rule": "jti_v4 pattern requires UUIDv4: 8-4-4-4-12 hex chars with version=4 and variant=8/9/a/b"
   },
-  "note": "结构示例，非密码学有效证据",
   "instance": {
     "iss": "arh:policy-engine",
     "aud": "arh:core",
@@ -14,16 +14,16 @@
     "iat": 1784678400,
     "nbf": 1784678400,
     "exp": 1784679300,
-    "jti": "not-a-uuid",
+    "jti": "01234567-89ab-4def-8123-abcdef1234567",
     "scope": [
-      "workflow:execute"
+      "workflow:read"
     ],
-    "max_authorization_tier": "A2",
+    "max_authorization_tier": "A0",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",
     "session_id": "s-01",
-    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
     "policy_decision_id": "pd-01"
   }
 }

@@ -2,11 +2,26 @@
   "fixture_id": "invalid-token-revoked",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
+  "note": "Token jti is in revocation list",
   "expected_violation": {
     "layer": "business",
-    "rule": "jti appears in valid revocation list"
+    "rule": "§8 step 8: jti in revocation_list; token revoked"
   },
-  "note": "结构示例，非密码学有效证据; business-layer revocation rejection",
+  "validation_context": {
+    "evaluation_time": 1784678500,
+    "revocation_list": {
+      "list_id": "rl-001",
+      "list_version": 1,
+      "issuer": "arh:policy-engine",
+      "revoked_jtis": [
+        {
+          "jti": "01234567-89ab-4def-8123-abcdef123456",
+          "revoked_at": "2026-07-22T00:01:00Z",
+          "reason": "manual_revoke"
+        }
+      ]
+    }
+  },
   "instance": {
     "iss": "arh:policy-engine",
     "aud": "arh:core",
@@ -14,16 +29,16 @@
     "iat": 1784678400,
     "nbf": 1784678400,
     "exp": 1784679300,
-    "jti": "01234567-89ab-4def-8123-abcdef1234567",
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
-      "workflow:execute"
+      "workflow:read"
     ],
-    "max_authorization_tier": "A2",
+    "max_authorization_tier": "A0",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",
     "session_id": "s-01",
-    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
     "policy_decision_id": "pd-01"
   }
 }

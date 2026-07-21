@@ -1,27 +1,34 @@
 {
   "fixture_id": "invalid-target-hash-mismatch",
-  "target_schema": "CONTRACTS/policy-bundle.schema.json",
+  "target_schema": "CONTRACTS/signature-manifest.schema.json",
   "expected": "invalid",
+  "note": "Signature manifest target_hash does not match computed hash of policy bundle content",
   "expected_violation": {
     "layer": "business",
-    "rule": "sidecar signature-manifest target_hash does not match content JCS canonical bytes SHA-256"
+    "rule": "§8 step 5: target_hash in manifest does not match SHA-256 of policy_bundle_content JCS canonical bytes"
   },
-  "note": "结构示例，非密码学有效证据; business-layer hash verification",
+  "validation_context": {
+    "expected_computed_target_hash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "policy_bundle_content": {
+      "schema_version": "1.0.0",
+      "bundle_id": "pb-001",
+      "policy_version": "1.0.0"
+    }
+  },
   "instance": {
     "schema_version": "1.0.0",
-    "bundle_id": "pb-002",
-    "policy_version": "1.0.0",
-    "authorization_tiers": [
+    "manifest_id": "sm-001",
+    "signatures": [
       {
-        "tier": "A0",
-        "allowed_scopes": [
-          "workflow:read"
-        ]
+        "target_type": "policy_bundle",
+        "target_id": "pb-001",
+        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        "key_id": "arh-key-01",
+        "key_purpose": "policy_bundle",
+        "algorithm": "ES256",
+        "signed_at": "2026-07-22T00:00:00Z",
+        "signature_value": "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
       }
-    ],
-    "scope_registry": [
-      "workflow:read"
-    ],
-    "default_decision": "deny"
+    ]
   }
 }

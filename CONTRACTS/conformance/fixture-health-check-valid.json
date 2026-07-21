@@ -2,7 +2,7 @@
   "fixture_id": "health-check-valid",
   "target_schema": "CONTRACTS/health-check.schema.json",
   "expected": "valid",
-  "note": "",
+  "note": "结构示例，非密码学有效证据",
   "instance": {
     "schema_version": "1.0.0",
     "adapter_id": "ad-01",
@@ -11,8 +11,7 @@
     "last_success_time": "2026-07-22T00:00:00Z",
     "capability_set": [
       "send",
-      "receive",
-      "execute"
+      "receive"
     ],
     "version": "1.0.0"
   }

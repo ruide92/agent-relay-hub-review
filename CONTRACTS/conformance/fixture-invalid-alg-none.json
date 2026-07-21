@@ -1,16 +1,11 @@
 {
   "fixture_id": "invalid-alg-none",
-  "target_schema": "CONTRACTS/capability-token-protected-header.schema.json",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
   "expected": "invalid",
+  "note": "alg=none is forbidden",
   "expected_violation": {
     "layer": "schema",
-    "rule": "alg must be const ES256; alg=none is FORBIDDEN"
+    "rule": "JWS pattern requires 3 base64url segments with 86-char signature; decoded header alg must be ES256 (const) — alg=none fails protected-header schema validation"
   },
-  "note": "",
-  "instance": {
-    "alg": "none",
-    "typ": "arh-cap+jwt",
-    "kid": "arh-key-01",
-    "key_purpose": "capability_token"
-  }
+  "instance": "eyJhbGciOiJub25lIiwidHlwIjoiYXJoLWNhcCtqd3QiLCJraWQiOiJhcmgta2V5LTAxIiwia2V5X3B1cnBvc2UiOiJjYXBhYmlsaXR5X3Rva2VuIn0.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
 }

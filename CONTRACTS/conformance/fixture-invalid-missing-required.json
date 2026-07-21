@@ -1,23 +1,28 @@
 {
   "fixture_id": "invalid-missing-required",
-  "target_schema": "CONTRACTS/arp-envelope.schema.json",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
+  "note": "Missing required field: policy_decision_id",
   "expected_violation": {
     "layer": "schema",
-    "rule": "message_id is required"
+    "rule": "required field policy_decision_id is missing"
   },
-  "note": "",
   "instance": {
-    "protocol_version": 1,
-    "schema_version": "1.0.0",
-    "sender_role": "policy.engine",
-    "recipient_role": "worker.primary",
-    "message_type": "command",
-    "created_at": "2026-07-22T00:00:00Z",
-    "security_classification": "INTERNAL",
-    "integrity": {
-      "hash_algorithm": "SHA-256",
-      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab"
-    }
+    "iss": "arh:policy-engine",
+    "aud": "arh:core",
+    "sub": "adapter-01",
+    "iat": 1784678400,
+    "nbf": 1784678400,
+    "exp": 1784679300,
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
+    "scope": [
+      "workflow:read"
+    ],
+    "max_authorization_tier": "A0",
+    "workflow_id": "WF-001",
+    "job_id": "JOB-001",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
   }
 }

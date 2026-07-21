@@ -2,11 +2,11 @@
   "fixture_id": "invalid-non-numeric-date",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
+  "note": "iat is RFC3339 string instead of NumericDate integer",
   "expected_violation": {
     "layer": "schema",
-    "rule": "iat must be integer (NumericDate); string rejected"
+    "rule": "numeric_date requires integer type; string value fails"
   },
-  "note": "结构示例，非密码学有效证据",
   "instance": {
     "iss": "arh:policy-engine",
     "aud": "arh:core",
@@ -14,16 +14,16 @@
     "iat": "2026-07-22T00:00:00Z",
     "nbf": 1784678400,
     "exp": 1784679300,
-    "jti": "01234567-89ab-4def-8123-abcdef1234567",
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
-      "workflow:execute"
+      "workflow:read"
     ],
-    "max_authorization_tier": "A2",
+    "max_authorization_tier": "A0",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",
     "session_id": "s-01",
-    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
     "policy_decision_id": "pd-01"
   }
 }

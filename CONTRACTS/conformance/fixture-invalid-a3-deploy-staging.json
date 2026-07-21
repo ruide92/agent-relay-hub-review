@@ -1,15 +1,11 @@
 {
-  "fixture_id": "invalid-token-expired",
+  "fixture_id": "invalid-a3-deploy-staging",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "Token expired: exp < evaluation_time + clock_skew",
+  "note": "A3 + deploy:staging — deploy is A4-only scope",
   "expected_violation": {
-    "layer": "business",
-    "rule": "§8 step 7: exp (1784678300) + clock_skew (60) < evaluation_time (1784679600); token expired"
-  },
-  "validation_context": {
-    "evaluation_time": 1784679600,
-    "clock_skew_seconds": 60
+    "layer": "schema",
+    "rule": "A3 tier allOf: scope must NOT contain deploy:staging"
   },
   "instance": {
     "iss": "arh:policy-engine",
@@ -17,12 +13,14 @@
     "sub": "adapter-01",
     "iat": 1784678400,
     "nbf": 1784678400,
-    "exp": 1784678300,
+    "exp": 1784679300,
     "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
-      "workflow:read"
+      "workflow:execute",
+      "git:commit",
+      "deploy:staging"
     ],
-    "max_authorization_tier": "A0",
+    "max_authorization_tier": "A3",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",

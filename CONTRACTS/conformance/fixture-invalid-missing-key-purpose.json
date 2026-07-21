@@ -1,15 +1,32 @@
 {
   "fixture_id": "invalid-missing-key-purpose",
-  "target_schema": "CONTRACTS/capability-token-protected-header.schema.json",
+  "target_schema": "CONTRACTS/arp-envelope.schema.json",
   "expected": "invalid",
+  "note": "integrity has signature but missing key_purpose",
   "expected_violation": {
     "layer": "schema",
-    "rule": "key_purpose is required"
+    "rule": "integrity allOf: if signature present then key_purpose is required"
   },
-  "note": "",
   "instance": {
-    "alg": "ES256",
-    "typ": "arh-cap+jwt",
-    "kid": "arh-key-01"
+    "protocol_version": 1,
+    "schema_version": "1.0.0",
+    "message_id": "MSG-001",
+    "sender_role": "policy.engine",
+    "recipient_role": "worker.primary",
+    "message_type": "heartbeat",
+    "created_at": "2026-07-22T00:00:00Z",
+    "security_classification": "INTERNAL",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
+    "payload": {
+      "health_signal": "nominal"
+    },
+    "integrity": {
+      "hash_algorithm": "SHA-256",
+      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "signature": "fake_sig",
+      "signature_algorithm": "ES256",
+      "key_id": "arh-key-01"
+    }
   }
 }

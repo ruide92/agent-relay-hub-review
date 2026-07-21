@@ -2,11 +2,11 @@
   "fixture_id": "invalid-tier-scope-mismatch",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
+  "note": "A0 tier must not contain git:push (forbidden at A0 level)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "max_authorization_tier=A3 but scope does not contain any of git:commit/git:push/pr:create (allOf if-then co-occurrence)"
+    "rule": "A0 tier allOf: scope must NOT contain git:push (forbidden above A0 tier)"
   },
-  "note": "结构示例，非密码学有效证据",
   "instance": {
     "iss": "arh:policy-engine",
     "aud": "arh:core",
@@ -14,16 +14,17 @@
     "iat": 1784678400,
     "nbf": 1784678400,
     "exp": 1784679300,
-    "jti": "01234567-89ab-4def-8123-abcdef1234567",
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
-      "workflow:read"
+      "workflow:read",
+      "git:push"
     ],
-    "max_authorization_tier": "A3",
+    "max_authorization_tier": "A0",
     "workflow_id": "WF-001",
     "job_id": "JOB-001",
     "adapter_id": "ad-01",
     "session_id": "s-01",
-    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
     "policy_decision_id": "pd-01"
   }
 }

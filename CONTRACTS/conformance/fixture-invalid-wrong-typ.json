@@ -1,16 +1,11 @@
 {
   "fixture_id": "invalid-wrong-typ",
-  "target_schema": "CONTRACTS/capability-token-protected-header.schema.json",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
   "expected": "invalid",
+  "note": "Decoded header has typ=JWT instead of arh-cap+jwt",
   "expected_violation": {
     "layer": "schema",
-    "rule": "typ must be const arh-cap+jwt, not generic JWT"
+    "rule": "Decoded protected header: typ must be const arh-cap+jwt — typ=JWT fails"
   },
-  "note": "",
-  "instance": {
-    "alg": "ES256",
-    "typ": "JWT",
-    "kid": "arh-key-01",
-    "key_purpose": "capability_token"
-  }
+  "instance": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFyaC1rZXktMDEiLCJrZXlfcHVycG9zZSI6ImNhcGFiaWxpdHlfdG9rZW4ifQ.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
 }

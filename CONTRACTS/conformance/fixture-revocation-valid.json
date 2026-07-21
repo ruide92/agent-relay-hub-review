@@ -10,9 +10,9 @@
     "issuer": "arh:policy-engine",
     "revoked_jtis": [
       {
-        "jti": "01234567-89ab-4def-8123-abcdef1234567",
+        "jti": "01234567-89ab-4def-8123-abcdef123456",
         "revoked_at": "2026-07-22T00:00:00Z",
-        "reason": "key_compromised"
+        "reason": "manual_revoke"
       }
     ]
   }

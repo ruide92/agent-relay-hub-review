@@ -2,7 +2,7 @@
   "fixture_id": "policy-bundle-valid",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "valid",
-  "note": "结构示例，非密码学有效证据",
+  "note": "结构示例，非密码学有效证据; covers all 18 required policy domains",
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -11,54 +11,177 @@
       {
         "tier": "A0",
         "allowed_scopes": [
-          "workflow:read"
+          "workflow:read",
+          "artifact:read",
+          "message:receive",
+          "adapter:health_check"
+        ]
+      },
+      {
+        "tier": "A1",
+        "allowed_scopes": [
+          "workflow:read",
+          "artifact:read",
+          "message:receive",
+          "adapter:health_check",
+          "review:request",
+          "plan:generate"
+        ]
+      },
+      {
+        "tier": "A2",
+        "allowed_scopes": [
+          "workflow:read",
+          "artifact:read",
+          "message:receive",
+          "workflow:execute",
+          "artifact:write",
+          "message:send",
+          "review:request",
+          "plan:generate",
+          "adapter:health_check"
         ]
       },
       {
         "tier": "A3",
         "allowed_scopes": [
+          "workflow:execute",
+          "artifact:read",
+          "artifact:write",
+          "message:send",
+          "message:receive",
+          "review:request",
+          "plan:generate",
           "git:commit",
           "git:push",
-          "pr:create"
+          "pr:create",
+          "workflow:read",
+          "adapter:health_check"
+        ]
+      },
+      {
+        "tier": "A4",
+        "allowed_scopes": [
+          "workflow:execute",
+          "artifact:read",
+          "artifact:write",
+          "message:send",
+          "message:receive",
+          "review:request",
+          "plan:generate",
+          "git:commit",
+          "git:push",
+          "pr:create",
+          "deploy:staging",
+          "workflow:read",
+          "adapter:health_check"
         ]
       }
     ],
     "scope_registry": [
       "workflow:read",
       "workflow:execute",
+      "artifact:read",
+      "artifact:write",
+      "message:send",
+      "message:receive",
+      "review:request",
+      "plan:generate",
       "git:commit",
       "git:push",
-      "pr:create"
+      "pr:create",
+      "deploy:staging",
+      "adapter:health_check"
     ],
     "default_decision": "deny",
     "rules": [
       {
-        "rule_id": "r1",
+        "rule_id": "r-001",
         "effect": "allow",
-        "authorization_tier_ceiling": "A2",
+        "authorization_tier_ceiling": "A3",
         "scope": [
-          "workflow:execute"
-        ]
+          "workflow:execute",
+          "git:commit"
+        ],
+        "description": "allow workflow execution + git commit at A3"
       }
     ],
     "budgets": [
       {
-        "budget_id": "b1",
+        "budget_id": "b-wf",
         "scope": "per_workflow",
+        "max_value": 100000,
+        "unit": "tokens"
+      },
+      {
+        "budget_id": "b-pd",
+        "scope": "per_project_daily",
         "max_value": 1000000,
+        "unit": "tokens"
+      },
+      {
+        "budget_id": "b-gd",
+        "scope": "global_daily",
+        "max_value": 10000000,
         "unit": "tokens"
       }
     ],
     "loop_limits": {
       "max_retry_attempts": 3,
-      "max_fix_rounds": 2,
-      "max_execution_time_seconds": 28800
+      "max_fix_rounds": 3,
+      "max_execution_time_seconds": 3600
     },
+    "path_boundaries": [
+      "/src/",
+      "/docs/"
+    ],
+    "domain_boundaries": [
+      "api.example.com"
+    ],
+    "credential_boundaries": {
+      "store": "vault",
+      "allowed_references": [
+        "ref-01"
+      ]
+    },
+    "routing": {
+      "adapter_priority": "official_api_sdk",
+      "fallback_chain": [
+        "cli",
+        "webhook"
+      ]
+    },
+    "release_gates": [
+      {
+        "gate_id": "g-001",
+        "gate_type": "verifier_evidence",
+        "required_severity_filter": "block_high_critical"
+      }
+    ],
     "token_policy": {
       "max_ttl_seconds": 3600,
       "default_ttl_seconds": 900,
       "clock_skew_seconds": 60,
-      "replay_cache_retention_seconds": 960
-    }
+      "replay_cache_retention_seconds": 3720
+    },
+    "safe_mode": {
+      "trigger": "policy_integrity_failure",
+      "allowed_actions": [
+        "A0_diagnostic"
+      ]
+    },
+    "degraded_behavior": {
+      "on_capability_loss": "reroute",
+      "on_adapter_crash_threshold": 3
+    },
+    "adapter_allowlists": [
+      {
+        "adapter_type": "git",
+        "allowed_capabilities": [
+          "send",
+          "receive"
+        ]
+      }
+    ]
   }
 }

@@ -2,7 +2,7 @@
   "fixture_id": "adapter-cap-valid",
   "target_schema": "CONTRACTS/adapter-capability.schema.json",
   "expected": "valid",
-  "note": "",
+  "note": "结构示例，非密码学有效证据",
   "instance": {
     "schema_version": "1.0.0",
     "adapter_id": "ad-01",
@@ -12,13 +12,9 @@
     ],
     "capability_set": [
       "send",
-      "receive",
-      "execute",
-      "health_check",
-      "supports_idempotency_key",
-      "supports_reconciliation"
+      "receive"
     ],
     "delivery_semantics": "at_least_once_attempts",
-    "max_payload_size": 10485760
+    "max_payload_size": 1048576
   }
 }

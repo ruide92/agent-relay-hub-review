@@ -2,24 +2,24 @@
   "fixture_id": "invalid-key-purpose-mismatch",
   "target_schema": "CONTRACTS/signature-manifest.schema.json",
   "expected": "invalid",
+  "note": "key_purpose=sbom but target_type=policy_bundle",
   "expected_violation": {
     "layer": "schema",
-    "rule": "key_purpose=sbom but target_type=policy_bundle (allOf if-then mismatch)"
+    "rule": "key_purpose/target_type if-then constraint: policy_bundle target requires key_purpose=policy_bundle"
   },
-  "note": "结构示例，非密码学有效证据",
   "instance": {
     "schema_version": "1.0.0",
-    "manifest_id": "sm-002",
+    "manifest_id": "sm-001",
     "signatures": [
       {
         "target_type": "policy_bundle",
         "target_id": "pb-001",
-        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
         "key_id": "arh-key-01",
         "key_purpose": "sbom",
         "algorithm": "ES256",
         "signed_at": "2026-07-22T00:00:00Z",
-        "signature_value": "X"
+        "signature_value": "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
       }
     ]
   }

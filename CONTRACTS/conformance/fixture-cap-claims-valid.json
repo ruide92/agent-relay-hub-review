@@ -10,7 +10,7 @@
     "iat": 1784678400,
     "nbf": 1784678400,
     "exp": 1784679300,
-    "jti": "01234567-89ab-4def-8123-abcdef1234567",
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
       "workflow:execute",
       "git:commit",
@@ -22,7 +22,7 @@
     "job_id": "JOB-001",
     "adapter_id": "ad-01",
     "session_id": "s-01",
-    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ab",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
     "policy_decision_id": "pd-01"
   }
 }
