@@ -21,11 +21,12 @@
 | 3 | `adapter-capability.schema.json` | 适配器能力上报 | `PROTOCOL.md` §6；V1.1 §10.2 | PROPOSED |
 | 4 | `adapter-lifecycle-event.schema.json` | 适配器生命周期事件 | `PROTOCOL.md` §7；V1.1 §20.1 | PROPOSED |
 | 5 | `health-check.schema.json` | 健康检查 | `PROTOCOL.md` §9；V1.1 §20.1 | PROPOSED |
-| 6 | `policy-bundle.schema.json` | 政策包 | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 | PROPOSED |
-| 7 | `signature-manifest.schema.json` | 签名清单（detached） | `SECURITY.md` §8 | PROPOSED |
-| 8 | `capability-token-claims.schema.json` | capability token claims | `DECISIONS/ADR-0003-…`（PROPOSED）；V1.1 §4.2.1 | PROPOSED |
-| 9 | `capability-token.schema.json` | capability token wire format (JWS) | `DECISIONS/ADR-0003-…`（PROPOSED） | PROPOSED |
-| 10 | `capability-token-revocation.schema.json` | capability token 撤销清单 | `DECISIONS/ADR-0003-…`（PROPOSED）；`SECURITY.md` §8 | PROPOSED |
+| 6 | `policy-bundle.schema.json` | 政策包（content only） | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 | PROPOSED |
+| 7 | `signature-manifest.schema.json` | 签名清单（detached sidecar） | `SECURITY.md` §8 | PROPOSED |
+| 8 | `capability-token-claims.schema.json` | capability token claims (decoded view) | `DECISIONS/ADR-0003-…`（PROPOSED）；V1.1 §4.2.1 | PROPOSED |
+| 9 | `capability-token-protected-header.schema.json` | capability token JWS protected header (decoded view) | `DECISIONS/ADR-0003-…`（PROPOSED） | PROPOSED |
+| 10 | `capability-token.schema.json` | capability token wire format (JWS compact string) | `DECISIONS/ADR-0003-…`（PROPOSED） | PROPOSED |
+| 11 | `capability-token-revocation.schema.json` | capability token 撤销清单（content only） | `DECISIONS/ADR-0003-…`（PROPOSED）；`SECURITY.md` §8 | PROPOSED |
 
 ## conformance/ 目录
 

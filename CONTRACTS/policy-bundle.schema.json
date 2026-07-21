@@ -1,54 +1,152 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agent-relay-hub.dev/contracts/v1/policy-bundle.schema.json",
-  "title": "Policy Bundle",
-  "description": "Signed policy bundle that defines authorization boundaries and default decision rules per SECURITY.md §6–§8, V1.1 §4.2 and §15.5. additionalProperties=false for fail-closed. Tampering MUST trigger POLICY_INTEGRITY_SAFE_MODE.",
+  "title": "Policy Bundle (Content Only — Signed via Sidecar Manifest)",
   "type": "object",
-  "required": ["schema_version", "bundle_id", "policy_version", "rules", "target_hash", "signature_manifest"],
+  "required": ["schema_version", "bundle_id", "policy_version", "authorization_tiers", "scope_registry", "default_decision"],
   "properties": {
-    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
     "bundle_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
-    "policy_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "policy_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "authorization_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tier", "allowed_scopes"],
+        "properties": {
+          "tier": { "$ref": "common-defs.schema.json#/$defs/authorization_tier" },
+          "allowed_scopes": { "type": "array", "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" }, "uniqueItems": true }
+        },
+        "additionalProperties": false
+      },
+      "description": "Authorization tier to scope mapping per V1.1 §4.2"
+    },
+    "scope_registry": {
+      "type": "array",
+      "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" },
+      "uniqueItems": true,
+      "description": "Allowed scopes in this policy version"
+    },
+    "default_decision": { "type": "string", "enum": ["deny", "allow", "degraded"], "description": "Default decision when no rule matches; SHOULD be deny (fail-closed)" },
     "rules": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["rule_id", "effect", "authorization_tier_ceiling"],
+        "required": ["rule_id", "effect"],
         "properties": {
           "rule_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
           "effect": { "type": "string", "enum": ["allow", "deny", "degraded"] },
           "authorization_tier_ceiling": { "$ref": "common-defs.schema.json#/$defs/authorization_tier" },
-          "scope": {
-            "type": "array",
-            "items": { "$ref": "common-defs.schema.json#/$defs/scope_entry" }
-          },
-          "adapter_whitelist": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
+          "scope": { "type": "array", "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" }, "uniqueItems": true },
+          "adapter_whitelist": { "type": "array", "items": { "type": "string" } },
           "description": { "type": "string" }
         },
         "additionalProperties": false
-      },
-      "minItems": 1
+      }
     },
-    "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
-    "signature_manifest": {
+    "budgets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["budget_id", "scope", "max_value"],
+        "properties": {
+          "budget_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+          "scope": { "type": "string", "enum": ["per_workflow", "per_project_daily", "global_daily"] },
+          "max_value": { "type": "number", "exclusiveMinimum": 0 },
+          "unit": { "type": "string", "enum": ["tokens", "usd"] }
+        },
+        "additionalProperties": false
+      },
+      "description": "Three-layer budget per V1.1 §9.1"
+    },
+    "loop_limits": {
       "type": "object",
-      "description": "Detached signature manifest reference (SECURITY.md §8)",
-      "required": ["manifest_id", "key_id", "key_purpose", "algorithm", "target_hash", "signed_at"],
       "properties": {
-        "manifest_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
-        "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
-        "key_purpose": { "type": "string", "const": "policy_bundle" },
-        "algorithm": { "type": "string", "enum": ["ES256"] },
-        "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
-        "signed_at": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" }
+        "max_retry_attempts": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "max_fix_rounds": { "type": "integer", "minimum": 1 },
+        "max_execution_time_seconds": { "type": "integer", "minimum": 1 }
       },
       "additionalProperties": false
+    },
+    "path_boundaries": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Allowed path prefixes per V1.1 §15"
+    },
+    "domain_boundaries": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Allowed domain whitelist per V1.1 §15"
+    },
+    "credential_boundaries": {
+      "type": "object",
+      "properties": {
+        "store": { "type": "string", "enum": ["windows_credential_manager", "vault"] },
+        "allowed_references": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "routing": {
+      "type": "object",
+      "properties": {
+        "adapter_priority": { "type": "string", "enum": ["official_api_sdk", "cli", "webhook", "playwright_dom", "uia", "visual_coordinate"] },
+        "fallback_chain": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "release_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "gate_type"],
+        "properties": {
+          "gate_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+          "gate_type": { "type": "string", "enum": ["verifier_evidence", "external_verifiable", "finding_resolution"] },
+          "required_severity_filter": { "type": "string", "enum": ["block_high_critical", "block_all", "none"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "token_policy": {
+      "type": "object",
+      "properties": {
+        "max_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Max token TTL; absolute ceiling 3600s (1h)" },
+        "default_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Default 900s (15min)" },
+        "clock_skew_seconds": { "type": "integer", "minimum": 0, "maximum": 300, "description": "Clock skew tolerance; absolute ceiling 300s" },
+        "replay_cache_retention_seconds": { "type": "integer", "minimum": 1, "description": "Retention beyond exp+skew" }
+      },
+      "additionalProperties": false
+    },
+    "safe_mode": {
+      "type": "object",
+      "properties": {
+        "trigger": { "type": "string", "enum": ["policy_integrity_failure", "trust_root_failure", "manual"] },
+        "allowed_actions": { "type": "array", "items": { "type": "string", "enum": ["A0_diagnostic"] } }
+      },
+      "additionalProperties": false
+    },
+    "degraded_behavior": {
+      "type": "object",
+      "properties": {
+        "on_capability_loss": { "type": "string", "enum": ["reroute", "safe_terminal"] },
+        "on_adapter_crash_threshold": { "type": "integer", "minimum": 1, "maximum": 10 }
+      },
+      "additionalProperties": false
+    },
+    "adapter_allowlists": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["adapter_type", "allowed_capabilities"],
+        "properties": {
+          "adapter_type": { "type": "string" },
+          "allowed_capabilities": { "type": "array", "items": { "$ref": "common-defs.schema.json#/$defs/capability_flag" }, "uniqueItems": true }
+        },
+        "additionalProperties": false
+      }
     },
     "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
   },
   "additionalProperties": false,
-  "description": "Policy bundle is the authorization Source of Truth (ARCHITECTURE.md §2). key_purpose MUST be policy_bundle, distinct from SBOM and capability_token. Tampering MUST trigger POLICY_INTEGRITY_SAFE_MODE (V1.1 §15.5)."
+  "description": "Policy bundle content only; signed via external sidecar signature-manifest. No embedded target_hash or signature_manifest. target_hash = SHA-256 of this content's JCS canonical bytes (no self-reference exclusion)."
 }

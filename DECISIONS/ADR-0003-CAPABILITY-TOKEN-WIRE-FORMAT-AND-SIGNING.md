@@ -48,7 +48,7 @@ V1.1 §4.2.1 定义了三层授权模型，其中第三层为能力令牌（capa
 ```json
 {
   "alg": "ES256",
-  "typ": "JWT",
+  "typ": "arh-cap+jwt",
   "kid": "<key identifier>",
   "key_purpose": "capability_token"
 }
@@ -56,9 +56,10 @@ V1.1 §4.2.1 定义了三层授权模型，其中第三层为能力令牌（capa
 
 - `alg` 固定为 `ES256`（ECDSA P-256 / SHA-256，`SECURITY.md` §8）。
 - `alg=none` **绝对禁止**。
+- `typ` 固定为 `arh-cap+jwt`（项目专用类型，非通用 JWT）。
 - `key_purpose` 固定为 `capability_token`，**MUST NOT** 与 `policy_bundle` 或 `sbom` 共用（`SECURITY.md` §8 用途分离）。
 - `kid` 标识验证密钥，MUST 在可信钥集中存在且未撤销（`SECURITY.md` §8 revocation list）。
-- Protected header 不允许额外字段（`additionalProperties: false`，见 `capability-token.schema.json`）。
+- Protected header 不允许额外字段（`additionalProperties: false`，见 `capability-token-protected-header.schema.json`）。
 
 ### 2.3 Payload Claims
 
@@ -107,18 +108,20 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 - Policy bundle MUST 可以收紧该限制但 MUST NOT 放宽超过 **1 小时**（绝对上限）。
 - `nbf ≤ iat < exp` MUST 满足，否则 fail-closed。
 
-### 2.7 Replay Protection
+### 2.7 Replay Protection（Durable Persistence）
 
-- 验证方维护 **replay cache**：以 `jti` 为键，缓存至 `exp + clock_skew`。
-- `jti` 已出现在 replay cache 中的 token MUST 被拒绝，即使签名与时间有效。
-- Phase 1 使用内存 replay cache；Phase 2+ 可考虑持久化（未来 ADR）。
+- 已接受的 `jti` replay 状态 MUST 写入 **Event Ledger / SQLite**（持久化），**不**仅使用进程内缓存。
+- 保留期至少覆盖 `exp + clock_skew`；保留期内的 `jti` MUST 在服务恢复后仍然被拒绝。
+- 服务恢复时，在 replay 状态从 Event Ledger 重建完成前，验证方 **MUST fail-closed**：不接受任何 token。
+- `jti` 已出现在 replay 状态中的 token MUST 被拒绝，即使签名与时间有效。
+- 进程重启后重复的 token 仍 MUST 被拒绝（conformance/acceptance vector: `fixture-invalid-replay-after-restart`）。
 
 ### 2.8 Revocation
 
-- 撤销清单格式见 `capability-token-revocation.schema.json`。
+- 撤销清单格式见 `capability-token-revocation.schema.json`（content only，不内嵌 `target_hash` 或 `signature_manifest`）。
 - `jti` 出现在有效撤销清单中的 token MUST 被拒绝，即使签名与时间有效。
 - 撤销清单 `list_version` MUST 单调递增；低于已见版本的清单 MUST 被拒绝（防回滚攻击）。
-- 撤销清单使用独立 `key_purpose=capability_token_revocation` 的 detached signature manifest 签名（`SECURITY.md` §8）。
+- 撤销清单通过**独立 sidecar signature manifest** 签名（`key_purpose=capability_token_revocation`，见 `signature-manifest.schema.json`）；`target_hash` = 撤销清单内容的 JCS canonical bytes 的 SHA-256（无自引用排除规则）。
 - 撤销原因枚举：`key_compromised` / `token_abused` / `policy_change` / `session_terminated` / `manual_revoke`。
 
 ### 2.9 Key Rotation
@@ -131,7 +134,9 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 ### 2.10 Clock Skew
 
 - 候选默认 clock skew 容忍：**60 秒**。
-- 验证方允许 `nbf` 早于当前时间最多 60 秒、`exp` 晚于当前时间最多 60 秒。
+- Token 被接受当且仅当 **`nbf - clock_skew <= now <= exp + clock_skew`**：
+  - `nbf` 最多可在当前时间**之后** 60 秒（token 尚未生效但在容差范围内被接受）；
+  - `exp` 最多可在当前时间**之前** 60 秒（token 刚刚过期但在容差范围内被接受）。
 - Policy bundle MUST 可收紧但 MUST NOT 放宽超过 **300 秒**（绝对上限）。
 
 ### 2.11 绑定语义
@@ -176,7 +181,7 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 ## 4. 后果（Consequences）
 
 - **正面**：标准化 wire format 有成熟库支持；独立 key_purpose 与签名容器避免权限混淆；JCS canonicalization 防止签名歧义；fail-closed 校验链杜绝宽放行。
-- **负面 / 风险**：JWS 要求 BASE64URL 编解码（少量开销）；replay cache 在 Phase 1 为内存态，崩溃后失效（缓解：token TTL 短，崩溃后 token 也快速过期）。
+- **负面 / 风险**：JWS 要求 BASE64URL 编解码（少量开销）；replay 状态持久化增加 Event Ledger 写入负载（缓解：仅接受状态需写入，拒绝状态不需写入）。
 - **后续义务**：运行时实现与验证属 Phase 1（经单独授权后）。
 
 ## 5. 证据（Evidence）

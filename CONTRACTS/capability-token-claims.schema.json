@@ -1,8 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agent-relay-hub.dev/contracts/v1/capability-token-claims.schema.json",
-  "title": "Capability Token Claims",
-  "description": "Claims payload for a capability token per V1.1 §4.2.1, ADR-0003 (PROPOSED), and SECURITY.md §8. additionalProperties=false: only defined claims are allowed; extensions MUST go in namespaced extensions container. No ambiguous permission fields.",
+  "title": "Capability Token Claims Payload (Decoded View)",
   "type": "object",
   "required": [
     "iss", "aud", "sub", "iat", "nbf", "exp", "jti",
@@ -11,53 +10,43 @@
     "policy_bundle_hash", "policy_decision_id"
   ],
   "properties": {
-    "iss": {
-      "type": "string",
-      "enum": ["arh:policy-engine"],
-      "description": "Issuer; MUST be arh:policy-engine (registry, MACHINE_READABLE_CONTRACTS.md §5)"
-    },
-    "aud": {
-      "type": "string",
-      "enum": ["arh:core", "arh:adapter-host"],
-      "description": "Audience; MUST be in audience registry (§5)"
-    },
-    "sub": {
-      "$ref": "common-defs.schema.json#/$defs/identifier",
-      "description": "Subject (adapter or role identity)"
-    },
-    "iat": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
-    "nbf": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
-    "exp": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
-    "jti": { "$ref": "common-defs.schema.json#/$defs/jti" },
+    "iss": { "type": "string", "const": "arh:policy-engine" },
+    "aud": { "type": "string", "enum": ["arh:core", "arh:adapter-host"] },
+    "sub": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "iat": { "$ref": "common-defs.schema.json#/$defs/numeric_date", "description": "Issued At (RFC 7519 NumericDate, integer seconds since epoch)" },
+    "nbf": { "$ref": "common-defs.schema.json#/$defs/numeric_date", "description": "Not Before (RFC 7519 NumericDate)" },
+    "exp": { "$ref": "common-defs.schema.json#/$defs/numeric_date", "description": "Expiration Time (RFC 7519 NumericDate)" },
+    "jti": { "$ref": "common-defs.schema.json#/$defs/jti_v4", "description": "UUIDv4 token identifier" },
     "scope": {
       "type": "array",
-      "items": { "$ref": "common-defs.schema.json#/$defs/scope_entry" },
+      "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" },
       "uniqueItems": true,
       "minItems": 1,
-      "description": "Minimum-privilege scope entries; MUST match scope registry (§5). A5 scope MUST NOT be granted."
+      "description": "Closed scope registry; unknown scopes MUST be rejected"
     },
     "max_authorization_tier": {
-      "type": "string",
-      "enum": ["A0", "A1", "A2", "A3", "A4"],
-      "description": "Maximum authorization tier; A5 MUST NOT be granted (V1.1 §4.2). MUST be consistent with scope."
+      "$ref": "common-defs.schema.json#/$defs/token_max_tier",
+      "description": "Maximum tier grantable by token; A5 MUST NOT be granted"
     },
     "workflow_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
     "job_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
     "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
     "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
-    "policy_bundle_hash": {
-      "type": "string",
-      "pattern": "^sha256:[a-f0-9]{64}$",
-      "description": "Hash of the policy bundle that authorized this token"
-    },
+    "policy_bundle_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
     "policy_decision_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
-    "nonce": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Challenge nonce for request binding (optional but recommended)"
-    },
+    "nonce": { "type": "string", "minLength": 1 },
     "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
   },
   "additionalProperties": false,
-  "description": "Capability token claims define the minimum-privilege authorization token (V1.1 §4.2.1, third layer). No top-level ambiguous permission fields allowed. Extensions MUST go in namespaced extensions container. alg=none is FORBIDDEN (enforced in capability-token.schema.json)."
+  "allOf": [
+    {
+      "description": "Tier/scope co-occurrence: higher tiers must include required scopes",
+      "if": { "properties": { "max_authorization_tier": { "const": "A3" } } },
+      "then": { "properties": { "scope": { "contains": { "enum": ["git:commit", "git:push", "pr:create"] } } } }
+    },
+    {
+      "if": { "properties": { "max_authorization_tier": { "const": "A4" } } },
+      "then": { "properties": { "scope": { "contains": { "const": "deploy:staging" } } } }
+    }
+  ]
 }

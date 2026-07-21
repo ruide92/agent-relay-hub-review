@@ -1,63 +1,37 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agent-relay-hub.dev/contracts/v1/signature-manifest.schema.json",
-  "title": "Detached Signature Manifest",
-  "description": "Detached signature manifest for policy bundles and SBOMs per SECURITY.md §8. key_purpose MUST match target_type. alg=none is FORBIDDEN. additionalProperties=false for fail-closed.",
+  "title": "Detached Signature Manifest (Sidecar)",
   "type": "object",
   "required": ["schema_version", "manifest_id", "signatures"],
   "properties": {
-    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
     "manifest_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
     "signatures": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["key_id", "key_purpose", "algorithm", "schema_version", "target_type", "target_hash", "signed_at"],
+        "required": ["target_type", "target_id", "target_hash", "key_id", "key_purpose", "algorithm", "signed_at", "signature_value"],
         "properties": {
+          "target_type": { "type": "string", "enum": ["policy_bundle", "sbom", "capability_token_revocation"] },
+          "target_id": { "$ref": "common-defs.schema.json#/$defs/identifier", "description": "Identifier of the signed content artifact (e.g. bundle_id, revocation list_id)" },
+          "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex", "description": "SHA-256 of the content artifact's JCS canonical bytes; no self-reference exclusion" },
           "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
-          "key_purpose": {
-            "type": "string",
-            "enum": ["policy_bundle", "sbom", "capability_token_revocation"],
-            "description": "MUST match target_type; capability_token MUST NOT use detached manifest (uses JWS, see ADR-0003)"
-          },
-          "algorithm": {
-            "type": "string",
-            "enum": ["ES256"],
-            "description": "ECDSA P-256 / SHA-256 (SECURITY.md §8). alg=none is FORBIDDEN."
-          },
-          "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
-          "target_type": {
-            "type": "string",
-            "enum": ["policy_bundle", "sbom", "capability_token_revocation"]
-          },
-          "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
-          "signed_at": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
-          "signature_value": {
-            "type": "string",
-            "minLength": 1,
-            "description": "Detached signature value; MUST NOT be empty or placeholder. Structure example only in fixtures."
-          }
+          "key_purpose": { "type": "string", "enum": ["policy_bundle", "sbom", "capability_token_revocation"], "description": "MUST match target_type; capability_token MUST NOT use this manifest (uses JWS)" },
+          "algorithm": { "type": "string", "const": "ES256", "description": "ECDSA P-256 / SHA-256; alg=none FORBIDDEN" },
+          "signed_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+          "signature_value": { "type": "string", "minLength": 1, "description": "Detached signature; MUST NOT be empty; structure example only in fixtures" }
         },
         "additionalProperties": false,
         "allOf": [
-          {
-            "if": { "properties": { "key_purpose": { "const": "policy_bundle" } } },
-            "then": { "properties": { "target_type": { "const": "policy_bundle" } } }
-          },
-          {
-            "if": { "properties": { "key_purpose": { "const": "sbom" } } },
-            "then": { "properties": { "target_type": { "const": "sbom" } } }
-          },
-          {
-            "if": { "properties": { "key_purpose": { "const": "capability_token_revocation" } } },
-            "then": { "properties": { "target_type": { "const": "capability_token_revocation" } } }
-          }
+          { "if": { "properties": { "key_purpose": { "const": "policy_bundle" } } }, "then": { "properties": { "target_type": { "const": "policy_bundle" } } } },
+          { "if": { "properties": { "key_purpose": { "const": "sbom" } } }, "then": { "properties": { "target_type": { "const": "sbom" } } } },
+          { "if": { "properties": { "key_purpose": { "const": "capability_token_revocation" } } }, "then": { "properties": { "target_type": { "const": "capability_token_revocation" } } } }
         ]
       }
     },
     "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
   },
-  "additionalProperties": false,
-  "description": "Detached signature manifest per SECURITY.md §8. key_purpose and target_type MUST match. This manifest is NOT used for capability token signing (capability token uses JWS compact serialization, see ADR-0003 and capability-token.schema.json)."
+  "additionalProperties": false
 }

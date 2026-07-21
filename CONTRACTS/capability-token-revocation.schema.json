@@ -1,54 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agent-relay-hub.dev/contracts/v1/capability-token-revocation.schema.json",
-  "title": "Capability Token Revocation List",
-  "description": "Revocation list for capability tokens per ADR-0003 (PROPOSED) and SECURITY.md §8. List version MUST be monotonically increasing; stale lists MUST be rejected (anti-rollback). additionalProperties=false for fail-closed.",
+  "title": "Capability Token Revocation List (Content Only — Signed via Sidecar Manifest)",
   "type": "object",
-  "required": ["schema_version", "list_id", "list_version", "issuer", "revoked_jtis", "target_hash", "signature_manifest_ref"],
+  "required": ["schema_version", "list_id", "list_version", "issuer", "revoked_jtis"],
   "properties": {
-    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
     "list_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
-    "list_version": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "Monotonically increasing version; lower versions MUST be rejected (anti-rollback)"
-    },
-    "issuer": {
-      "type": "string",
-      "const": "arh:policy-engine",
-      "description": "Only the policy engine may issue revocation lists"
-    },
+    "list_version": { "type": "integer", "minimum": 1, "description": "Monotonically increasing; stale lists rejected (anti-rollback)" },
+    "issuer": { "type": "string", "const": "arh:policy-engine" },
     "revoked_jtis": {
       "type": "array",
       "items": {
         "type": "object",
         "required": ["jti", "revoked_at", "reason"],
         "properties": {
-          "jti": { "$ref": "common-defs.schema.json#/$defs/jti" },
-          "revoked_at": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
-          "reason": {
-            "type": "string",
-            "enum": ["key_compromised", "token_abused", "policy_change", "session_terminated", "manual_revoke"]
-          }
+          "jti": { "$ref": "common-defs.schema.json#/$defs/jti_v4" },
+          "revoked_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+          "reason": { "type": "string", "enum": ["key_compromised", "token_abused", "policy_change", "session_terminated", "manual_revoke"] }
         },
         "additionalProperties": false
-      },
-      "description": "List of revoked token jti values"
-    },
-    "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
-    "signature_manifest_ref": {
-      "type": "object",
-      "description": "Reference to detached signature manifest covering this list (SECURITY.md §8)",
-      "required": ["manifest_id", "key_id", "key_purpose"],
-      "properties": {
-        "manifest_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
-        "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
-        "key_purpose": { "type": "string", "const": "capability_token_revocation" }
-      },
-      "additionalProperties": false
+      }
     },
     "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
   },
   "additionalProperties": false,
-  "description": "Revocation list for capability tokens. key_purpose MUST be capability_token_revocation (distinct from policy_bundle and sbom). Verifiers MUST reject tokens whose jti appears in the latest valid revocation list, even if signature and time are valid (MACHINE_READABLE_CONTRACTS.md §7.6)."
+  "description": "Content only; signed via external sidecar signature-manifest with key_purpose=capability_token_revocation. No embedded target_hash or signature_manifest_ref. target_hash = SHA-256 of this content's JCS canonical bytes."
 }
