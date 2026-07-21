@@ -9,7 +9,7 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Implementation Status: DESIGN ONLY
-Last Revised: 2026-07-21 (Reviewer-2 Round 1)
+Last Revised: 2026-07-21 (Reviewer-2 Round 2, mechanical cleanup)
 ```
 
 # UI_STATE_ACCEPTANCE_MATRIX.md（UI 状态验收矩阵）
@@ -42,6 +42,14 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 - `last_rebuilt_at`
 - `last_successful_sync_at`
 
+### 1.2 本地健康探测例外（非业务事实）
+
+- `app boot` 与 `core unavailable` 可读取**本地实时 liveness / health probe**（本地健康检查、进程/连接可达性）；
+- 该探测**只表示当前连接或进程可达性**，不是 workflow 业务事实；
+- **不得**根据 health probe 伪造工作流状态、终态、授权或完成；
+- Core 恢复后 MUST 与 Event Ledger / projection 重新同步；
+- 可记录时，健康状态变化追加脱敏 audit event。
+
 ---
 
 ## 2. 必须覆盖的状态（主矩阵）
@@ -49,39 +57,39 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 | UI State ID | Page/Component | Backend Source | Trigger Event | Display State | Allowed Actions | Forbidden Actions | Required Evidence | Exit Condition | Phase | Acceptance Test |
 |---|---|---|---|---|---|---|---|---|---|---|
 | UI-INIT-LOAD | App Shell | Projection（加载中） | app boot | loading (skeleton) | 等待 | 任何写操作 | —— | projection 可用 | 1 | 启动显示 Skeleton，不假进度 |
-| UI-EMPTY | 各列表页 | Projection（空） | 无记录 | empty | 创建（限 A2） | 误标"完成" | —— | 有记录 | 1 | 空态文案，无 success |
+| UI-EMPTY | 各列表页 | Projection（空） | 无记录 | empty | Control Room / Workflow List 可创建模拟工作流（UX-CREATE-SIM，A2）；其他列表空态仅查看 | 误标"完成" | —— | 有记录 | 1 | 空态文案，无 success |
 | UI-LOADING | 各详情页 | Projection（加载） | 导航进入 | loading | 等待 | 写事实 | —— | 数据加载 | 1 | Skeleton，无成功动画 |
 | UI-STALE | 各页面 | Projection（派生自 Event Ledger） | 陈旧判据由政策配置（sequence lag = `ledger_head_sequence - last_applied_event_sequence` 或 `now - last_successful_sync_at` 超阈值），不硬编码于 UI | stale (warning) | 刷新、查看、导出诊断(A0) | 当作实时事实；依赖最新事实/授权的写操作 | `projection_version` + `last_applied_event_sequence` + `ledger_head_sequence` + `last_successful_sync_at` | 重放后一致且 lag 回到阈值内 | 1 | 显著陈旧横幅，明确标注「非实时，缓存状态」 |
 | UI-CORE-DOWN | Global Health Banner | Core 健康探测 | 核心不可达 | degraded (danger) | 查看诊断(A0) | A1–A5、外部 | 健康检查失败记录 | 核心恢复 | 1 | 核心不可用时降级横幅，不伪装 |
-| UI-ADAPT-LOAD | Adapter Detail | Adapter lifecycle | `lifecycle: LOADING` | adapter loading | 查看 | 调度任务 | session_id | → NEGOTIATING | 1 | mock adapter LOADING 显示 |
-| UI-ADAPT-NEGOT | Adapter Detail | Adapter lifecycle | `lifecycle: NEGOTIATING` | adapter negotiating | 查看 | 跳过协商 | capability_set | → READY | 1 | 协商显示，协议不兼容拒绝 |
-| UI-ADAPT-READY | Adapter Detail | Adapter lifecycle | `lifecycle: READY` | adapter ready | 查看、调度 | 提权 | capability_set | → BUSY/STOPPING | 1 | READY 显示，可接收 |
-| UI-ADAPT-BUSY | Adapter Detail | Adapter lifecycle | `lifecycle: BUSY` | adapter busy | 查看、取消请求 | 直接重发 | job_id | → READY/DEGRADED/FAILED | 1 | BUSY 显示，心跳不误断 |
-| UI-ADAPT-DEGR | Adapter Detail | Adapter lifecycle | `lifecycle: DEGRADED` | adapter degraded | 查看、暂停 | 强制提权 | capability_change | → READY/STOPPING/FAILED | 1 | DEGRADED 显著，可降级 |
-| UI-ADAPT-FAIL | Adapter Detail | Adapter lifecycle | `lifecycle: FAILED` | adapter failed | 查看、请求重建(UX-RECREATE-MOCK-ADAPTER, A2, 仅 mock) | 同实例 FAILED→READY；加载真实适配器 | 旧 session FAILED 终态 + 新 `session_id` + 新实例从 `LOADING` 起的 lifecycle event | 新 instance 从 LOADING | 1 | FAILED 终态，新 session 重建，禁止同实例恢复 |
-| UI-WF-PEND | Workflow Detail | Workflow projection | `status: PENDING` | pending | 启动、取消 | 标完成 | 目标固化事件 | → RUNNING | 1 | PENDING 不显示成功 |
-| UI-WF-RUN | Workflow Detail | Workflow projection | `status: RUNNING` | running | 取消请求 | 标完成 | 心跳 + policy decision | → 终态/STALLED | 1 | RUNNING 非完成（resume 仅 STALLED 后，须带 resume token） |
-| UI-WF-STALL | Workflow Detail | Workflow projection | `status: STALLED` | stalled | 查看、恢复 | 直接重发 | 最后心跳时间 | → RUNNING | 1 | STALLED 显著，可恢复 |
+| UI-ADAPT-LOAD | Adapter Detail | Event Ledger（adapter lifecycle projection） | `lifecycle: LOADING` | adapter loading | 查看 | 调度任务 | session_id | → NEGOTIATING | 1 | mock adapter LOADING 显示 |
+| UI-ADAPT-NEGOT | Adapter Detail | Event Ledger（adapter lifecycle projection） | `lifecycle: NEGOTIATING` | adapter negotiating | 查看 | 跳过协商 | capability_set | → READY | 1 | 协商显示，协议不兼容拒绝 |
+| UI-ADAPT-READY | Adapter Detail | Event Ledger（adapter lifecycle projection） | `lifecycle: READY` | adapter ready | 查看；导航至关联 workflow（NAV） | 提权 | capability_set | → BUSY/STOPPING | 1 | READY 显示，可接收 |
+| UI-ADAPT-BUSY | Adapter Detail | Event Ledger（adapter lifecycle projection） | `lifecycle: BUSY` | adapter busy | 查看；导航至关联 workflow（NAV） | 直接重发 | job_id | → READY/DEGRADED/FAILED | 1 | BUSY 显示，心跳不误断 |
+| UI-ADAPT-DEGR | Adapter Detail | Event Ledger（adapter lifecycle projection） | `lifecycle: DEGRADED` | adapter degraded | 查看；导航至受影响 workflow（NAV） | 强制提权 | capability_change | → READY/STOPPING/FAILED | 1 | DEGRADED 显著，可降级 |
+| UI-ADAPT-FAIL | Adapter Detail | Event Ledger（adapter lifecycle projection） | `lifecycle: FAILED` | adapter failed | 查看、请求重建(UX-RECREATE-MOCK-ADAPTER, A2, 仅 mock) | 同实例 FAILED→READY；加载真实适配器 | 旧 session FAILED 终态 + 新 `session_id` + 新实例从 `LOADING` 起的 lifecycle event | 新 instance 从 LOADING | 1 | FAILED 终态，新 session 重建，禁止同实例恢复 |
+| UI-WF-PEND | Workflow Detail | Workflow projection | `status: PENDING` | pending | 启动（UX-START）；取消（UX-CANCEL） | 标完成 | 目标固化事件 | → RUNNING | 1 | PENDING 不显示成功 |
+| UI-WF-RUN | Workflow Detail | Workflow projection | `status: RUNNING` | running | 取消请求（UX-CANCEL） | 标完成 | 心跳 + policy decision | → 终态/STALLED | 1 | RUNNING 非完成（resume 仅 STALLED 后，须带 resume token） |
+| UI-WF-STALL | Workflow Detail | Workflow projection | `status: STALLED` | stalled | 查看；恢复（UX-RESUME） | 直接重发 | 最后心跳时间 | → RUNNING | 1 | STALLED 显著，可恢复 |
 | UI-WORKER-DONE | Workflow Detail | Event Ledger | `result` 事件 | verification pending | 查看证据 | **标完成** | evidence_id（待 verifier） | evidence verified | 1 | worker 自述不显完成 |
-| UI-EVID-VER | Evidence Detail | Artifact + Event | `evidence` 事件 + 校验 | verified | 查看、请求 reverify | 标终态完成 | evidence_id + sha256 + policy_decision | release gate passed | 1 | verified 非终态完成 |
-| UI-FIND-HIGH | Finding Detail | Event Ledger（finding projection） | `review.finding` HIGH | finding HIGH | 查看、reverify | 隐藏严重度、自动降级 | finding_id + fingerprint | 未被充分证据排除时必须阻断；verifier 提供充分可验证证据排除后解除该 finding 阻断（insufficient evidence 不得自动降级） | 1 | HIGH 阻断晋级提示 |
-| UI-FIND-CRIT | Finding Detail | Event Ledger（finding projection） | `review.finding` CRITICAL | finding CRITICAL | 查看、reverify | 隐藏严重度、自动降级、写「永远不得排除」 | finding_id + fingerprint | 未被充分证据排除时必须阻断；verifier 提供充分可验证证据排除后可解除（不得写「永远不得排除」；排除事实须有 evidence + policy decision） | 1 | CRITICAL 未排除必阻断 |
-| UI-REL-BLOCK | Workflow Detail | Event Ledger（policy.decision projection） | `policy.decision`: release gate blocked | blocked | 查看、提交治理 | 标完成 | gate decision (policy_decision_id) | 证据排除风险 | 1 | release blocked 不显完成 |
-| UI-RECON | Reconciliation | Reconciliation projection | `delivery.status: RECONCILIATION_REQUIRED` | reconciliation required | 查看、查询 | **盲重发** | reconciliation.result (external_state_known) | 确定性证据→VERIFIED/安全终态 | 1 | 0 次盲重试，进对账 |
+| UI-EVID-VER | Evidence Detail | Artifact + Event | `evidence` 事件 + 校验 | verified | 查看、请求 reverify（UX-REQUEST-REVERIFY） | 标终态完成 | evidence_id + sha256 + policy_decision | release gate passed | 1 | verified 非终态完成 |
+| UI-FIND-HIGH | Finding Detail | Event Ledger（finding projection） | `review.finding` HIGH | finding HIGH | 查看、请求 reverify（UX-REQUEST-REVERIFY） | 隐藏严重度、自动降级 | finding_id + fingerprint | 未被充分证据排除时必须阻断；verifier 提供充分可验证证据排除后解除该 finding 阻断（insufficient evidence 不得自动降级） | 1 | HIGH 阻断晋级提示 |
+| UI-FIND-CRIT | Finding Detail | Event Ledger（finding projection） | `review.finding` CRITICAL | finding CRITICAL | 查看、请求 reverify（UX-REQUEST-REVERIFY） | 隐藏严重度、自动降级、写「永远不得排除」 | finding_id + fingerprint | 未被充分证据排除时必须阻断；verifier 提供充分可验证证据排除后可解除（不得写「永远不得排除」；排除事实须有 evidence + policy decision） | 1 | CRITICAL 未排除必阻断 |
+| UI-REL-BLOCK | Workflow Detail | Event Ledger（policy.decision projection） | `policy.decision`: release gate blocked | blocked | 查看；导航至 Policies & Authorization（NAV） | 标完成 | gate decision (policy_decision_id) | 证据排除风险 | 1 | release blocked 不显完成 |
+| UI-RECON | Reconciliation | Reconciliation projection | `delivery.status: RECONCILIATION_REQUIRED` | reconciliation required | 查看、查询（UX-VIEW-RECON） | **盲重发** | reconciliation.result (external_state_known) | 确定性证据→VERIFIED/安全终态 | 1 | 0 次盲重试，进对账 |
 | UI-BUD-WARN | Budget Meter | Budget projection | 预算≥阈值 | warning | 查看 | 绕过预算 | budget 计数 | 低于阈值/增额 | 1 | 警告色非 success |
-| UI-BUD-EXH | Budget Meter | Budget projection | `budget_exhausted` | blocked (exhausted) | 查看、请求增额(治理) | 继续消耗 | budget 计数达上限 | 治理增额+新授权 | 1 | 耗尽进 BLOCKED_BUDGET_EXHAUSTED |
+| UI-BUD-EXH | Budget Meter | Budget projection | `budget_exhausted` | blocked (exhausted) | 查看；导航至 Policies & Authorization（NAV） | 继续消耗 | budget 计数达上限 | 治理增额+新授权 | 1 | 耗尽进 BLOCKED_BUDGET_EXHAUSTED |
 | UI-AUTH-EXP | Workflow Detail | Event Ledger（policy.decision projection） | `policy.decision`: BLOCKED_AUTH_EXPIRED | blocked (auth) | 查看、重新认证(人) | 自动 A1–A5 | auth 失效事件（policy.decision） | 安全重认证+新令牌 | 1 | 过期进安全停止 |
 | UI-POL-NEED | Workflow Detail | Event Ledger（policy.decision projection） | `policy.decision`: BLOCKED_NEEDS_POLICY_DECISION | blocked (policy) | 查看、提交治理 | 自动续跑 | 默认决策阶梯记录 | 新政策/owner 决策 | 1 | 阶梯穷尽才阻断 |
-| UI-QUAR | Workflow Detail | Event Ledger（policy.decision projection） | `policy.decision`: QUARANTINED_SECURITY_RISK | quarantined | 查看(脱敏)、上报 | 解除隔离 | 安全证据 | owner 安全确认 | 1 | 隔离显著，不伪装 |
-| UI-SAFE | Safe Mode Panel | Event Ledger（policy.decision projection） | `policy.decision`: POLICY_INTEGRITY_SAFE_MODE | safe mode | 查看、导出诊断(A0)、重新加载已批准政策(本地只读验证, 不提权) | **A1–A5/外部/模型/编辑或签署 policy** | 校验失败记录；重载时须 bundle 内容哈希+治理批准引用+签名+key_id+key purpose+trust-root 校验结果 | 可信政策重载校验通过并产生 Event Ledger 审计事件（UX-RELOAD-APPROVED-POLICY） | 1 | safe mode 控件全禁；重载失败仍留 safe mode |
+| UI-QUAR | Workflow Detail | Event Ledger（policy.decision projection） | `policy.decision`: QUARANTINED_SECURITY_RISK | quarantined | 查看；导航至 Policies & Authorization（NAV） | 解除隔离 | 安全证据 | owner 安全确认 | 1 | 隔离显著，不伪装 |
+| UI-SAFE | Safe Mode Panel | Event Ledger（policy.decision projection） | `policy.decision`: POLICY_INTEGRITY_SAFE_MODE | safe mode | 查看、导出诊断（UX-EXPORT-DIAG）；重载批准政策（UX-RELOAD-APPROVED-POLICY） | **A1–A5/外部/模型/编辑或签署 policy** | 校验失败记录；重载时须 bundle 内容哈希+治理批准引用+签名+key_id+key purpose+trust-root 校验结果 | 可信政策重载校验通过并产生 Event Ledger 审计事件（UX-RELOAD-APPROVED-POLICY） | 1 | safe mode 控件全禁；重载失败仍留 safe mode |
 | UI-CANCEL-REQ | Workflow Detail | Event Ledger | `cancellation` 请求 | cancellation requested | 查看 | 标已取消 | adapter 最终状态待回报 | adapter 回报 | 1 | 请求非确认 |
 | UI-CANCEL-CONF | Workflow Detail | Event Ledger | `CANCELLED_BY_POLICY` | cancelled | 查看 | 自动续跑 | 取消 policy decision | ——(终态) | 1 | 取消为终态 |
 | UI-BACKUP-RUN | Backup Page | Event Ledger（backup projection） | `backup.trigger` 事件 | backup running | 查看(A0) | 标恢复成功 | backup set ID + 哈希 | 哈希一致 | 1 | 运行中不显成功 |
-| UI-BACKUP-FAIL | Backup Page | Event Ledger（backup projection） | 哈希不一致事件 | error (danger) | 查看(A0)、重试(A2) | 标成功 | 哈希不一致记录 | 重 backup | 1 | 失败不伪造成功 |
+| UI-BACKUP-FAIL | Backup Page | Event Ledger（backup projection） | 哈希不一致事件 | error (danger) | 查看(A0)、重试（UX-TRIGGER-BACKUP，A2） | 标成功 | 哈希不一致记录 | 重 backup | 1 | 失败不伪造成功 |
 | UI-RESTORE-VER | Backup Page | Event Ledger（recovery projection） | `restore.drill` 事件 | restore verification | 查看(A0) | 标成功 | 恢复成功判据(哈希+重放+对账) | 判据全过 | 1 | 演练未过不显成功 |
 | UI-TERM-APPROVED | Workflow Detail | Event Ledger | `COMPLETED_APPROVED` | completed | 查看 | —— | 终态 + evidence + policy_decision | ——(终态) | 1 | 仅终态+证据显完成 |
 | UI-TERM-DEFERRED | Workflow Detail | Event Ledger | `COMPLETED_WITH_DEFERRED_LOW_RISK` | completed (deferred) | 查看 | 隐藏 deferred、仅显示绿色「完成」 | ①所有可信候选均低于 HIGH；②无未排除的 HIGH/CRITICAL 候选；③deferred finding 列表；④unresolved reason；⑤defer reason；⑥reevaluation condition；⑦evidence references；⑧release gate policy decision | ——(终态) | 1 | 须显式标注「低风险延期项」并列出 deferred 清单，不得仅显示绿色完成 |
-| UI-EXT-FAIL | Workflow Detail | Event Ledger | `FAILED_EXTERNAL_DEPENDENCY` | blocked (external) | 查看、请求重审 | 盲重试 | 外部失败证据 | 依赖恢复+新授权 | 1 | 外部失败进安全停止 |
+| UI-EXT-FAIL | Workflow Detail | Event Ledger | `FAILED_EXTERNAL_DEPENDENCY` | blocked (external) | 查看；导航至 Evidence / Policy 页面（NAV） | 盲重试 | 外部失败证据 | 依赖恢复+新授权 | 1 | 外部失败进安全停止 |
 
 > 所有 UI State ID 均映射到 ARCHITECTURE.md §6（工作流终态）/ §7（Outbox）/ PROTOCOL.md §5、§7（adapter lifecycle）/ §11（finding/evidence）。**不新增任何 workflow 终态**。
 > 注：Pause / `PAUSED` 为延期能力，当前未批准；登记 `Pause is deferred pending a future approved protocol/state-machine change`。Phase 1 不得实现 pause，也不得将 pause 成功映射为 `STALLED`；`STALLED` 仍仅表示心跳丢失。

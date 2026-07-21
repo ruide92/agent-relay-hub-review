@@ -9,7 +9,7 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Implementation Status: DESIGN ONLY
-Last Revised: 2026-07-21 (Reviewer-2 Round 1)
+Last Revised: 2026-07-21 (Reviewer-2 Round 2, mechanical cleanup)
 ```
 
 # UI_INFORMATION_ARCHITECTURE.md（信息架构）
@@ -78,13 +78,13 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 | PAGE-EVID | `/evidence/:id` | 1 | 证据详情 | Evidence + Artifact projection | 查看(A0)、请求重新验证(A1) | 证据缺失提示 | Skeleton | 校验失败提示 | A0 查看证据；A1 请求重新验证；不涉及 A5 |
 | PAGE-FIND | `/findings/:id` | 1 | finding 详情 | Finding projection | 查看、请求 reverify | 无 finding 提示 | Skeleton | —— | A0/A1（reviewer） |
 | PAGE-RECON | `/reconciliation/:id` | 1 | 对账案例 | Reconciliation projection | 查看、查询 | 无对账提示 | Skeleton | —— | A0 可见 |
-| PAGE-ADAPT | `/adapters/:id` | 1 | 适配器详情 | Adapter lifecycle projection | 查看健康、能力 | 无 adapter 提示 | Skeleton | adapter FAILED 显著 | A0 可见 |
+| PAGE-ADAPT | `/adapters/:id` | 1 | 适配器详情 | Adapter lifecycle projection | 查看健康、查看能力；FAILED 时可请求重建 mock adapter | 无 adapter 提示 | Skeleton | adapter FAILED 显著 | 查看 A0；重建 mock adapter A2（仅 Phase 1 mock，不得加载真实 adapter，不得同 session FAILED→READY） |
 | PAGE-POLICY | `/policies` | 1 | 政策查看 | Policy projection（签名引用） | 查看政策版本 | 无政策提示 | Skeleton | safe mode 提示 | A0 可见 |
 | PAGE-AUTH | `/authorization/request` | 1/3 | A5 授权请求（Phase 1 仅 mock 流程） | Policy decision projection | 提交 A5 请求（mock，无真实外部副作用） | 无请求提示 | Skeleton | —— | 须 owner；真实 A5 外部操作至少 Phase 3+，仍受政策与 owner 批准 |
 | PAGE-BUDGET | `/budgets` | 1 | 预算详情 | Budget projection | 查看 | 无预算提示 | Skeleton | 耗尽提示 | A0 可见 |
 | PAGE-AUDIT | `/audit` | 1 | 审计浏览 | Audit hash-chain projection | 查询、导出脱敏 | 无记录提示 | Skeleton | —— | A0 可见 |
 | PAGE-BACKUP | `/audit/backup` | 1 | 备份与恢复演练（Phase 1 本地 mock） | Backup/Recovery projection | 触发备份/演练 | 无备份提示 | Skeleton | 哈希不一致提示 | A0 查看；A2 触发备份/恢复演练；A4 保留给未来真实非生产部署 |
-| PAGE-SAFE | `/safe-mode` | 1 | 安全模式面板 | Safe mode state | 查看、导出诊断 | 未进入提示 | Skeleton | —— | A0 仅本地 |
+| PAGE-SAFE | `/safe-mode` | 1 | 安全模式面板 | Safe Mode projection（派生自 Event Ledger policy.decision / audit events） | 查看、导出脱敏诊断、重新加载外部提供的已批准 policy bundle | 未进入提示 | Skeleton | —— | 查看/导出本地 A0；Reload 为 safe-mode 本地验证路径，不授予 A1–A5，不编辑/生成/签署/修复 policy，不创建 trust root |
 | PAGE-SETTINGS | `/settings` | 1 | 设置 | 本地配置 projection | 查看（改配置须治理） | 默认提示 | Skeleton | —— | A0 可见 |
 
 ### 3.1 Action Traceability（操作追溯）
@@ -94,6 +94,7 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 | Page/Component | Visible Action | Interaction ID | Core Command | Required Permission | Phase |
 |---|---|---|---|---|---|
 | 一级导航 | 各导航项跳转 | NAV | （无） | A0 | 1 |
+| Workflow List | [Cancel] | UX-CANCEL | `workflow.cancel_request` | A1 | 1 |
 | Control Room | [Create Simulation Workflow] | UX-CREATE-SIM | `workflow.create_simulation` | A2 | 1 |
 | Control Room | [View Anomalies] / [View Evidence] | NAV | （无） | A0 | 1 |
 | Workflow Detail | [Cancel] | UX-CANCEL | `workflow.cancel_request` | A1 | 1 |
@@ -105,7 +106,7 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 1)
 | Reconciliation | [View Result] | NAV | （无） | A0 | 1 |
 | Adapter Detail | [View Health] | NAV | （无） | A0 | 1 |
 | Adapter Detail | [Recreate Mock Adapter] | UX-RECREATE-MOCK-ADAPTER | `adapter.recreate_mock_instance` | A2 | 1 |
-| Policy & Authorization | [Submit A5 Request] | UX-REQUEST-A5 | `auth.a5_request` | A5（owner 批准） | 1/3 |
+| Policy & Authorization | [Submit A5 Request] | UX-REQUEST-A5 | `auth.a5_request` | A1 提交申请；owner 批准后目标操作才可能取得 A5 | 1/3 |
 | Policy Viewer | [View Policy] | UX-VIEW-POLICY | `policy.query` | A0 | 1 |
 | Budget | [View Budget] | UX-VIEW-BUDGET | `budget.query` | A0 | 1 |
 | Audit & Recovery | [Export Diagnostic] | UX-EXPORT-DIAG | `diagnostic.export` | A0 | 1 |
