@@ -2,13 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agent-relay-hub.dev/contracts/v1/common-defs.schema.json",
   "title": "ARH Common Definitions",
-  "description": "Shared atomic definitions reused across all ARH machine-readable contract schemas (Draft 2020-12).",
-  "type": "object",
   "$defs": {
-    "rfc3339_timestamp": {
+    "utc_rfc3339": {
       "type": "string",
-      "format": "date-time",
-      "description": "UTC RFC3339 timestamp, e.g. 2026-07-22T00:00:00Z"
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "UTC RFC3339 timestamp with mandatory Z suffix; no offset allowed"
+    },
+    "numeric_date": {
+      "type": "integer",
+      "description": "Seconds since Unix epoch (RFC 7519 NumericDate)"
     },
     "sha256_hex": {
       "type": "string",
@@ -32,20 +34,29 @@
       "maxLength": 256,
       "description": "Signing key identifier"
     },
-    "jti": {
+    "jti_v4": {
       "type": "string",
-      "format": "uuid",
-      "description": "Capability token unique identifier (JWT jti claim)"
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "UUIDv4 token identifier (RFC 4122 variant 1, version 4)"
     },
-    "scope_entry": {
+    "scope_registry": {
       "type": "string",
-      "pattern": "^[a-z_]+:[a-z_]+$",
-      "description": "Scope entry in domain:action format"
+      "enum": [
+        "workflow:read", "workflow:execute", "artifact:read", "artifact:write",
+        "message:send", "message:receive", "review:request", "plan:generate",
+        "git:commit", "git:push", "pr:create", "deploy:staging", "adapter:health_check"
+      ],
+      "description": "Closed scope registry; unknown scopes MUST be rejected"
     },
     "authorization_tier": {
       "type": "string",
       "enum": ["A0", "A1", "A2", "A3", "A4", "A5"],
-      "description": "Authorization tier per V1.1 §4.2"
+      "description": "Authorization tier per V1.1 §4.2 (A5 is forbidden for capability tokens)"
+    },
+    "token_max_tier": {
+      "type": "string",
+      "enum": ["A0", "A1", "A2", "A3", "A4"],
+      "description": "Maximum authorization tier grantable by a capability token; A5 MUST NOT be granted"
     },
     "security_classification": {
       "type": "string",
@@ -67,33 +78,52 @@
       "enum": ["LOADING", "NEGOTIATING", "READY", "BUSY", "DEGRADED", "STOPPING", "STOPPED", "FAILED"],
       "description": "Adapter lifecycle state per V1.1 §20.1 / PROTOCOL.md §7"
     },
+    "capability_flag": {
+      "type": "string",
+      "enum": [
+        "send", "receive", "stream", "upload_artifact", "download_artifact",
+        "execute", "cancel", "resume", "health_check", "structured_output",
+        "requires_unlocked_session", "requires_human_auth",
+        "supports_idempotency_key", "supports_status_query",
+        "supports_external_correlation_id", "supports_reconciliation"
+      ],
+      "description": "Closed capability flag registry per PROTOCOL §6 / V1.1 §10.2; delivery_semantics and max_payload_size are properties, not flags"
+    },
     "delivery_semantics": {
       "type": "string",
       "enum": ["at_least_once_attempts", "at_most_once_attempt", "unknown"],
       "description": "Delivery semantics per PROTOCOL.md §6"
     },
-    "semver": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "Semantic version MAJOR.MINOR.PATCH"
+    "schema_version_v1": {
+      "const": "1.0.0",
+      "description": "Schema version for v1 contracts; instances with other versions MUST be rejected (fail-closed)"
     },
-    "namespaced_extension_key": {
-      "type": "string",
-      "pattern": "^[a-z][a-z0-9]*\\.[a-z][a-z0-9_]*$",
-      "description": "Dotted namespace key for extensions container"
+    "protocol_version_v1": {
+      "const": 1,
+      "description": "ARP protocol version 1"
     },
     "extensions_container": {
       "type": "object",
-      "description": "Namespaced extensions; keys MUST match namespaced_extension_key pattern",
       "propertyNames": {
         "pattern": "^[a-z][a-z0-9]*\\.[a-z][a-z0-9_]*$"
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "description": "Namespaced extensions; keys MUST be dotted namespace (e.g. arh.experimental)"
     },
-    "base64url_string": {
+    "base64url_segment": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_-]+$",
-      "description": "Base64URL-encoded string (no padding)"
+      "description": "Base64URL-encoded string without padding"
+    },
+    "capability_token_ref": {
+      "type": "object",
+      "required": ["jti", "token_hash"],
+      "properties": {
+        "jti": { "$ref": "#/$defs/jti_v4" },
+        "token_hash": { "$ref": "#/$defs/sha256_hex" }
+      },
+      "additionalProperties": false,
+      "description": "Reference to a capability token; contains only jti and hash, NEVER the full token string"
     }
   }
 }
