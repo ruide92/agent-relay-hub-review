@@ -11,8 +11,9 @@ Governance Approver: owner
 Approval Record: GOVERNANCE_APPROVAL_0004.md
 Approval commit: d5947db83513f5e11c1ac264944382dcfe1ebcbe
 Effective Commit: 5dfb881ae6e2b36b742b3c0187c377762d1c85cd
+Corrective Record: GOVERNANCE_APPROVAL_0006.md
 
-> 本 ADR 已由独立 Reviewer-2 审核（`PASS`，review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准（`GOVERNANCE_APPROVAL_0004.md`）；Status 为 `ACCEPTED`，待晋级 PR 合并并可从 main 到达后生效。
+> 本 ADR 已由独立 Reviewer-2 审核（`PASS`，review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准（`GOVERNANCE_APPROVAL_0004.md`）；Status 为 `ACCEPTED`，批准已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达生效；PR #2 越权合并由 `GOVERNANCE_APPROVAL_0006.md` 追认并登记纠正。
 
 ---
 
@@ -48,16 +49,19 @@ Phase 0 的治理批准目前由 owner 的明确书面指令、精确 target com
 - `SOURCE_OF_TRUTH.md` §5.1（治理批准与授权记录分类，append-only）。
 - `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md`（现有 append-only 治理记录）。
 - `SECURITY.md` §8（Phase 1 签名基线：ECDSA P-256 / SHA-256）。
-- 本 ADR 提出前尚未通过独立审核与 owner 批准，故无生效证据。
+- Reviewer-2 独立审核 `PASS`：review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，正式审核产物 PR #1 评论 `5035425502`（https://github.com/ruide92/agent-relay-hub-review/pull/1#issuecomment-5035425502），review target `fd2574c28843ee2885460cb191c735dd0d257d1a`。
+- owner 批准记录 `GOVERNANCE_APPROVAL_0004.md`（approval commit `d5947db83513f5e11c1ac264944382dcfe1ebcbe`，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`），已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达生效。
+- 纠正性追认记录 `GOVERNANCE_APPROVAL_0006.md`（PR #2 越权合并登记、GOV-APP-0004 限定纠正、PR 合并授权规则）。
 
-## 6. 批准字段（待审批后填写）
+## 6. 批准字段
 
-- **批准 commit（Approval commit）**：—
+- **批准 commit（Approval commit）**：`d5947db83513f5e11c1ac264944382dcfe1ebcbe`
 - **Decision Owner**：owner
-- **Reviewer（独立审核者）**：Reviewer-2（待独立审核）
-- **Governance Approver（治理批准者）**：owner（待批准）
-- **Approval Record**：—
-- **Effective Commit（生效 commit）**：—
+- **Reviewer（独立审核者）**：Reviewer-2（产品身份 WorkBuddy，模型版本 UNKNOWN；review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`；正式审核评论 `5035425502`）
+- **Governance Approver（治理批准者）**：owner
+- **Approval Record**：`GOVERNANCE_APPROVAL_0004.md`
+- **Corrective Record（纠正记录）**：`GOVERNANCE_APPROVAL_0006.md`
+- **Effective Commit（生效 commit）**：`5dfb881ae6e2b36b742b3c0187c377762d1c85cd`
 - **Affected Normative Documents**：`SOURCE_OF_TRUTH.md` §5.1、`SECURITY.md` §15（治理批准记录真实性）。`SECURITY.md` §8 为签名算法依据（referenced baseline；仅定义 policy bundle / SBOM 用途分离，未定义 capability token 的 purpose schema）。
 - **Supersedes / Superseded By**：无 / 无
 
