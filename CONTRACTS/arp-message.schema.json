@@ -7,7 +7,7 @@
     { "$ref": "arp-envelope.schema.json" },
 
     { "if": { "properties": { "message_type": { "const": "command" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "target", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "target", "capability_token_ref", "payload"],
       "properties": {
         "payload": {
           "type": "object",
@@ -22,24 +22,44 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "result" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "artifacts", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "artifacts", "capability_token_ref", "payload"],
       "properties": {
         "payload": {
           "type": "object",
           "required": ["result_status"],
           "properties": {
             "result_status": { "type": "string", "enum": ["success", "failure", "partial", "error"] },
-            "error_category": { "type": "string", "enum": ["validation", "authentication", "authorization", "protocol_incompatible", "adapter_unavailable", "timeout", "internal"] },
-            "error_message": { "type": "string", "minLength": 1 },
-            "retriable": { "type": "boolean" }
+            "error_code": { "type": "string", "minLength": 1 },
+            "category": { "type": "string", "enum": ["validation", "authentication", "authorization", "capability", "timeout", "transport", "external_state_unknown", "policy_denied", "budget_exhausted", "protocol_incompatible", "internal", "cancelled"] },
+            "retriable": { "type": "boolean" },
+            "retry_after": { "type": "integer", "minimum": 0 },
+            "safe_to_retry": { "type": "boolean" },
+            "external_state_known": { "type": "boolean" },
+            "details": { "type": "string" },
+            "evidence": { "type": "array", "items": { "$ref": "common-defs.schema.json#/$defs/identifier" } },
+            "terminal_recommendation": { "type": "string", "enum": ["safe_skip", "retry", "escalate", "abort_workflow", "abort_job", "manual_intervention", "none"] }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "description": "When result_status is error or failure, the full error object is required",
+              "if": { "properties": { "result_status": { "enum": ["error", "failure"] } } },
+              "then": {
+                "required": ["error_code", "category", "retriable", "retry_after", "safe_to_retry", "external_state_known", "details", "evidence", "terminal_recommendation"]
+              }
+            },
+            {
+              "description": "external_state_known=false MUST NOT coexist with safe_to_retry=true (no blind retry)",
+              "if": { "properties": { "external_state_known": { "const": false } } },
+              "then": { "properties": { "safe_to_retry": { "const": false } } }
+            }
+          ]
         }
       }
     } },
 
     { "if": { "properties": { "message_type": { "const": "status" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "capability_token_ref", "payload"],
       "properties": {
         "payload": {
           "type": "object",
@@ -55,7 +75,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "review.finding" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["finding_id", "fingerprint", "severity_candidates"],
@@ -71,7 +91,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "evidence" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "artifacts", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "artifacts", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["evidence_id"],
@@ -85,7 +105,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "policy.decision" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["policy_decision_id", "policy_version"],
@@ -100,7 +120,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "delivery.status" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "delivery_attempt_id", "idempotency_key", "attempt", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "delivery_attempt_id", "idempotency_key", "attempt", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["outbox_status"],
@@ -113,7 +133,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "reconciliation.request" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "delivery_attempt_id", "idempotency_key", "attempt", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "delivery_attempt_id", "idempotency_key", "attempt", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["reconciliation_mode"],
@@ -125,7 +145,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "reconciliation.result" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "delivery_attempt_id", "idempotency_key", "attempt", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "delivery_attempt_id", "idempotency_key", "attempt", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["reconciliation_outcome", "confirmed_external_state"],
@@ -138,7 +158,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "audit.event" } } }, "then": {
-      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["event_type"],
@@ -152,7 +172,7 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "cancellation" } } }, "then": {
-      "required": ["workflow_id", "job_id", "target", "capability_token_ref"],
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "target", "capability_token_ref", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["reason", "cascade"],
@@ -165,11 +185,11 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "resume" } } }, "then": {
-      "required": ["workflow_id", "job_id", "target", "resume_token", "checkpoint", "capability_token_ref"]
+      "required": ["workflow_id", "workflow_version", "job_id", "correlation_id", "target", "resume_token", "checkpoint", "capability_token_ref"]
     } },
 
     { "if": { "properties": { "message_type": { "const": "heartbeat" } } }, "then": {
-      "required": ["adapter_id", "session_id"],
+      "required": ["adapter_id", "session_id", "payload"],
       "properties": { "payload": {
         "type": "object",
         "properties": {
@@ -180,22 +200,22 @@
     } },
 
     { "if": { "properties": { "message_type": { "const": "capability.negotiation" } } }, "then": {
-      "required": ["adapter_id", "session_id"],
+      "required": ["adapter_id", "session_id", "payload"],
       "properties": { "payload": { "$ref": "adapter-capability.schema.json" } }
     } },
 
     { "if": { "properties": { "message_type": { "const": "lifecycle" } } }, "then": {
-      "required": ["adapter_id", "session_id"],
+      "required": ["adapter_id", "session_id", "payload"],
       "properties": { "payload": { "$ref": "adapter-lifecycle-event.schema.json" } }
     } },
 
     { "if": { "properties": { "message_type": { "const": "health_check" } } }, "then": {
-      "required": ["adapter_id", "session_id"],
+      "required": ["adapter_id", "session_id", "payload"],
       "properties": { "payload": { "$ref": "health-check.schema.json" } }
     } },
 
     { "if": { "properties": { "message_type": { "const": "capability_change" } } }, "then": {
-      "required": ["adapter_id", "session_id"],
+      "required": ["adapter_id", "session_id", "payload"],
       "properties": { "payload": {
         "type": "object",
         "required": ["capability_set_before", "capability_set_after"],

@@ -5,7 +5,7 @@
   "type": "object",
   "required": [
     "schema_version", "bundle_id", "policy_version",
-    "authorization_tiers", "scope_registry", "default_decision",
+    "authorization_tiers", "a5_policy", "scope_registry", "default_decision",
     "rules", "budgets", "loop_limits",
     "path_boundaries", "domain_boundaries", "credential_boundaries",
     "routing", "release_gates", "token_policy",
@@ -27,18 +27,29 @@
         },
         "additionalProperties": false
       },
-      "description": "Authorization tier to scope mapping per V1.1 §4.2; minItems 5 ensures A0–A4 tiers present (A5 is forbidden for tokens but must be registered)"
+      "description": "Authorization tier to scope mapping per V1.1 §4.2. MUST contain exactly one each of A0, A1, A2, A3, A4 (uniqueness/completeness is business validation since Draft 2020-12 cannot enforce exact-count-per-enum without contains). A5 is defined separately in a5_policy."
+    },
+    "a5_policy": {
+      "type": "object",
+      "required": ["default_deny", "capability_token_grantable", "requires_explicit_owner_authorization"],
+      "properties": {
+        "default_deny": { "type": "boolean", "const": true, "description": "A5 is default-deny; MUST be true" },
+        "capability_token_grantable": { "type": "boolean", "const": false, "description": "Capability tokens MUST NOT be granted at A5; MUST be false" },
+        "requires_explicit_owner_authorization": { "type": "boolean", "const": true, "description": "A5 requires explicit owner authorization; MUST be true" }
+      },
+      "additionalProperties": false,
+      "description": "Explicit A5 policy: A5 is default_deny, not capability-token-grantable, requires explicit owner authorization"
     },
     "scope_registry": {
       "type": "array",
       "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" },
       "uniqueItems": true,
-      "description": "Allowed scopes in this policy version; MUST be consistent with authorization_tiers allowed_scopes"
+      "description": "Allowed scopes in this policy version; MUST be consistent with authorization_tiers allowed_scopes (business validation)"
     },
     "default_decision": {
       "type": "string",
-      "enum": ["deny", "allow", "degraded"],
-      "description": "Default decision when no rule matches per V1.1 §4.3.1 decision ladder; SHOULD be deny (fail-closed)"
+      "enum": ["safe_skip", "conservative_default", "equivalent_fallback", "degraded_completion", "blocked_needs_policy_decision"],
+      "description": "V1.1 §4.3.1 ordered 5-step decision ladder (not simple allow/deny/degraded). Order is fixed: 1=safe_skip, 2=conservative_default, 3=equivalent_fallback, 4=degraded_completion, 5=blocked_needs_policy_decision. Simple 'allow' MUST NOT bypass this ladder."
     },
     "rules": {
       "type": "array",
@@ -56,31 +67,47 @@
         },
         "additionalProperties": false
       },
-      "description": "Policy rules; minItems 1; empty rules array MUST NOT substitute for a complete policy"
+      "description": "Policy rules; minItems 1; empty rules array MUST NOT substitute for a complete policy. rule scope items MUST be in scope_registry (business validation for cross-field consistency)."
     },
     "budgets": {
       "type": "array",
       "minItems": 3,
       "items": {
         "type": "object",
-        "required": ["budget_id", "scope", "max_value"],
+        "required": ["budget_id", "scope", "max_tokens", "max_usd"],
         "properties": {
           "budget_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
           "scope": { "type": "string", "enum": ["per_workflow", "per_project_daily", "global_daily"] },
-          "max_value": { "type": "number", "exclusiveMinimum": 0 },
-          "unit": { "type": "string", "enum": ["tokens", "usd"] }
+          "max_tokens": { "type": "integer", "minimum": 1, "description": "Token budget; absolute ceilings: per_workflow<=2000000, per_project_daily<=10000000, global_daily<=50000000 (business validation)" },
+          "max_usd": { "type": "number", "exclusiveMinimum": 0, "description": "USD budget; absolute ceilings: per_workflow<=10, per_project_daily<=50, global_daily<=200 (business validation)" }
         },
         "additionalProperties": false
       },
-      "description": "Three-layer budget per V1.1 §9.1; minItems 3 ensures all layers present"
+      "allOf": [
+        {
+          "description": "Exactly one per_workflow budget",
+          "contains": { "properties": { "scope": { "const": "per_workflow" } } }
+        },
+        {
+          "description": "Exactly one per_project_daily budget",
+          "contains": { "properties": { "scope": { "const": "per_project_daily" } } }
+        },
+        {
+          "description": "Exactly one global_daily budget",
+          "contains": { "properties": { "scope": { "const": "global_daily" } } }
+        }
+      ],
+      "description": "Three-layer budget per V1.1 §9.1; MUST contain exactly one each of per_workflow, per_project_daily, global_daily. Each layer expresses both max_tokens and max_usd. Absolute ceilings enforced via business validation."
     },
     "loop_limits": {
       "type": "object",
-      "required": ["max_retry_attempts", "max_fix_rounds", "max_execution_time_seconds"],
+      "required": ["max_delivery_attempts", "max_adapter_switches", "max_fix_rounds", "max_workflow_execution_seconds", "max_step_execution_seconds"],
       "properties": {
-        "max_retry_attempts": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "max_fix_rounds": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "max_execution_time_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 }
+        "max_delivery_attempts": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Max delivery attempts (V1.1 absolute ceiling: 10)" },
+        "max_adapter_switches": { "type": "integer", "minimum": 1, "maximum": 10, "description": "Max adapter switches (V1.1 absolute ceiling: 10)" },
+        "max_fix_rounds": { "type": "integer", "minimum": 1, "maximum": 5, "description": "Max fix rounds (V1.1 absolute ceiling: 5)" },
+        "max_workflow_execution_seconds": { "type": "integer", "minimum": 1, "maximum": 86400, "description": "Max workflow execution time (V1.1 absolute ceiling: 86400s = 24h)" },
+        "max_step_execution_seconds": { "type": "integer", "minimum": 1, "maximum": 14400, "description": "Max step execution time (V1.1 absolute ceiling: 14400s = 4h)" }
       },
       "additionalProperties": false
     },
@@ -133,9 +160,9 @@
       "required": ["max_ttl_seconds", "default_ttl_seconds", "clock_skew_seconds", "replay_cache_retention_seconds"],
       "properties": {
         "max_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Max token TTL; absolute ceiling 3600s (1h)" },
-        "default_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Default 900s (15min); MUST <= max_ttl_seconds" },
+        "default_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Default 900s (15min); MUST <= max_ttl_seconds (business validation)" },
         "clock_skew_seconds": { "type": "integer", "minimum": 0, "maximum": 300, "description": "Clock skew tolerance; absolute ceiling 300s" },
-        "replay_cache_retention_seconds": { "type": "integer", "minimum": 1, "description": "Retention MUST cover max_ttl + clock_skew" }
+        "replay_cache_retention_seconds": { "type": "integer", "minimum": 1, "description": "Retention MUST >= max_ttl + clock_skew (business validation)" }
       },
       "additionalProperties": false
     },
@@ -173,5 +200,5 @@
     "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
   },
   "additionalProperties": false,
-  "description": "Policy bundle content only; signed via external sidecar signature-manifest. No embedded target_hash or signature_manifest. target_hash = SHA-256 of this content's JCS canonical bytes (no self-reference exclusion)."
+  "description": "Policy bundle content only; signed via external sidecar signature-manifest. No embedded target_hash or signature_manifest. target_hash = SHA-256 of this content's JCS canonical bytes (no self-reference exclusion). Cross-field constraints (tier uniqueness/completeness, budget exact-once, scope consistency, token TTL ordering) are business validation beyond JSON Schema expressiveness."
 }

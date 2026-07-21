@@ -412,7 +412,7 @@ terminal_recommendation
 | §5 消息类型 | `arp-message.schema.json` | 各 message_type 的条件 payload 约束 |
 | §6 适配器能力协商 | `adapter-capability.schema.json` | 能力字段封闭枚举；禁止 `supports_exactly_once_claim` |
 | §7 生命周期 | `adapter-lifecycle-event.schema.json` | 状态枚举与迁移白名单 |
-| §8 错误模型 | `arp-message.schema.json` → `result` message payload | 错误类别枚举（`error_category`）与 `retriable` 语义；错误通过 `result` 消息 payload 中的 `result_status=error` 字段及 `error_category`、`error_message`、`retriable` 传达，不使用独立 `error` 消息类型 |
+| §8 错误模型 | `arp-message.schema.json` → `result` message payload | 错误通过 `result` 消息 payload 中 `result_status=error/failure` 条件要求完整错误对象（`error_code`、`category`、`retriable`、`retry_after`、`safe_to_retry`、`external_state_known`、`details`、`evidence`、`terminal_recommendation`）；`category` 枚举与 §8 完整对齐（12 类：validation/authentication/authorization/capability/timeout/transport/external_state_unknown/policy_denied/budget_exhausted/protocol_incompatible/internal/cancelled）；不使用独立 `error` 消息类型 |
 | §9 Cancel/Resume/Heartbeat/Health | `health-check.schema.json` | 健康检查必含 `capability_set` |
 | §10 投递语义 | `arp-message.schema.json` → delivery.status | outbox 状态枚举 |
 | §11 Finding/Evidence | `arp-message.schema.json` → review.finding / evidence payload | finding/evidence 必填字段 |
