@@ -55,7 +55,7 @@ Implemented By: executor（WorkBuddy）
 - **Decision Owner**：owner
 - **Reviewer（独立审核者）**：待独立审核（不得填写当前设计负责人）
 - **Governance Approver（治理批准者）**：owner（待批准）
-- **Approval Record**：— （未来：第四包视觉设计产物的 owner 批准使用 `GOVERNANCE_APPROVAL_0005.md`）
+- **Approval Record**：—（本 ADR 与本次治理一致性修订未来由 `GOVERNANCE_APPROVAL_0004.md` 批准；第四包视觉设计产物另由 `GOVERNANCE_APPROVAL_0005.md` 批准）
 - **Effective Commit（生效 commit）**：—
 - **Affected Normative Documents**：`ROADMAP.md`、`PHASE_0_EXIT_CRITERIA.md`
 - **Supersedes / Superseded By**：无 / 无
