@@ -36,6 +36,7 @@ Crypto/Runtime Validation Status: UNVALIDATED（设计契约，未实现）
 | 政策包 | `CONTRACTS/policy-bundle.schema.json` | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 |
 | 签名清单（detached） | `CONTRACTS/signature-manifest.schema.json` | `SECURITY.md` §8 |
 | capability token claims | `CONTRACTS/capability-token-claims.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED）；V1.1 §4.2.1 |
+| capability token protected header | `CONTRACTS/capability-token-protected-header.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED） |
 | capability token wire format | `CONTRACTS/capability-token.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED） |
 | capability token 撤销清单 | `CONTRACTS/capability-token-revocation.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED）；`SECURITY.md` §8 |
 | 共享定义 | `CONTRACTS/common-defs.schema.json` | 本文件 §3 |
@@ -121,7 +122,12 @@ Crypto/Runtime Validation Status: UNVALIDATED（设计契约，未实现）
 7. **防重放**：`jti` 在 replay cache（缓存至 `exp + clock skew`）中已见的 token MUST 被拒绝。
 8. **三层授权一致性**：token `scope`、`max_authorization_tier`、绑定对象（`workflow_id` / `job_id` / `adapter_id` / `session_id` / `policy_bundle_hash` / `policy_decision_id`）与实际调用上下文 MUST 一致；最终授权上限 = min(自报能力, 政策上限, 令牌权限)（V1.1 §4.2.1）。
 9. **禁止字段**：适配器能力上报 MUST NOT 含 `supports_exactly_once_claim`（V1.1 §10.2）；任何对象 MUST NOT 含明文密钥、真实 token 值（`PROTOCOL.md` §12）。
-10. **capability token 泄漏防护**：完整 token MUST NOT 出现在 ARP envelope payload、Event Ledger、日志或截图中；引用 MUST 仅含 `jti` 与 token 哈希（见 `PROTOCOL.md` §13 与 `SECURITY.md` §8.1）。
+10. **capability token 泄漏防护**：完整 token MUST NOT 出现在 ARP envelope payload、Event Ledger、日志或截图中；引用 MUST 仅含 `jti` 与 token 哈希（见 `PROTOCOL.md` §13 与 `SECURITY.md` §8.1）。JSON Schema 约束 `capability_token_ref` 仅含 `jti` 与 `token_hash`，但 envelope 层 `additionalProperties: true` 允许未知字段，故完整 token 通过未知字段携带的禁令属于 **business validation**（见 §8 第 9 步），JSON Schema 无法完全禁止。
+11. **policy-bundle 跨字段一致性（business validation）**：以下约束跨越多个字段，超出 JSON Schema 表达能力，校验方 MUST 在 business 层强制执行：
+    - `token_policy.default_ttl_seconds` MUST ≤ `token_policy.max_ttl_seconds`；
+    - `token_policy.replay_cache_retention_seconds` MUST ≥ `max_ttl_seconds + clock_skew_seconds`；
+    - `authorization_tiers` 不得重复（同 `tier` 值出现一次），且 MUST 包含 A0–A4 五档（A5 为禁止档但 MUST 登记）；
+    - `scope_registry` 与 `authorization_tiers[*].allowed_scopes` 中的 scope 引用 MUST 一致（不存在 registry 未登记的 scope）。
 
 ---
 
@@ -130,7 +136,7 @@ Crypto/Runtime Validation Status: UNVALIDATED（设计契约，未实现）
 校验方 MUST 按以下顺序校验，**任一失败即整体拒绝并按 `PROTOCOL.md` §12.1 记录脱敏审计事件**，MUST NOT 跳过、猜测或部分接受：
 
 1. **语法层**：UTF-8 JSON 解析；失败 → 拒绝（`validation`）。
-2. **dialect 层**：`$schema` 存在且为 Draft 2020-12；失败 → 拒绝。
+2. **dialect 层**：选定 Schema bundle 已完成 dialect / meta-schema 检查（每个 Schema 文件声明 `$schema: "https://json-schema.org/draft/2020-12/schema"`）；业务实例 MUST NOT 自带 `$schema` 字段，其 dialect 由校验方选定的 Schema 决定；失败 → 拒绝。
 3. **版本层**：`schema_version` 在支持集合内；`protocol_version` 协商区间重叠（PROTOCOL §1）；失败 → 拒绝（`protocol_incompatible`）。
 4. **结构层**：Schema 校验（必填、类型、封闭枚举、条件必填、`additionalProperties`）；失败 → 拒绝（`validation`）。
 5. **完整性层**：canonical hash 重算比对（envelope `content_hash`、detached `target_hash`）；失败 → 拒绝。
@@ -160,9 +166,12 @@ Crypto/Runtime Validation Status: UNVALIDATED（设计契约，未实现）
 
 1. `CONTRACTS/conformance/` 下的 fixtures 为**非执行型设计验收向量**：仅用于表达"该校验路径必须接受/拒绝"，供未来实现期 conformance 测试引用。
 2. 每个 fixture 为单个 JSON 文件，外壳字段：`fixture_id`、`target_schema`、`expected`（`valid` / `invalid`）、`expected_violation`（invalid 时必填：`layer` = `schema` / `business`，`rule` 描述命中的规范条款）、`note`、`instance`（被校验对象）。
-3. fixtures **MUST NOT** 包含真实密钥、测试私钥、真实 token 或真实有效签名；哈希与签名字段为结构示例（如 `sha256:` + 模式化 hex），`note` MUST 标注“结构示例，非密码学有效证据”。
+3. fixtures **MUST NOT** 包含真实密钥、测试私钥、真实 token 或真实有效签名；哈希与签名字段为结构示例（如 `sha256:` + 模式化 hex），`note` MUST 标注"结构示例，非密码学有效证据"。
 4. `expected=invalid` 的 fixture MUST 能被第 8 节校验顺序中的**恰好一层**确定性捕获；fixture 的 `expected_violation.layer` 标明该层（`schema` = 第 4 层结构校验；`business` = 第 5–9 层不变量校验）。
 5. fixtures 不替代独立审核与运行时测试；当前全部**未执行**（无实现），仅作设计验收登记。
+6. **business-layer fixtures 必须包含确定性上下文**：对于依赖运行时状态（replay、revocation、session 历史、active policy bundle hash、detached signature manifest 等）才能判定的 fixture，MUST 在 `validation_context` 字段中提供完整的判定上下文，使校验方仅依赖文件内的 `instance` + `validation_context` 即可确定性地接受或拒绝。
+7. `validation_context` 允许字段包括但不限于：`evaluation_time`（NumericDate）、`accepted_jti_state`（已接受 jti 列表）、`recovered_replay_state`（从持久化恢复的 replay 状态）、`revocation_list`（当前有效撤销清单）、`prior_session_history`（历史会话列表）、`policy_bundle_content`（当前 policy bundle 完整内容）、`detached_signature_manifest`（detached signature sidecar）、`expected_computed_target_hash`（预期计算哈希）、`active_policy_bundle_hash`（当前加载的 policy bundle 哈希）、`invocation_binding_context`（绑定上下文：workflow_id / job_id / adapter_id / session_id）。
+8. `expected=invalid` 的 business fixture MUST 在 `expected_violation` 中标明触发拒绝的具体 `validation_context` 字段与判定规则。
 
 ---
 

@@ -3,13 +3,21 @@
   "$id": "https://agent-relay-hub.dev/contracts/v1/policy-bundle.schema.json",
   "title": "Policy Bundle (Content Only — Signed via Sidecar Manifest)",
   "type": "object",
-  "required": ["schema_version", "bundle_id", "policy_version", "authorization_tiers", "scope_registry", "default_decision"],
+  "required": [
+    "schema_version", "bundle_id", "policy_version",
+    "authorization_tiers", "scope_registry", "default_decision",
+    "rules", "budgets", "loop_limits",
+    "path_boundaries", "domain_boundaries", "credential_boundaries",
+    "routing", "release_gates", "token_policy",
+    "safe_mode", "degraded_behavior", "adapter_allowlists"
+  ],
   "properties": {
     "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
     "bundle_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
     "policy_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
     "authorization_tiers": {
       "type": "array",
+      "minItems": 5,
       "items": {
         "type": "object",
         "required": ["tier", "allowed_scopes"],
@@ -19,17 +27,22 @@
         },
         "additionalProperties": false
       },
-      "description": "Authorization tier to scope mapping per V1.1 §4.2"
+      "description": "Authorization tier to scope mapping per V1.1 §4.2; minItems 5 ensures A0–A4 tiers present (A5 is forbidden for tokens but must be registered)"
     },
     "scope_registry": {
       "type": "array",
       "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" },
       "uniqueItems": true,
-      "description": "Allowed scopes in this policy version"
+      "description": "Allowed scopes in this policy version; MUST be consistent with authorization_tiers allowed_scopes"
     },
-    "default_decision": { "type": "string", "enum": ["deny", "allow", "degraded"], "description": "Default decision when no rule matches; SHOULD be deny (fail-closed)" },
+    "default_decision": {
+      "type": "string",
+      "enum": ["deny", "allow", "degraded"],
+      "description": "Default decision when no rule matches per V1.1 §4.3.1 decision ladder; SHOULD be deny (fail-closed)"
+    },
     "rules": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["rule_id", "effect"],
@@ -42,10 +55,12 @@
           "description": { "type": "string" }
         },
         "additionalProperties": false
-      }
+      },
+      "description": "Policy rules; minItems 1; empty rules array MUST NOT substitute for a complete policy"
     },
     "budgets": {
       "type": "array",
+      "minItems": 3,
       "items": {
         "type": "object",
         "required": ["budget_id", "scope", "max_value"],
@@ -57,29 +72,33 @@
         },
         "additionalProperties": false
       },
-      "description": "Three-layer budget per V1.1 §9.1"
+      "description": "Three-layer budget per V1.1 §9.1; minItems 3 ensures all layers present"
     },
     "loop_limits": {
       "type": "object",
+      "required": ["max_retry_attempts", "max_fix_rounds", "max_execution_time_seconds"],
       "properties": {
         "max_retry_attempts": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "max_fix_rounds": { "type": "integer", "minimum": 1 },
-        "max_execution_time_seconds": { "type": "integer", "minimum": 1 }
+        "max_fix_rounds": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "max_execution_time_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 }
       },
       "additionalProperties": false
     },
     "path_boundaries": {
       "type": "array",
+      "minItems": 1,
       "items": { "type": "string" },
       "description": "Allowed path prefixes per V1.1 §15"
     },
     "domain_boundaries": {
       "type": "array",
+      "minItems": 1,
       "items": { "type": "string" },
       "description": "Allowed domain whitelist per V1.1 §15"
     },
     "credential_boundaries": {
       "type": "object",
+      "required": ["store", "allowed_references"],
       "properties": {
         "store": { "type": "string", "enum": ["windows_credential_manager", "vault"] },
         "allowed_references": { "type": "array", "items": { "type": "string" } }
@@ -88,6 +107,7 @@
     },
     "routing": {
       "type": "object",
+      "required": ["adapter_priority", "fallback_chain"],
       "properties": {
         "adapter_priority": { "type": "string", "enum": ["official_api_sdk", "cli", "webhook", "playwright_dom", "uia", "visual_coordinate"] },
         "fallback_chain": { "type": "array", "items": { "type": "string" } }
@@ -96,6 +116,7 @@
     },
     "release_gates": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["gate_id", "gate_type"],
@@ -109,16 +130,18 @@
     },
     "token_policy": {
       "type": "object",
+      "required": ["max_ttl_seconds", "default_ttl_seconds", "clock_skew_seconds", "replay_cache_retention_seconds"],
       "properties": {
         "max_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Max token TTL; absolute ceiling 3600s (1h)" },
-        "default_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Default 900s (15min)" },
+        "default_ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 3600, "description": "Default 900s (15min); MUST <= max_ttl_seconds" },
         "clock_skew_seconds": { "type": "integer", "minimum": 0, "maximum": 300, "description": "Clock skew tolerance; absolute ceiling 300s" },
-        "replay_cache_retention_seconds": { "type": "integer", "minimum": 1, "description": "Retention beyond exp+skew" }
+        "replay_cache_retention_seconds": { "type": "integer", "minimum": 1, "description": "Retention MUST cover max_ttl + clock_skew" }
       },
       "additionalProperties": false
     },
     "safe_mode": {
       "type": "object",
+      "required": ["trigger", "allowed_actions"],
       "properties": {
         "trigger": { "type": "string", "enum": ["policy_integrity_failure", "trust_root_failure", "manual"] },
         "allowed_actions": { "type": "array", "items": { "type": "string", "enum": ["A0_diagnostic"] } }
@@ -127,6 +150,7 @@
     },
     "degraded_behavior": {
       "type": "object",
+      "required": ["on_capability_loss", "on_adapter_crash_threshold"],
       "properties": {
         "on_capability_loss": { "type": "string", "enum": ["reroute", "safe_terminal"] },
         "on_adapter_crash_threshold": { "type": "integer", "minimum": 1, "maximum": 10 }
@@ -135,6 +159,7 @@
     },
     "adapter_allowlists": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["adapter_type", "allowed_capabilities"],

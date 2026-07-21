@@ -22,7 +22,7 @@
       "items": { "$ref": "common-defs.schema.json#/$defs/scope_registry" },
       "uniqueItems": true,
       "minItems": 1,
-      "description": "Closed scope registry; unknown scopes MUST be rejected"
+      "description": "Closed scope registry; unknown scopes MUST be rejected. Scope items MUST be allowed by max_authorization_tier (see allOf tier/scope rules below)."
     },
     "max_authorization_tier": {
       "$ref": "common-defs.schema.json#/$defs/token_max_tier",
@@ -40,13 +40,81 @@
   "additionalProperties": false,
   "allOf": [
     {
-      "description": "Tier/scope co-occurrence: higher tiers must include required scopes",
-      "if": { "properties": { "max_authorization_tier": { "const": "A3" } } },
-      "then": { "properties": { "scope": { "contains": { "enum": ["git:commit", "git:push", "pr:create"] } } } }
+      "description": "A0 tier: scope MUST NOT contain any tier above A0 (forbidden: review:request, plan:generate, workflow:execute, artifact:write, message:send, git:commit, git:push, pr:create, deploy:staging)",
+      "if": { "properties": { "max_authorization_tier": { "const": "A0" } } },
+      "then": {
+        "properties": {
+          "scope": {
+            "not": {
+              "anyOf": [
+                { "contains": { "const": "review:request" } },
+                { "contains": { "const": "plan:generate" } },
+                { "contains": { "const": "workflow:execute" } },
+                { "contains": { "const": "artifact:write" } },
+                { "contains": { "const": "message:send" } },
+                { "contains": { "const": "git:commit" } },
+                { "contains": { "const": "git:push" } },
+                { "contains": { "const": "pr:create" } },
+                { "contains": { "const": "deploy:staging" } }
+              ]
+            }
+          }
+        }
+      }
     },
     {
-      "if": { "properties": { "max_authorization_tier": { "const": "A4" } } },
-      "then": { "properties": { "scope": { "contains": { "const": "deploy:staging" } } } }
+      "description": "A1 tier: scope MUST NOT contain any tier above A1 (forbidden: workflow:execute, artifact:write, message:send, git:commit, git:push, pr:create, deploy:staging)",
+      "if": { "properties": { "max_authorization_tier": { "const": "A1" } } },
+      "then": {
+        "properties": {
+          "scope": {
+            "not": {
+              "anyOf": [
+                { "contains": { "const": "workflow:execute" } },
+                { "contains": { "const": "artifact:write" } },
+                { "contains": { "const": "message:send" } },
+                { "contains": { "const": "git:commit" } },
+                { "contains": { "const": "git:push" } },
+                { "contains": { "const": "pr:create" } },
+                { "contains": { "const": "deploy:staging" } }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "A2 tier: scope MUST NOT contain any tier above A2 (forbidden: git:commit, git:push, pr:create, deploy:staging)",
+      "if": { "properties": { "max_authorization_tier": { "const": "A2" } } },
+      "then": {
+        "properties": {
+          "scope": {
+            "not": {
+              "anyOf": [
+                { "contains": { "const": "git:commit" } },
+                { "contains": { "const": "git:push" } },
+                { "contains": { "const": "pr:create" } },
+                { "contains": { "const": "deploy:staging" } }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "A3 tier: scope MUST NOT contain A4 deploy:staging (forbidden: deploy:staging only)",
+      "if": { "properties": { "max_authorization_tier": { "const": "A3" } } },
+      "then": {
+        "properties": {
+          "scope": {
+            "not": {
+              "anyOf": [
+                { "contains": { "const": "deploy:staging" } }
+              ]
+            }
+          }
+        }
+      }
     }
   ]
 }

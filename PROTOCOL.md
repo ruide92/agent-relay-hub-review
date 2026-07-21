@@ -407,12 +407,12 @@ terminal_recommendation
 |---|---|---|
 | §1 协议版本 | `arp-envelope.schema.json` → `protocol_version` | 常量 `1`，Schema 校验确保 |
 | §2 标识符 | `arp-envelope.schema.json` → 标识符字段 | 字段定义与唯一性规则一致 |
-| §3 时间和序列化 | `common-defs.schema.json` → `rfc3339_timestamp` / `semver` | 时间格式与 schema_version 规则一致 |
+| §3 时间和序列化 | `common-defs.schema.json` → `utc_rfc3339` / `schema_version_v1` | 时间格式与 schema_version 规则一致 |
 | §4 Envelope | `arp-envelope.schema.json` | 公共必填、条件必填、integrity、未知字段保留 |
 | §5 消息类型 | `arp-message.schema.json` | 各 message_type 的条件 payload 约束 |
 | §6 适配器能力协商 | `adapter-capability.schema.json` | 能力字段封闭枚举；禁止 `supports_exactly_once_claim` |
 | §7 生命周期 | `adapter-lifecycle-event.schema.json` | 状态枚举与迁移白名单 |
-| §8 错误模型 | `arp-message.schema.json` → error payload | 错误类别枚举与 retriable 语义 |
+| §8 错误模型 | `arp-message.schema.json` → `result` message payload | 错误类别枚举（`error_category`）与 `retriable` 语义；错误通过 `result` 消息 payload 中的 `result_status=error` 字段及 `error_category`、`error_message`、`retriable` 传达，不使用独立 `error` 消息类型 |
 | §9 Cancel/Resume/Heartbeat/Health | `health-check.schema.json` | 健康检查必含 `capability_set` |
 | §10 投递语义 | `arp-message.schema.json` → delivery.status | outbox 状态枚举 |
 | §11 Finding/Evidence | `arp-message.schema.json` → review.finding / evidence payload | finding/evidence 必填字段 |

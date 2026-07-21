@@ -70,9 +70,9 @@ Token claims payload MUST 包含以下全部字段（见 `capability-token-claim
 | `iss` | ✓ | Issuer，固定 `arh:policy-engine`（唯一合法签发者） |
 | `aud` | ✓ | Audience，注册表 `arh:core` / `arh:adapter-host`（`MACHINE_READABLE_CONTRACTS.md` §5） |
 | `sub` | ✓ | Subject，适配器或角色身份 |
-| `iat` | ✓ | Issued At，RFC3339 UTC |
-| `nbf` | ✓ | Not Before，RFC3339 UTC；MUST ≤ `iat` |
-| `exp` | ✓ | Expiration Time，RFC3339 UTC；`exp − iat` MUST ≤ 最大 TTL |
+| `iat` | ✓ | Issued At，RFC 7519 NumericDate（整数秒） |
+| `nbf` | ✓ | Not Before，RFC 7519 NumericDate；MUST ≤ `iat` |
+| `exp` | ✓ | Expiration Time，RFC 7519 NumericDate；`exp − iat` MUST ≤ 最大 TTL |
 | `jti` | ✓ | Token ID，UUIDv4，全局唯一 |
 | `scope` | ✓ | 最小权限 scope 数组，每项 `<domain>:<action>`，须在 scope 注册表内（§5） |
 | `max_authorization_tier` | ✓ | 最高授权档位，仅允许 `A0`–`A4`；`A5` **MUST NOT** 由 token 授予（V1.1 §4.2） |
@@ -149,15 +149,15 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 
 验证方 MUST 按以下顺序校验 token，**任一失败即整体拒绝**：
 
-1. **形式检查**：JWS 三段式、BASE64URL 可解码；失败 → `validation`。
-2. **Protected header 检查**：`alg=ES256`、`typ=JWT`、`kid` 存在、`key_purpose=capability_token`；失败 → `validation`。
+1. **形式检查**：JWS 三段式（signature 段精确 86 base64url 字符）、BASE64URL 可解码；失败 → `validation`。
+2. **Protected header 检查**：解码 protected header 段，校验 `capability-token-protected-header.schema.json`：`alg=ES256`、`typ=arh-cap+jwt`、`kid` 存在、`key_purpose=capability_token`；失败 → `validation`。
 3. **签名验证**：`kid` 在可信钥集且未撤销；ECDSA P-256/SHA-256 验签；失败 → `authentication`。
-4. **Claims 结构校验**：`capability-token-claims.schema.json` 执行；失败 → `validation`。
+4. **Claims 结构校验**：解码 payload 段，执行 `capability-token-claims.schema.json` 校验（含 tier/scope 级联规则）；失败 → `validation`。
 5. **时间校验**：`nbf ≤ now+skew`、`now−skew ≤ exp`、`iat ≤ exp`、`exp−iat ≤ max_TTL`；失败 → `authorization`（过期/未生效）。
 6. **注册表校验**：`iss=arh:policy-engine`、`aud` 在 audience 注册表、`scope` 每项在 scope 注册表、`max_authorization_tier ≠ A5`；失败 → `authorization`。
 7. **绑定校验**：`workflow_id/job_id/adapter_id/session_id` 与上下文一致、`policy_bundle_hash` 与当前 bundle 一致；失败 → `authorization`。
 8. **撤销检查**：`jti` 不在最新有效撤销清单中；失败 → `authorization`（已撤销）。
-9. **防重放检查**：`jti` 不在 replay cache 中；通过后写入 replay cache（TTL=`exp+skew`）；失败 → `authorization`（重放）。
+9. **防重放检查**：`jti` 不在持久化 replay 状态（Event Ledger / SQLite）中；通过后写入持久化 replay 状态（TTL=`exp+skew`）；失败 → `authorization`（重放）。
 
 ### 2.13 失败路径
 
@@ -176,7 +176,7 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 
 - **COSE_Sign1 (RFC 8152)**：被否决。ARH 技术栈为 JSON/.NET，引入 CBOR 增加复杂度且无增益（见 §2.1）。
 - **自定义 signed JSON**：被否决。非标准、无库支持、安全审计成本高、易遗漏边界（见 §2.1）。
-- **将 token 签名混入 envelope integrity**：被否决。Envelope integrity 使用 detached signature manifest（PROTOCOL §4.3），token 需要独立的 wire format 以实现跨系统验证与标准库互操作。
+- **将 token 签名混入 envelope integrity**：被否决。Envelope integrity 使用 inline `integrity.signature`（PROTOCOL §4.3），与 token 的独立签名容器混用会模糊用途边界。Token 需要独立的 wire format（JWS）以实现跨系统验证与标准库互操作。Detached signature manifest（sidecar）用于 policy bundle / SBOM / revocation list，不用于 envelope 或 capability token。
 
 ## 4. 后果（Consequences）
 

@@ -17,7 +17,8 @@
       "type": "array",
       "items": { "$ref": "common-defs.schema.json#/$defs/capability_flag" },
       "uniqueItems": true,
-      "description": "Closed capability flag registry; delivery_semantics and max_payload_size are separate top-level properties, NOT capability flags"
+      "minItems": 1,
+      "description": "Closed capability flag registry; minItems 1; delivery_semantics and max_payload_size are separate top-level properties, NOT capability flags"
     },
     "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
     "max_payload_size": { "type": "integer", "minimum": 0 },
@@ -31,9 +32,32 @@
   },
   "allOf": [
     {
+      "description": "supports_reconciliation requires delivery_semantics=at_least_once_attempts",
       "if": { "properties": { "capability_set": { "contains": { "const": "supports_reconciliation" } } } },
-      "then": { "properties": { "delivery_semantics": { "const": "at_least_once_attempts" } } },
-      "description": "If supports_reconciliation is reported, delivery_semantics should be at_least_once_attempts"
+      "then": {
+        "required": ["delivery_semantics"],
+        "properties": { "delivery_semantics": { "const": "at_least_once_attempts" } }
+      }
+    },
+    {
+      "description": "execute capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "contains": { "const": "execute" } } } },
+      "then": { "required": ["delivery_semantics", "max_payload_size"] }
+    },
+    {
+      "description": "send capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "contains": { "const": "send" } } } },
+      "then": { "required": ["delivery_semantics", "max_payload_size"] }
+    },
+    {
+      "description": "upload_artifact capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "contains": { "const": "upload_artifact" } } } },
+      "then": { "required": ["delivery_semantics", "max_payload_size"] }
+    },
+    {
+      "description": "stream capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "contains": { "const": "stream" } } } },
+      "then": { "required": ["delivery_semantics", "max_payload_size"] }
     }
   ]
 }
