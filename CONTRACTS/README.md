@@ -30,13 +30,26 @@
 
 ## conformance/ 目录
 
-`conformance/` 下的 JSON fixtures 为非执行型设计验收向量，用于表达"该校验路径必须接受/拒绝"。当前全部未执行（无实现）。详见 `MACHINE_READABLE_CONTRACTS.md` §10。
+`conformance/` 下的 JSON fixtures 为非执行型设计验收向量，用于表达"该校验路径必须接受/拒绝"。当前 60 个 fixtures（27 valid + 33 invalid），详见 `MACHINE_READABLE_CONTRACTS.md` §10。
 
 ## 当前状态
 
 - Phase 0：`OPEN / NOT_READY`
 - Phase 1：`NOT AUTHORIZED`
 - Code Status：`NO PRODUCT CODE`
-- Validation Status：`UNVALIDATED`
+- Schema count：**12** 个 JSON Schema 文件
+- Fixture count：**60** 个 conformance fixtures（27 valid + 33 invalid）
+
+### 分层 Validation Status
+
+| 层 | 状态 | 说明 |
+|---|---|---|
+| Static Precheck | `PASS` | JSON 语法（72 文件）、$id 唯一性（12 ID）、$ref 可解析性（98 ref）、duplicate-key 检测（72 文件，0 重复键）、atomic preflight（UUIDv4/hash/base64url/required） |
+| Schema Meta-Validation | `SCHEMA_META_VALIDATION_NOT_RUN` | 无预装 Draft 2020-12 validator；未安装依赖 |
+| Fixture Execution | `SCHEMA_META_VALIDATION_NOT_RUN` | 同上；60 个 fixtures 未通过 Draft 2020-12 validator 运行；仅通过 stdlib atomic preflight 检查 |
+| Crypto/Runtime Validation | `UNVALIDATED` | 设计契约，未实现；签名/验签/replay/revocation 均未运行 |
+
+> **诚实声明**：Static precheck（含 atomic preflight）**不替代**完整 JSON Schema Draft 2020-12 validation。`SCHEMA_META_VALIDATION_NOT_RUN` 表示无 Draft 2020-12 validator 可用。不得声称 60/60 fixture validation PASS。
+
 - 预期批准编号：`GOVERNANCE_APPROVAL_0007`（**本轮未创建**）
 - `GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
