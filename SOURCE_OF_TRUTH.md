@@ -104,6 +104,7 @@
   - `GOVERNANCE_APPROVAL_0001.md`：批准 Phase 0 Source of Truth **第一包——治理与权威体系**，target commit `cf8e66b…`，effective commit `93dbdbb…`；
   - `GOVERNANCE_APPROVAL_0002.md`：批准 Phase 0 Source of Truth **第二包——实施契约、安全与退出门禁**，target commit `b8ef219…`；
   - `GOVERNANCE_APPROVAL_0003.md`：批准 Phase 0 Source of Truth **第三包——UX、UI 与交互契约**，target commit `b74e407…`。
+  - `GOVERNANCE_APPROVAL_0004.md`：批准 Phase 0 治理一致性修订与 ADR-0001 / ADR-0002 决策，target commit `fd2574c28843ee2885460cb191c735dd0d257d1a`，approval commit `d5947db83513f5e11c1ac264944382dcfe1ebcbe`，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`，review artifact `PR #1 评论 5035425502`；
 - 本小节仅补充治理记录分类规则，**不修改 SOURCE_OF_TRUTH.md 的其他设计规则**（第 1–4、6–10 节保持不变）。
 
 ---

@@ -59,8 +59,8 @@
 
 | ADR | 标题 | 状态 | 批准 commit |
 |-----|------|------|-------------|
-| ADR-0001 | 治理批准真实性 | PROPOSED | — |
-| ADR-0002 | 视觉设计基线作为 Phase 1 UI 实现入口门禁 | PROPOSED | — |
+| ADR-0001 | 治理批准真实性 | ACCEPTED | d5947db83513f5e11c1ac264944382dcfe1ebcbe |
+| ADR-0002 | 视觉设计基线作为 Phase 1 UI 实现入口门禁 | ACCEPTED | d5947db83513f5e11c1ac264944382dcfe1ebcbe |
 
 ---
 
