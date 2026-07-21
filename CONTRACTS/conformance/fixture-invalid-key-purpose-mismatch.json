@@ -1,0 +1,26 @@
+{
+  "fixture_id": "invalid-key-purpose-mismatch",
+  "target_schema": "CONTRACTS/signature-manifest.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "signature entry key_purpose MUST match target_type (signature-manifest allOf if-then: key_purpose=sbom requires target_type=sbom)"
+  },
+  "note": "Signature manifest entry has key_purpose=sbom but target_type=policy_bundle, violating the allOf if-then conditional in signature-manifest.schema.json. target_hash is structural; 结构示例，非密码学有效证据.",
+  "instance": {
+    "schema_version": "1.0.0",
+    "manifest_id": "sigman-0040",
+    "signatures": [
+      {
+        "key_id": "key-sbom-0001",
+        "key_purpose": "sbom",
+        "algorithm": "ES256",
+        "schema_version": "1.0.0",
+        "target_type": "policy_bundle",
+        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        "signed_at": "2026-07-22T00:00:00Z",
+        "signature_value": "MEUCIFB0cnVjdHVyZV9leGFtcGxlX3NpZ25hdHVyZV92YWx1ZV9ub3RfY3J5cHRvZ3JhcGhpY2FsbHlfdmFsaWQK"
+      }
+    ]
+  }
+}

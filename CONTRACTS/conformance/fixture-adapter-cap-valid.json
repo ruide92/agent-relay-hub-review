@@ -1,0 +1,15 @@
+{
+  "fixture_id": "adapter-cap-valid",
+  "target_schema": "CONTRACTS/adapter-capability.schema.json",
+  "expected": "valid",
+  "note": "Valid adapter capability report submitted during negotiation. supports_exactly_once_claim is correctly absent; capability_set is non-empty and unique. No hash or signature fields.",
+  "instance": {
+    "schema_version": "1.0.0",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0003",
+    "supported_protocol_versions": [1],
+    "capability_set": ["send", "receive", "health_check", "supports_idempotency_key"],
+    "delivery_semantics": "at_least_once_attempts",
+    "max_payload_size": 1048576
+  }
+}

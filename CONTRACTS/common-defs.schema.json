@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/common-defs.schema.json",
+  "title": "ARH Common Definitions",
+  "description": "Shared atomic definitions reused across all ARH machine-readable contract schemas (Draft 2020-12).",
+  "type": "object",
+  "$defs": {
+    "rfc3339_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC RFC3339 timestamp, e.g. 2026-07-22T00:00:00Z"
+    },
+    "sha256_hex": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 hash string in sha256:<lowercase-hex> format"
+    },
+    "bare_sha256_hex": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Bare 64-character lowercase hex SHA-256 digest"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "General-purpose unique identifier string"
+    },
+    "key_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Signing key identifier"
+    },
+    "jti": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Capability token unique identifier (JWT jti claim)"
+    },
+    "scope_entry": {
+      "type": "string",
+      "pattern": "^[a-z_]+:[a-z_]+$",
+      "description": "Scope entry in domain:action format"
+    },
+    "authorization_tier": {
+      "type": "string",
+      "enum": ["A0", "A1", "A2", "A3", "A4", "A5"],
+      "description": "Authorization tier per V1.1 §4.2"
+    },
+    "security_classification": {
+      "type": "string",
+      "enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"],
+      "description": "Security classification per SECURITY.md §14"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "command", "result", "status", "heartbeat", "cancellation", "resume",
+        "review.finding", "evidence", "policy.decision", "delivery.status",
+        "reconciliation.request", "reconciliation.result", "audit.event",
+        "capability_change", "capability.negotiation", "lifecycle", "health_check"
+      ],
+      "description": "ARP message/event type per PROTOCOL.md §5"
+    },
+    "lifecycle_state": {
+      "type": "string",
+      "enum": ["LOADING", "NEGOTIATING", "READY", "BUSY", "DEGRADED", "STOPPING", "STOPPED", "FAILED"],
+      "description": "Adapter lifecycle state per V1.1 §20.1 / PROTOCOL.md §7"
+    },
+    "delivery_semantics": {
+      "type": "string",
+      "enum": ["at_least_once_attempts", "at_most_once_attempt", "unknown"],
+      "description": "Delivery semantics per PROTOCOL.md §6"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version MAJOR.MINOR.PATCH"
+    },
+    "namespaced_extension_key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*\\.[a-z][a-z0-9_]*$",
+      "description": "Dotted namespace key for extensions container"
+    },
+    "extensions_container": {
+      "type": "object",
+      "description": "Namespaced extensions; keys MUST match namespaced_extension_key pattern",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9]*\\.[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": true
+    },
+    "base64url_string": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Base64URL-encoded string (no padding)"
+    }
+  }
+}

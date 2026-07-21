@@ -1,0 +1,25 @@
+{
+  "fixture_id": "revocation-valid",
+  "target_schema": "CONTRACTS/capability-token-revocation.schema.json",
+  "expected": "valid",
+  "note": "Valid capability-token revocation list issued by arh:policy-engine with one revoked jti. target_hash and signature_manifest_ref use structural examples; 结构示例，非密码学有效证据.",
+  "instance": {
+    "schema_version": "1.0.0",
+    "list_id": "crl-0001",
+    "list_version": 3,
+    "issuer": "arh:policy-engine",
+    "revoked_jtis": [
+      {
+        "jti": "00000000-0000-4000-8000-000000000010",
+        "revoked_at": "2026-07-22T00:10:00Z",
+        "reason": "key_compromised"
+      }
+    ],
+    "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "signature_manifest_ref": {
+      "manifest_id": "sigman-0010",
+      "key_id": "key-crl-0001",
+      "key_purpose": "capability_token_revocation"
+    }
+  }
+}

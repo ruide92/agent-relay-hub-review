@@ -1,0 +1,18 @@
+{
+  "fixture_id": "invalid-health-no-capability-set",
+  "target_schema": "CONTRACTS/health-check.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "capability_set is a required field of health-check (health-check.schema.json required list)"
+  },
+  "note": "The health-check instance is missing the required capability_set field, so JSON Schema rejects it for missing required property. The schema description notes that capability_set MUST NOT be empty and MUST be present. No hash or signature fields.",
+  "instance": {
+    "schema_version": "1.0.0",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0060",
+    "status": "degraded",
+    "last_success_time": "2026-07-22T00:00:00Z",
+    "version": "1.0.0"
+  }
+}

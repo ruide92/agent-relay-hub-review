@@ -1,0 +1,27 @@
+{
+  "fixture_id": "invalid-audience-mismatch",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "aud MUST be in audience registry enum [arh:core, arh:adapter-host] (capability-token-claims.schema.json)"
+  },
+  "note": "aud is set to evil:third-party, which is not in the aud enum, so the JSON Schema enum check rejects it. policy_bundle_hash is structural; 结构示例，非密码学有效证据.",
+  "instance": {
+    "iss": "arh:policy-engine",
+    "aud": "evil:third-party",
+    "sub": "adapter.worker.primary",
+    "iat": "2026-07-22T00:00:00Z",
+    "nbf": "2026-07-22T00:00:00Z",
+    "exp": "2026-07-22T01:00:00Z",
+    "jti": "00000000-0000-4000-8000-000000000031",
+    "scope": ["repo:read"],
+    "max_authorization_tier": "A1",
+    "workflow_id": "wf-0031",
+    "job_id": "job-0031",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0031",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "policy_decision_id": "pd-0031"
+  }
+}

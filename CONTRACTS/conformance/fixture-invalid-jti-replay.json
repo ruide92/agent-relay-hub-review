@@ -1,0 +1,27 @@
+{
+  "fixture_id": "invalid-jti-replay",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "jti MUST NOT be reused; token rejected because jti is already present in the replay cache (PROTOCOL §2 idempotency / replay protection)"
+  },
+  "note": "All structural fields conform to the schema, but jti 00000000-0000-4000-8000-000000000033 has already been seen by the verifier. The schema-level check passes, but business-layer replay cache rejects the token. policy_bundle_hash is structural; 结构示例，非密码学有效证据.",
+  "instance": {
+    "iss": "arh:policy-engine",
+    "aud": "arh:core",
+    "sub": "adapter.worker.primary",
+    "iat": "2026-07-22T00:00:00Z",
+    "nbf": "2026-07-22T00:00:00Z",
+    "exp": "2026-07-22T01:00:00Z",
+    "jti": "00000000-0000-4000-8000-000000000033",
+    "scope": ["repo:read"],
+    "max_authorization_tier": "A1",
+    "workflow_id": "wf-0033",
+    "job_id": "job-0033",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0033",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "policy_decision_id": "pd-0033"
+  }
+}

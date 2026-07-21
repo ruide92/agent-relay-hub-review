@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/policy-bundle.schema.json",
+  "title": "Policy Bundle",
+  "description": "Signed policy bundle that defines authorization boundaries and default decision rules per SECURITY.md §6–§8, V1.1 §4.2 and §15.5. additionalProperties=false for fail-closed. Tampering MUST trigger POLICY_INTEGRITY_SAFE_MODE.",
+  "type": "object",
+  "required": ["schema_version", "bundle_id", "policy_version", "rules", "target_hash", "signature_manifest"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "bundle_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "policy_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule_id", "effect", "authorization_tier_ceiling"],
+        "properties": {
+          "rule_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+          "effect": { "type": "string", "enum": ["allow", "deny", "degraded"] },
+          "authorization_tier_ceiling": { "$ref": "common-defs.schema.json#/$defs/authorization_tier" },
+          "scope": {
+            "type": "array",
+            "items": { "$ref": "common-defs.schema.json#/$defs/scope_entry" }
+          },
+          "adapter_whitelist": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
+    "signature_manifest": {
+      "type": "object",
+      "description": "Detached signature manifest reference (SECURITY.md §8)",
+      "required": ["manifest_id", "key_id", "key_purpose", "algorithm", "target_hash", "signed_at"],
+      "properties": {
+        "manifest_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+        "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
+        "key_purpose": { "type": "string", "const": "policy_bundle" },
+        "algorithm": { "type": "string", "enum": ["ES256"] },
+        "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
+        "signed_at": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" }
+      },
+      "additionalProperties": false
+    },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "description": "Policy bundle is the authorization Source of Truth (ARCHITECTURE.md §2). key_purpose MUST be policy_bundle, distinct from SBOM and capability_token. Tampering MUST trigger POLICY_INTEGRITY_SAFE_MODE (V1.1 §15.5)."
+}

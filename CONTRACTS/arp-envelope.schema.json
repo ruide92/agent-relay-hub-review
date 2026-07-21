@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/arp-envelope.schema.json",
+  "title": "ARP Message Envelope",
+  "description": "Top-level envelope for all ARP v1 messages per PROTOCOL.md §1–§4. Unknown fields are retained (PROTOCOL §3) and MUST be included in canonical hash.",
+  "type": "object",
+  "required": [
+    "protocol_version", "schema_version", "message_id", "sender_role",
+    "recipient_role", "message_type", "created_at", "security_classification", "integrity"
+  ],
+  "properties": {
+    "protocol_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "ARP protocol version (PROTOCOL §1)"
+    },
+    "schema_version": {
+      "$ref": "common-defs.schema.json#/$defs/semver",
+      "description": "Structure version of this envelope (PROTOCOL §3)"
+    },
+    "message_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Globally unique, non-reusable message identifier (PROTOCOL §2)"
+    },
+    "sender_role": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Sender role, e.g. worker.primary, reviewer.security, policy.engine"
+    },
+    "recipient_role": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Recipient role"
+    },
+    "message_type": {
+      "$ref": "common-defs.schema.json#/$defs/message_type",
+      "description": "Message/event type (PROTOCOL §5)"
+    },
+    "created_at": {
+      "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp",
+      "description": "Creation timestamp"
+    },
+    "security_classification": {
+      "$ref": "common-defs.schema.json#/$defs/security_classification",
+      "description": "Security classification (SECURITY.md §14)"
+    },
+    "workflow_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Conditional required for workflow messages (PROTOCOL §4.1)"
+    },
+    "workflow_version": {
+      "$ref": "common-defs.schema.json#/$defs/semver",
+      "description": "Workflow version"
+    },
+    "job_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Job identifier within workflow"
+    },
+    "correlation_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Correlation context identifier"
+    },
+    "delivery_attempt_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Delivery attempt sequence identifier"
+    },
+    "idempotency_key": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Idempotency key, consistent across delivery attempts"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Delivery attempt count, starting from 1"
+    },
+    "target": {
+      "type": "object",
+      "description": "Action target (repository/branch/revision etc.)",
+      "additionalProperties": true
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "sha256", "uri"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
+          "uri": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      },
+      "description": "Content-addressed artifact attachments (V1.1 §11, §12.3)"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Structured payload, type-specific (PROTOCOL §4.1)",
+      "additionalProperties": true
+    },
+    "expires_at": {
+      "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp",
+      "description": "Message expiry; expired messages MUST NOT be treated as new results (V1.1 §11)"
+    },
+    "resume_token": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Resume token for resume messages (PROTOCOL §9)"
+    },
+    "checkpoint": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Checkpoint reference for resume"
+    },
+    "supersedes_message_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Message ID superseded by this message (PROTOCOL §4.4)"
+    },
+    "integrity": {
+      "type": "object",
+      "description": "Integrity object (PROTOCOL §4.3)",
+      "required": ["hash_algorithm", "content_hash"],
+      "properties": {
+        "hash_algorithm": {
+          "type": "string",
+          "enum": ["SHA-256"],
+          "description": "Hash algorithm; SHA-256 is the only allowed value"
+        },
+        "content_hash": {
+          "$ref": "common-defs.schema.json#/$defs/sha256_hex",
+          "description": "Canonical content hash of the message (excluding content_hash and signature from preimage)"
+        },
+        "signature_algorithm": {
+          "type": "string",
+          "enum": ["ES256"],
+          "description": "Signing algorithm; MUST co-occur with key_id, key_purpose, signature"
+        },
+        "key_id": {
+          "$ref": "common-defs.schema.json#/$defs/key_id",
+          "description": "Signing key identifier"
+        },
+        "key_purpose": {
+          "type": "string",
+          "enum": ["policy_bundle", "sbom", "capability_token_revocation", "envelope"],
+          "description": "Key purpose; MUST match target type (SECURITY.md §8)"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Detached signature value; MUST NOT be empty or placeholder"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": ["signature"],
+            "properties": { "signature": { "minLength": 1 } }
+          },
+          "then": {
+            "required": ["signature_algorithm", "key_id", "key_purpose"]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "required": ["signature"]
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["signature_algorithm"] },
+                { "required": ["key_id"] },
+                { "required": ["key_purpose"] }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "adapter_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Adapter logical identity, stable within registration cycle (PROTOCOL §2)"
+    },
+    "session_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier",
+      "description": "Session identity, unique per load/connection instance, not reused across restarts (PROTOCOL §2)"
+    },
+    "extensions": {
+      "$ref": "common-defs.schema.json#/$defs/extensions_container",
+      "description": "Namespaced extensions container"
+    }
+  },
+  "additionalProperties": true,
+  "description": "Envelope allows additionalProperties=true per PROTOCOL §3 (unknown fields retained for passthrough/audit). All present fields MUST be included in canonical hash."
+}

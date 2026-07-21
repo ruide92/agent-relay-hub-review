@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/health-check.schema.json",
+  "title": "Health Check Result",
+  "description": "Health check return schema per PROTOCOL.md §9 and V1.1 §20.1. MUST contain status, last_success_time, capability_set, version. additionalProperties=false for fail-closed.",
+  "type": "object",
+  "required": ["schema_version", "adapter_id", "session_id", "status", "last_success_time", "capability_set", "version"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "status": {
+      "type": "string",
+      "enum": ["healthy", "degraded", "failed"]
+    },
+    "last_success_time": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
+    "capability_set": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Current capability set; MUST NOT be empty"
+    },
+    "version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "description": "health_check schema MUST include capability_set (V1.1 §20.1, PROTOCOL §9). Missing capability_set is a schema-level rejection."
+}

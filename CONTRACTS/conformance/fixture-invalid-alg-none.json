@@ -1,0 +1,36 @@
+{
+  "fixture_id": "invalid-alg-none",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "protected_header.alg MUST be ES256 (const); alg=none is FORBIDDEN per capability-token.schema.json and SECURITY.md §8"
+  },
+  "note": "Capability token protected_header.alg is set to none instead of ES256, violating the const constraint and the alg=none prohibition. signature is a structural placeholder; 结构示例，非密码学有效证据.",
+  "instance": {
+    "protected_header": {
+      "alg": "none",
+      "typ": "JWT",
+      "kid": "key-cap-token-0002",
+      "key_purpose": "capability_token"
+    },
+    "payload": {
+      "iss": "arh:policy-engine",
+      "aud": "arh:core",
+      "sub": "adapter.worker.primary",
+      "iat": "2026-07-22T00:00:00Z",
+      "nbf": "2026-07-22T00:00:00Z",
+      "exp": "2026-07-22T01:00:00Z",
+      "jti": "00000000-0000-4000-8000-000000000020",
+      "scope": ["repo:read"],
+      "max_authorization_tier": "A1",
+      "workflow_id": "wf-0020",
+      "job_id": "job-0020",
+      "adapter_id": "adapter.worker.primary",
+      "session_id": "sess-0020",
+      "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "policy_decision_id": "pd-0020"
+    },
+    "signature": "c3RydWN0dXJhbF9leGFtcGxlX3NpZ25hdHVyZV92YWx1ZV9ub3RfY3J5cHRvZ3JhcGhpY2FsbHlfdmFsaWQK"
+  }
+}

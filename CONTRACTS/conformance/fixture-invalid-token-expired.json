@@ -1,0 +1,27 @@
+{
+  "fixture_id": "invalid-token-expired",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "exp MUST be after iat (capability token time consistency: exp < iat is invalid)"
+  },
+  "note": "exp (2026-07-22T00:30:00Z) is before iat (2026-07-22T01:00:00Z), violating business-layer time consistency. JSON Schema format checks only validate RFC3339 well-formedness, so this is a business-layer invariant. policy_bundle_hash is structural; 结构示例，非密码学有效证据.",
+  "instance": {
+    "iss": "arh:policy-engine",
+    "aud": "arh:core",
+    "sub": "adapter.worker.primary",
+    "iat": "2026-07-22T01:00:00Z",
+    "nbf": "2026-07-22T01:00:00Z",
+    "exp": "2026-07-22T00:30:00Z",
+    "jti": "00000000-0000-4000-8000-000000000030",
+    "scope": ["repo:read"],
+    "max_authorization_tier": "A1",
+    "workflow_id": "wf-0030",
+    "job_id": "job-0030",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0030",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "policy_decision_id": "pd-0030"
+  }
+}

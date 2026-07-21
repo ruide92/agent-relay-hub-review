@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/capability-token.schema.json",
+  "title": "Capability Token Wire Format (JWS Compact Serialization)",
+  "description": "Wire format for capability tokens using JWS Compact Serialization per ADR-0003 (PROPOSED). alg MUST be ES256; alg=none is FORBIDDEN. The token is a three-part dot-separated string: protected_header.payload.signature.",
+  "type": "object",
+  "required": ["protected_header", "payload", "signature"],
+  "properties": {
+    "protected_header": {
+      "type": "object",
+      "description": "JWS Protected Header (RFC 7515)",
+      "required": ["alg", "typ", "kid"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "const": "ES256",
+          "description": "ECDSA P-256 / SHA-256. alg=none is FORBIDDEN."
+        },
+        "typ": {
+          "type": "string",
+          "const": "JWT"
+        },
+        "kid": {
+          "$ref": "common-defs.schema.json#/$defs/key_id",
+          "description": "Key identifier for verification key lookup"
+        },
+        "key_purpose": {
+          "type": "string",
+          "const": "capability_token",
+          "description": "MUST be capability_token; MUST NOT be policy_bundle or sbom (SECURITY.md §8)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload": {
+      "$ref": "capability-token-claims.schema.json",
+      "description": "Claims payload; MUST conform to capability-token-claims schema"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JWS signature value (BASE64URL-encoded). MUST NOT be empty. Signing input: ASCII(BASE64URL(protected_header)) + '.' + ASCII(BASE64URL(payload)) per RFC 7515. Payload canonicalization uses JCS (RFC 8785) before signing; verifier MUST verify original bytes, MUST NOT re-serialize."
+    }
+  },
+  "additionalProperties": false,
+  "description": "JWS compact serialization container for capability tokens. Independent key_purpose=capability_token, distinct from policy_bundle/SBOM detached manifests. Canonicalization for token signing is JCS (RFC 8785), independent from envelope canonicalization (MACHINE_READABLE_CONTRACTS.md §6.5)."
+}

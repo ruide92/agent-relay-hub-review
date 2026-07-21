@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/adapter-capability.schema.json",
+  "title": "Adapter Capability Report",
+  "description": "Capability report that an adapter MUST submit during negotiation per PROTOCOL.md §6 and V1.1 §10.2. additionalProperties=false: only listed capabilities are allowed; supports_exactly_once_claim is FORBIDDEN.",
+  "type": "object",
+  "required": ["schema_version", "adapter_id", "session_id", "supported_protocol_versions", "capability_set"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "supported_protocol_versions": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 1 },
+      "minItems": 1
+    },
+    "capability_set": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "send", "receive", "stream", "upload_artifact", "download_artifact",
+          "execute", "cancel", "resume", "health_check", "structured_output",
+          "requires_unlocked_session", "requires_human_auth",
+          "supports_idempotency_key", "supports_status_query",
+          "supports_external_correlation_id", "supports_reconciliation",
+          "delivery_semantics", "max_payload_size"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Allowed capability fields per PROTOCOL §6 / V1.1 §10.2"
+    },
+    "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
+    "max_payload_size": { "type": "integer", "minimum": 0 },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "not": {
+    "properties": {
+      "capability_set": {
+        "contains": { "const": "supports_exactly_once_claim" }
+      }
+    }
+  },
+  "description": "Forbidden field supports_exactly_once_claim MUST NOT appear (V1.1 §10.2, PROTOCOL §6). additionalProperties=false enforces fail-closed."
+}

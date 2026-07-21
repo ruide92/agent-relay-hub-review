@@ -1,0 +1,19 @@
+{
+  "fixture_id": "invalid-lifecycle-transition",
+  "target_schema": "CONTRACTS/adapter-lifecycle-event.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "FAILED->READY is not in the PROTOCOL §7 transition whitelist; FAILED is terminal for the current instance and recovery MUST start at LOADING with a new session_id"
+  },
+  "note": "All schema-level fields conform, but the from_state=FAILED to to_state=READY transition is illegal per PROTOCOL §7 transition table. FAILED is a terminal state; recovery MUST create a new session_id and start from LOADING. No hash or signature fields.",
+  "instance": {
+    "schema_version": "1.0.0",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0050",
+    "from_state": "FAILED",
+    "to_state": "READY",
+    "timestamp": "2026-07-22T00:00:00Z",
+    "reason": "attempt to reuse failed adapter session"
+  }
+}

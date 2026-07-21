@@ -1,0 +1,24 @@
+{
+  "fixture_id": "invalid-schema-version",
+  "target_schema": "CONTRACTS/arp-envelope.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "schema_version 99.0.0 is not in the supported schema_version registry; envelope must be rejected as unsupported version"
+  },
+  "note": "schema_version 99.0.0 passes the semver pattern check but is not in the supported schema_version registry, so business-layer version-support check rejects it. content_hash is structural; 结构示例，非密码学有效证据.",
+  "instance": {
+    "protocol_version": 1,
+    "schema_version": "99.0.0",
+    "message_id": "msg-0010",
+    "sender_role": "policy.engine",
+    "recipient_role": "worker.primary",
+    "message_type": "heartbeat",
+    "created_at": "2026-07-22T00:00:00Z",
+    "security_classification": "INTERNAL",
+    "integrity": {
+      "hash_algorithm": "SHA-256",
+      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+    }
+  }
+}

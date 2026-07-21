@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/adapter-lifecycle-event.schema.json",
+  "title": "Adapter Lifecycle Event",
+  "description": "Lifecycle state event emitted by adapter per PROTOCOL.md §7 and V1.1 §20.1. additionalProperties=false for fail-closed. Legal transitions defined in PROTOCOL §7 transition table.",
+  "type": "object",
+  "required": ["schema_version", "adapter_id", "session_id", "from_state", "to_state", "timestamp"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "from_state": { "$ref": "common-defs.schema.json#/$defs/lifecycle_state" },
+    "to_state": { "$ref": "common-defs.schema.json#/$defs/lifecycle_state" },
+    "timestamp": { "$ref": "common-defs.schema.json#/$defs/rfc3339_timestamp" },
+    "reason": { "type": "string", "minLength": 1 },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "description": "Lifecycle events MUST conform to PROTOCOL §7 transition table. Business-layer validation MUST reject transitions not in the whitelist. FAILED is terminal for the current instance; recovery MUST create new session_id and start from LOADING."
+}

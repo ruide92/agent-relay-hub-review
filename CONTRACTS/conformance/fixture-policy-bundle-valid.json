@@ -1,0 +1,35 @@
+{
+  "fixture_id": "policy-bundle-valid",
+  "target_schema": "CONTRACTS/policy-bundle.schema.json",
+  "expected": "valid",
+  "note": "Valid policy bundle with one deny rule and one allow rule, signed with key_purpose=policy_bundle. target_hash fields are structural examples (sha256: patterned hex), not cryptographically valid; 结构示例，非密码学有效证据.",
+  "instance": {
+    "schema_version": "1.0.0",
+    "bundle_id": "bundle-0001",
+    "policy_version": "1.0.0",
+    "rules": [
+      {
+        "rule_id": "rule-deny-a5",
+        "effect": "deny",
+        "authorization_tier_ceiling": "A4",
+        "scope": ["repo:write"],
+        "description": "Deny write at A4 ceiling boundary"
+      },
+      {
+        "rule_id": "rule-allow-read",
+        "effect": "allow",
+        "authorization_tier_ceiling": "A2",
+        "scope": ["repo:read"]
+      }
+    ],
+    "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "signature_manifest": {
+      "manifest_id": "sigman-0020",
+      "key_id": "key-policy-0001",
+      "key_purpose": "policy_bundle",
+      "algorithm": "ES256",
+      "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "signed_at": "2026-07-22T00:00:00Z"
+    }
+  }
+}

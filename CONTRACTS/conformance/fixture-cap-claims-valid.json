@@ -1,0 +1,24 @@
+{
+  "fixture_id": "cap-claims-valid",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
+  "expected": "valid",
+  "note": "Valid capability-token-claims instance with minimum-privilege scope and A2 ceiling. policy_bundle_hash is a structural example (sha256: patterned hex), not a cryptographically valid digest; 结构示例，非密码学有效证据.",
+  "instance": {
+    "iss": "arh:policy-engine",
+    "aud": "arh:core",
+    "sub": "adapter.worker.primary",
+    "iat": "2026-07-22T00:00:00Z",
+    "nbf": "2026-07-22T00:00:00Z",
+    "exp": "2026-07-22T01:00:00Z",
+    "jti": "00000000-0000-4000-8000-000000000001",
+    "scope": ["repo:read", "repo:write"],
+    "max_authorization_tier": "A2",
+    "workflow_id": "wf-0001",
+    "job_id": "job-0001",
+    "adapter_id": "adapter.worker.primary",
+    "session_id": "sess-0001",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "policy_decision_id": "pd-0001",
+    "nonce": "nonce-0123456789"
+  }
+}

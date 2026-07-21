@@ -1,0 +1,25 @@
+{
+  "fixture_id": "invalid-hash-sig-contradiction",
+  "target_schema": "CONTRACTS/arp-envelope.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "integrity.signature present requires signature_algorithm, key_id, and key_purpose (arp-envelope allOf if-then)"
+  },
+  "note": "integrity has signature present but signature_algorithm/key_id/key_purpose are missing, violating the allOf if-then conditional in arp-envelope.schema.json. content_hash and signature are structural; 结构示例，非密码学有效证据.",
+  "instance": {
+    "protocol_version": 1,
+    "schema_version": "1.0.0",
+    "message_id": "msg-0011",
+    "sender_role": "policy.engine",
+    "recipient_role": "worker.primary",
+    "message_type": "heartbeat",
+    "created_at": "2026-07-22T00:00:00Z",
+    "security_classification": "INTERNAL",
+    "integrity": {
+      "hash_algorithm": "SHA-256",
+      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "signature": "c3RydWN0dXJhbF9leGFtcGxlX3NpZ25hdHVyZV92YWx1ZV9ub3RfY3J5cHRvZ3JhcGhpY2FsbHlfdmFsaWQK"
+    }
+  }
+}

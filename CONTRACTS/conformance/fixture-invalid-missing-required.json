@@ -1,0 +1,23 @@
+{
+  "fixture_id": "invalid-missing-required",
+  "target_schema": "CONTRACTS/arp-envelope.schema.json",
+  "expected": "invalid",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "arp-envelope required field message_id is missing (PROTOCOL §2)"
+  },
+  "note": "Envelope is missing the required message_id field, which is a top-level required field per arp-envelope.schema.json. content_hash is a structural sha256: example; 结构示例，非密码学有效证据.",
+  "instance": {
+    "protocol_version": 1,
+    "schema_version": "1.0.0",
+    "sender_role": "policy.engine",
+    "recipient_role": "worker.primary",
+    "message_type": "heartbeat",
+    "created_at": "2026-07-22T00:00:00Z",
+    "security_classification": "INTERNAL",
+    "integrity": {
+      "hash_algorithm": "SHA-256",
+      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+    }
+  }
+}

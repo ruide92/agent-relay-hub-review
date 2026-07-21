@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/arp-message.schema.json",
+  "title": "ARP Message Types and Payload Baseline",
+  "description": "Defines type-specific payload constraints for ARP messages per PROTOCOL.md §5, §8, §11. Extends arp-envelope with conditional requirements.",
+  "type": "object",
+  "allOf": [
+    { "$ref": "arp-envelope.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "message_type": {
+          "$ref": "common-defs.schema.json#/$defs/message_type"
+        },
+        "payload": {
+          "type": "object",
+          "description": "Type-specific structured payload",
+          "additionalProperties": true
+        }
+      },
+      "then": false
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "command" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["target"],
+        "properties": {
+          "target": {
+            "type": "object",
+            "required": ["repository"],
+            "properties": {
+              "repository": { "type": "string", "minLength": 1 },
+              "branch": { "type": "string" },
+              "revision": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "result" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["workflow_id", "job_id"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "review.finding" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["workflow_id", "job_id"],
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["finding_id", "fingerprint", "severity_candidates"],
+            "properties": {
+              "finding_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+              "fingerprint": { "type": "string", "minLength": 1 },
+              "severity_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+                },
+                "minItems": 1
+              },
+              "unresolved_reason": { "type": "string" },
+              "evidence_refs": {
+                "type": "array",
+                "items": { "$ref": "common-defs.schema.json#/$defs/identifier" }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "evidence" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["artifacts"],
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["evidence_id"],
+            "properties": {
+              "evidence_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+              "artifact_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+              "verifier": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "policy.decision" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["policy_decision_id", "policy_version"],
+            "properties": {
+              "policy_decision_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+              "policy_version": { "$ref": "common-defs.schema.json#/$defs/semver" },
+              "decision": { "type": "string", "enum": ["allow", "deny", "degraded"] },
+              "authorization_tier_ceiling": { "$ref": "common-defs.schema.json#/$defs/authorization_tier" }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "delivery.status" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["delivery_attempt_id", "idempotency_key", "attempt"],
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["outbox_status"],
+            "properties": {
+              "outbox_status": {
+                "type": "string",
+                "enum": ["PREPARED", "DISPATCHING", "ACKNOWLEDGED", "VERIFIED", "RECONCILIATION_REQUIRED"]
+              },
+              "external_state_known": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "capability_change" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["adapter_id", "session_id"],
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["capability_set_before", "capability_set_after"],
+            "properties": {
+              "capability_set_before": { "type": "array", "items": { "type": "string" } },
+              "capability_set_after": { "type": "array", "items": { "type": "string" } }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": { "const": "resume" }
+        },
+        "required": ["message_type"]
+      },
+      "then": {
+        "required": ["resume_token", "checkpoint"]
+      }
+    }
+  ],
+  "description": "Message type-specific payload constraints. Conditional requirements are enforced via allOf/if-then. Missing conditional required fields MUST cause validation failure (fail-closed, PROTOCOL §4.5)."
+}
