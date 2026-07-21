@@ -10,7 +10,7 @@ Reviewer: Reviewer-2（产品身份 WorkBuddy，模型版本 UNKNOWN；review_ru
 Governance Approver: owner
 Approval Record: GOVERNANCE_APPROVAL_0004.md
 Approval commit: d5947db83513f5e11c1ac264944382dcfe1ebcbe
-Effective Commit: PENDING_EFFECTIVE_COMMIT_BACKFILL
+Effective Commit: 5dfb881ae6e2b36b742b3c0187c377762d1c85cd
 
 > 本 ADR 已由独立 Reviewer-2 审核（`PASS`，review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准（`GOVERNANCE_APPROVAL_0004.md`）；Status 为 `ACCEPTED`，待晋级 PR 合并并可从 main 到达后生效。
 
