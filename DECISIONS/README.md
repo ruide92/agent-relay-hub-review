@@ -81,14 +81,32 @@
 
 ## 8. 独立审核证据要求（前瞻，自 GOVERNANCE_APPROVAL_0004 起适用）
 
-自 `GOVERNANCE_APPROVAL_0004.md` 起，所有治理批准所依赖的独立审核 MUST 在审核产物中记录以下要素（细则与 `ADR-0001` 第 8 节一致）：
+自 `GOVERNANCE_APPROVAL_0004.md` 起，所有治理批准所依赖的独立审核 MUST 在审核产物中记录以下要素（细则与 `ADR-0001` 第 8 节一致）。审核独立性由「审核上下文与变更实施上下文分离」+「完整可核验证据留痕」共同保证。
 
 1. **review target**：被审核的精确 commit 范围（base..head）与受影响文件清单；
-2. **reviewer / model identity**：独立审核者身份，含模型标识与版本（如适用）；
-3. **independent session / task ID**：与变更实施不同的独立会话或任务 ID；
-4. **not-participated-in-modification statement**：审核者未参与被审变更的实施；
-5. **direct-read-repo statement**：审核者直接读取仓库原文（commit / 文件正文 / diff），未依赖执行者报告；
-6. **complete review artifact / verdict**：完整审核产物（逐条 finding、严重度、修订要求）与明确结论（PASS / FIX_REQUIRED）。
+2. **reviewer / model identity**：独立审核者身份，含产品/模型标识；模型版本不可见时允许记 `UNKNOWN`，但不得猜测；
+3. **independent review context identifier**（平台无关，二选一，不得编造）：
+   - **(a) 原生平台 session / task ID**：平台暴露真实原生会话/任务 ID 时，MUST 记录真实值，不得伪造；
+   - **(b) fallback review context evidence**：平台不暴露原生 ID 时允许使用，但 MUST 同时记录以下全部内容——
+     - 明确声明「平台原生 session / task ID 不可得」；
+     - 审核开始前生成的唯一 `review_run_id`（UUIDv4）；
+     - 审核开始时间（UTC ISO-8601）；
+     - 独立干净工作区绝对路径，或平台可见 workspace 标识；
+     - repository URL；
+     - 精确 base SHA 与 target SHA；
+     - reviewer / product / model identity（版本不可见写 `UNKNOWN`，不猜测）；
+     - 未参与被审修改或指导的明确声明；
+     - 直接读取仓库 / git 对象、未依赖执行者报告的声明；
+     - 完整审核产物与明确 verdict；
+     - 正式记录后对应的 PR review / comment URL 或仓库审核产物路径。
+   - fallback 仅解决「平台不暴露原生 ID」的可追溯性问题，**不能**使 proposer / executor 或原执行会话获得独立 Reviewer 资格。
+4. **same-session self-review prohibition**：同一执行会话对自身执行的变更自审，MUST 判定为 `REVIEWER NOT INDEPENDENT`，无论是否提供上述字段；
+5. **provenance completeness**：原生 ID 与完整 fallback evidence 均缺失时，结论 MUST 为 `PROVENANCE_INCOMPLETE`；
+6. **not-participated-in-modification statement**：审核者未参与被审变更的实施；
+7. **direct-read-repo statement**：审核者直接读取仓库原文（commit / 文件正文 / diff），未依赖执行者报告；
+8. **complete review artifact / verdict**：完整审核产物（逐条 finding、严重度、修订要求）与明确结论（PASS / FIX_REQUIRED / PROVENANCE_INCOMPLETE / REVIEWER NOT INDEPENDENT）。
 
-- 上述要求**自 `GOVERNANCE_APPROVAL_0004.md` 起前瞻适用**，**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md`。
+约束：
+- 上述要求**自 `GOVERNANCE_APPROVAL_0004.md` 起前瞻适用**，**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md`；
+- 本规则不降低 review target、直接读仓库、完整 findings、角色分离与 owner 最终批准的要求；
 - 缺少上述要素的独立审核证据时，相关决策状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见第 3 节与 `SOURCE_OF_TRUTH.md` 第 10 节）。

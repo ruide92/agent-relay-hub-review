@@ -167,7 +167,7 @@
   4. **仓库内可追溯的批准记录**（如 `REVIEWER_2_FINAL_APPROVAL.md`、ADR 的 Approval Record）。
 - **owner 可提前委派治理批准角色**以避免每次人工介入，但委派本身必须明确：范围、期限、可撤销条件；委派记录须在仓库内可追溯。
 - **没有有效批准记录时，状态只能是 `PROPOSED`，不得标记 `ACCEPTED`**（适用于 ADR 与任何决策状态）。
-- **独立审核证据要求（前瞻，自 `GOVERNANCE_APPROVAL_0004.md` 起适用）**：自该记录起，治理批准所依赖的独立审核 MUST 在审核产物中记录——review target（精确 commit 范围与受影响文件）、reviewer / model identity、与变更实施不同的 independent session / task ID、未参与修改声明、直接读取仓库原文声明、完整审核产物与结论（PASS / FIX_REQUIRED）；要素细则见 `DECISIONS/README.md` 第 8 节。该要求**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md`。
+- **独立审核证据要求（前瞻，自 `GOVERNANCE_APPROVAL_0004.md` 起适用）**：自该记录起，治理批准所依赖的独立审核 MUST 在审核产物中记录 `independent review context identifier`（平台无关：原生 session/task ID 可得时记真实值、不得编造；平台不暴露时允许 fallback review context evidence，须同时含——平台原生 ID 不可得声明、`review_run_id`(UUIDv4，审核前生成)、UTC ISO-8601 开始时间、独立干净工作区绝对路径或平台可见 workspace 标识、repository URL、精确 base/target SHA、reviewer/product/model identity（版本不可见写 `UNKNOWN`，不猜测）、未参与被审修改或指导声明、直接读取仓库/git 对象声明、完整审核产物与明确 verdict、正式记录后 PR review/comment URL 或仓库审核产物路径）、review target、未参与修改声明、直接读取仓库原文声明、完整审核产物与结论（PASS / FIX_REQUIRED / PROVENANCE_INCOMPLETE / REVIEWER NOT INDEPENDENT）；同一执行会话自审 MUST 判 `REVIEWER NOT INDEPENDENT`，原生 ID 与完整 fallback 均缺失 MUST 为 `PROVENANCE_INCOMPLETE`，fallback 仅解决平台不暴露 ID 的可追溯性、不得使 executor 或原执行会话获独立 Reviewer 资格；要素细则见 `DECISIONS/README.md` 第 8 节。该要求**不追溯改写** `GOVERNANCE_APPROVAL_0001.md` / `_0002.md` / `_0003.md。
 
 ### 10.3 与 ADR 的衔接
 
