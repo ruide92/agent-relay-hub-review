@@ -7,7 +7,7 @@
     "protocol_version": 1,
     "schema_version": "1.0.0",
     "message_id": "MSG-001",
-    "sender_role": "policy.engine",
+    "sender_role": "reviewer",
     "recipient_role": "worker.primary",
     "message_type": "review.finding",
     "created_at": "2026-07-22T00:00:00Z",
@@ -26,7 +26,8 @@
       "severity_candidates": [
         "HIGH",
         "MEDIUM"
-      ]
+      ],
+      "finding_status": "OPEN"
     },
     "integrity": {
       "hash_algorithm": "SHA-256",

@@ -1,8 +1,12 @@
 {
-  "fixture_id": "message-evidence-valid",
+  "fixture_id": "invalid-evidence-missing-artifact-id",
   "target_schema": "CONTRACTS/arp-message.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据",
+  "expected": "invalid",
+  "note": "evidence payload missing artifact_id (now required)",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "evidence payload required: artifact_id"
+  },
   "instance": {
     "protocol_version": 1,
     "schema_version": "1.0.0",
@@ -29,7 +33,6 @@
     },
     "payload": {
       "evidence_id": "E-001",
-      "artifact_id": "A-001",
       "verifier": "verifier-01"
     },
     "integrity": {

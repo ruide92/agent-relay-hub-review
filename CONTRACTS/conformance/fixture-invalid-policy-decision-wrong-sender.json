@@ -1,36 +1,33 @@
 {
-  "fixture_id": "message-evidence-valid",
+  "fixture_id": "invalid-policy-decision-wrong-sender",
   "target_schema": "CONTRACTS/arp-message.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据",
+  "expected": "invalid",
+  "note": "policy.decision with sender_role=reviewer (must be policy.engine)",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "policy.decision sender_role must be const policy.engine"
+  },
   "instance": {
     "protocol_version": 1,
     "schema_version": "1.0.0",
     "message_id": "MSG-001",
-    "sender_role": "evidence_verifier",
+    "sender_role": "reviewer",
     "recipient_role": "worker.primary",
-    "message_type": "evidence",
+    "message_type": "policy.decision",
     "created_at": "2026-07-22T00:00:00Z",
     "security_classification": "INTERNAL",
     "workflow_id": "WF-001",
     "workflow_version": "1.0.0",
     "job_id": "JOB-001",
     "correlation_id": "CORR-001",
-    "artifacts": [
-      {
-        "name": "build.log",
-        "sha256": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-        "uri": "file:///tmp/build.log"
-      }
-    ],
     "capability_token_ref": {
       "jti": "01234567-89ab-4def-8123-abcdef123456",
       "token_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     },
     "payload": {
-      "evidence_id": "E-001",
-      "artifact_id": "A-001",
-      "verifier": "verifier-01"
+      "policy_decision_id": "pd-01",
+      "policy_version": "1.0.0",
+      "decision": "deny"
     },
     "integrity": {
       "hash_algorithm": "SHA-256",
