@@ -2,10 +2,10 @@
   "fixture_id": "invalid-capability-token-ref-missing",
   "target_schema": "CONTRACTS/arp-message.schema.json",
   "expected": "invalid",
-  "note": "command missing required capability_token_ref",
+  "note": "command missing capability_token_ref",
   "expected_violation": {
     "layer": "schema",
-    "rule": "command message_type requires capability_token_ref"
+    "rule": "command requires capability_token_ref"
   },
   "instance": {
     "protocol_version": 1,

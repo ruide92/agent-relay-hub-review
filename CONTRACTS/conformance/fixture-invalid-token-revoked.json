@@ -2,14 +2,15 @@
   "fixture_id": "invalid-token-revoked",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "Token jti is in revocation list",
+  "note": "Token jti is in prevalidated revocation list (schema-valid, sidecar-signed)",
   "expected_violation": {
     "layer": "business",
-    "rule": "§8 step 8: jti in revocation_list; token revoked"
+    "rule": "§8 step 8: jti in prevalidated revocation_list; token revoked"
   },
   "validation_context": {
     "evaluation_time": 1784678500,
     "revocation_list": {
+      "schema_version": "1.0.0",
       "list_id": "rl-001",
       "list_version": 1,
       "issuer": "arh:policy-engine",
@@ -18,6 +19,23 @@
           "jti": "01234567-89ab-4def-8123-abcdef123456",
           "revoked_at": "2026-07-22T00:01:00Z",
           "reason": "manual_revoke"
+        }
+      ]
+    },
+    "revocation_list_prevalidated": true,
+    "revocation_list_sidecar_manifest": {
+      "schema_version": "1.0.0",
+      "manifest_id": "sm-rl-001",
+      "signatures": [
+        {
+          "target_type": "capability_token_revocation",
+          "target_id": "rl-001",
+          "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+          "key_id": "arh-key-01",
+          "key_purpose": "capability_token_revocation",
+          "algorithm": "ES256",
+          "signed_at": "2026-07-22T00:01:00Z",
+          "signature_value": "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
         }
       ]
     }

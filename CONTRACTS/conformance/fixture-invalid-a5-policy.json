@@ -1,8 +1,12 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-a5-policy",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "a5_policy.default_deny must be true (const)",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "a5_policy.default_deny: const true; false is rejected"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -79,7 +83,7 @@
       }
     ],
     "a5_policy": {
-      "default_deny": true,
+      "default_deny": false,
       "capability_token_grantable": false,
       "requires_explicit_owner_authorization": true
     },

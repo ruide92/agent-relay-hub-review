@@ -2,10 +2,10 @@
   "fixture_id": "invalid-schema-version",
   "target_schema": "CONTRACTS/arp-envelope.schema.json",
   "expected": "invalid",
-  "note": "schema_version is 2.0.0 (not supported in v1)",
+  "note": "schema_version 2.0.0",
   "expected_violation": {
     "layer": "schema",
-    "rule": "schema_version_v1 is const 1.0.0; 2.0.0 is rejected (fail-closed)"
+    "rule": "schema_version_v1 const 1.0.0"
   },
   "instance": {
     "protocol_version": 1,

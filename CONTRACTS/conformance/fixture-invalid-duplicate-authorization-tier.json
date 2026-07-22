@@ -1,8 +1,15 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-duplicate-authorization-tier",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "Duplicate A0 tier (business validation: each tier exactly once)",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "authorization_tiers: A0 appears twice; each tier must appear exactly once"
+  },
+  "validation_context": {
+    "business_rule": "authorization_tiers: each of A0-A4 must appear exactly once"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -11,70 +18,31 @@
       {
         "tier": "A0",
         "allowed_scopes": [
-          "workflow:read",
-          "artifact:read",
-          "message:receive",
-          "adapter:health_check"
+          "workflow:read"
+        ]
+      },
+      {
+        "tier": "A0",
+        "allowed_scopes": [
+          "artifact:read"
         ]
       },
       {
         "tier": "A1",
         "allowed_scopes": [
-          "workflow:read",
-          "artifact:read",
-          "message:receive",
-          "review:request",
-          "plan:generate",
-          "adapter:health_check"
+          "review:request"
         ]
       },
       {
         "tier": "A2",
         "allowed_scopes": [
-          "workflow:read",
-          "artifact:read",
-          "artifact:write",
-          "message:send",
-          "message:receive",
-          "workflow:execute",
-          "review:request",
-          "plan:generate",
-          "adapter:health_check"
+          "workflow:execute"
         ]
       },
       {
         "tier": "A3",
         "allowed_scopes": [
-          "workflow:read",
-          "workflow:execute",
-          "artifact:read",
-          "artifact:write",
-          "message:send",
-          "message:receive",
-          "review:request",
-          "plan:generate",
-          "git:commit",
-          "git:push",
-          "pr:create",
-          "adapter:health_check"
-        ]
-      },
-      {
-        "tier": "A4",
-        "allowed_scopes": [
-          "workflow:read",
-          "workflow:execute",
-          "artifact:read",
-          "artifact:write",
-          "message:send",
-          "message:receive",
-          "review:request",
-          "plan:generate",
-          "git:commit",
-          "git:push",
-          "pr:create",
-          "deploy:staging",
-          "adapter:health_check"
+          "git:commit"
         ]
       }
     ],

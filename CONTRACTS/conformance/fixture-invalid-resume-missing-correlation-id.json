@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-workflow-version-missing",
+  "fixture_id": "invalid-resume-missing-correlation-id",
   "target_schema": "CONTRACTS/arp-message.schema.json",
   "expected": "invalid",
-  "note": "result missing workflow_version",
+  "note": "resume missing correlation_id",
   "expected_violation": {
     "layer": "schema",
-    "rule": "result requires workflow_version"
+    "rule": "resume requires correlation_id"
   },
   "instance": {
     "protocol_version": 1,
@@ -13,25 +13,21 @@
     "message_id": "MSG-001",
     "sender_role": "policy.engine",
     "recipient_role": "worker.primary",
-    "message_type": "result",
+    "message_type": "resume",
     "created_at": "2026-07-22T00:00:00Z",
     "security_classification": "INTERNAL",
     "workflow_id": "WF-001",
+    "workflow_version": "1.0.0",
     "job_id": "JOB-001",
-    "correlation_id": "CORR-001",
-    "artifacts": [
-      {
-        "name": "build.log",
-        "sha256": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-        "uri": "file:///tmp/build.log"
-      }
-    ],
+    "target": {
+      "repository": "owner/repo",
+      "branch": "main"
+    },
+    "resume_token": "rt-001",
+    "checkpoint": "cp-001",
     "capability_token_ref": {
       "jti": "01234567-89ab-4def-8123-abcdef123456",
       "token_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-    },
-    "payload": {
-      "result_status": "success"
     },
     "integrity": {
       "hash_algorithm": "SHA-256",

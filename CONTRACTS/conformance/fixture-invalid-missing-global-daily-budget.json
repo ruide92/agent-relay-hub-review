@@ -1,8 +1,12 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-missing-global-daily-budget",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "Missing global_daily budget (Schema: contains allOf)",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "budgets allOf: must contain one global_daily scope"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -123,12 +127,6 @@
         "scope": "per_project_daily",
         "max_tokens": 10000000,
         "max_usd": 50
-      },
-      {
-        "budget_id": "b-gd",
-        "scope": "global_daily",
-        "max_tokens": 50000000,
-        "max_usd": 200
       }
     ],
     "loop_limits": {

@@ -2,10 +2,10 @@
   "fixture_id": "invalid-missing-required",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "Missing required field: policy_decision_id",
+  "note": "Missing policy_decision_id",
   "expected_violation": {
     "layer": "schema",
-    "rule": "required field policy_decision_id is missing"
+    "rule": "required field policy_decision_id missing"
   },
   "instance": {
     "iss": "arh:policy-engine",

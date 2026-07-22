@@ -2,10 +2,10 @@
   "fixture_id": "invalid-hash-sig-contradiction",
   "target_schema": "CONTRACTS/arp-envelope.schema.json",
   "expected": "invalid",
-  "note": "integrity has signature_algorithm/key_id/key_purpose but no actual signature field",
+  "note": "sig fields without actual signature",
   "expected_violation": {
     "layer": "schema",
-    "rule": "integrity allOf: if signature NOT present then signature_algorithm/key_id/key_purpose MUST NOT be present"
+    "rule": "integrity allOf: if signature NOT present then sig fields MUST NOT be present"
   },
   "instance": {
     "protocol_version": 1,

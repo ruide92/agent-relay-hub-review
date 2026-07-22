@@ -1,8 +1,15 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-budget-exceeds-token-limit",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "per_workflow max_tokens exceeds V1.1 absolute ceiling 2,000,000 (business validation)",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "budgets: per_workflow max_tokens (3000000) > absolute ceiling 2000000"
+  },
+  "validation_context": {
+    "business_rule": "per_workflow max_tokens absolute ceiling: 2000000"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -115,7 +122,7 @@
       {
         "budget_id": "b-wf",
         "scope": "per_workflow",
-        "max_tokens": 2000000,
+        "max_tokens": 3000000,
         "max_usd": 10
       },
       {

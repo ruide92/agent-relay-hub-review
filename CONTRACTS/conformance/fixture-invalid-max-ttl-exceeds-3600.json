@@ -1,8 +1,12 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-max-ttl-exceeds-3600",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "max_ttl > 3600 absolute ceiling",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "token_policy.max_ttl_seconds: maximum is 3600"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -166,10 +170,10 @@
       }
     ],
     "token_policy": {
-      "max_ttl_seconds": 3600,
+      "max_ttl_seconds": 7200,
       "default_ttl_seconds": 900,
       "clock_skew_seconds": 60,
-      "replay_cache_retention_seconds": 3720
+      "replay_cache_retention_seconds": 7320
     },
     "safe_mode": {
       "trigger": "policy_integrity_failure",

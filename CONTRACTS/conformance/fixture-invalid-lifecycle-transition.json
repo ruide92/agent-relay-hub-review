@@ -2,10 +2,10 @@
   "fixture_id": "invalid-lifecycle-transition",
   "target_schema": "CONTRACTS/adapter-lifecycle-event.schema.json",
   "expected": "invalid",
-  "note": "STOPPED→READY is not a legal transition",
+  "note": "STOPPED→READY illegal",
   "expected_violation": {
     "layer": "schema",
-    "rule": "oneOf: STOPPED→READY is not in transition whitelist"
+    "rule": "oneOf: STOPPED→READY not in transition whitelist"
   },
   "instance": {
     "schema_version": "1.0.0",

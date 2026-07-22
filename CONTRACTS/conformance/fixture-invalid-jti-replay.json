@@ -5,7 +5,7 @@
   "note": "Token jti already in replay state",
   "expected_violation": {
     "layer": "business",
-    "rule": "§8 step 8: jti already in recovered_replay_state; token rejected as replay"
+    "rule": "§8 step 8: jti in recovered_replay_state; rejected as replay"
   },
   "validation_context": {
     "evaluation_time": 1784678500,

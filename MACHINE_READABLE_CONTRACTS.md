@@ -9,17 +9,19 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Schema count: 12
-Fixture count: 60 (27 valid + 33 invalid)
-Schema Static Check Status: PASS (JSON syntax; $id uniqueness; $ref resolvability; duplicate-key detection; atomic preflight)
-Schema Meta-Validation Status: SCHEMA_META_VALIDATION_NOT_RUN (no pre-installed Draft 2020-12 validator; no dependencies installed)
-Fixture Execution Status: SCHEMA_META_VALIDATION_NOT_RUN (same; 60 fixtures not run through Draft 2020-12 validator; 60/60 fixture PASS is NOT claimed)
+Fixture count: 81 (28 valid + 53 invalid)
+Schema Static Check Status: PASS (JSON syntax 93 files; $id uniqueness 12 IDs; $ref resolvability 99 refs; duplicate-key detection 93 files 0 dupes; atomic preflight)
+Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12; 12/12 compiled; strict=false for contains-without-type and relative $ref compatibility; validator: E:\omp-tools\json-schema-audit; no deps installed in repo)
+Fixture Execution Status: PASS (28/28 valid passed instance validation; 53/53 invalid correctly handled: schema-layer rejected, business/decoded-header-layer schema-valid but caught by corresponding layer)
+Business Semantic Validation Status: PASS (20 cross-field checks: tier uniqueness/completeness, budget exact-once/ceilings, TTL ordering, a5_policy 3 consts, loop_limits V1.1 bounds, default decision 5-step ladder, expired/revoked/blind-retry directional failure, target SHA-256 recomputation consistency)
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
 
 # MACHINE_READABLE_CONTRACTS.md（机器可读契约规范性总说明，提案 #0007）
 
 > 本文件是 Agent Relay Hub（ARH）全部机器可读契约（JSON Schema bundle）的**规范性总说明**。
-> 本文件与其登记的 `CONTRACTS/` Schema 均为 **Phase 0 设计契约（提案 #0007）**：**未实现、未运行验证、未获批准**。
+> 本文件与其登记的 `CONTRACTS/` Schema 均为 **Phase 0 设计契约（提案 #0007）**：**未实现、未获批准**。
+> Schema Meta-Validation 与 Fixture Execution 已在外部验证环境（Ajv 8.20.0 Draft 2020-12）中运行并 PASS，但 Crypto/Runtime Validation 仍 UNVALIDATED。
 > 本提案不授权 Phase 1，不授权编写产品代码；只有经独立审核与 owner 批准（预期 `GOVERNANCE_APPROVAL_0007`，本轮未创建）后，本文件才成为 Source of Truth。
 > 语义服从已批准 V1.1（`AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md`）、`PROTOCOL.md` 与 `SECURITY.md`，不得与它们冲突。
 
@@ -148,6 +150,8 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 8. **状态层**：撤销清单、replay cache、生命周期迁移白名单、session 复用禁止；失败 → 拒绝。
 9. **授权上下文层**：绑定对象与政策裁决一致性（`policy_bundle_hash` / `policy_decision_id` / 三层授权上限）；失败 → 拒绝（`authorization` / `policy_denied`）。
 
+> 注：JWS wire-format Schema（`capability-token.schema.json`）仅校验 compact serialization 字符串模式（三段 base64url + 86 字符签名段）。protected header 与 claims 的解码内容校验在第 6 层（签名层）的解码步骤执行，由 `capability-token-protected-header.schema.json` 与 `capability-token-claims.schema.json` 分别约束。fixture 中 `expected_violation.layer = "decoded-header"` 标明该层失败。
+
 ---
 
 ## 9. 规范文本与 Schema 冲突裁决
@@ -168,10 +172,10 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 ## 10. Fixture / conformance 证据规则
 
 1. `CONTRACTS/conformance/` 下的 fixtures 为**非执行型设计验收向量**：仅用于表达"该校验路径必须接受/拒绝"，供未来实现期 conformance 测试引用。
-2. 每个 fixture 为单个 JSON 文件，外壳字段：`fixture_id`、`target_schema`、`expected`（`valid` / `invalid`）、`expected_violation`（invalid 时必填：`layer` = `schema` / `business`，`rule` 描述命中的规范条款）、`note`、`instance`（被校验对象）。
+2. 每个 fixture 为单个 JSON 文件，外壳字段：`fixture_id`、`target_schema`、`expected`（`valid` / `invalid`）、`expected_violation`（invalid 时必填：`layer` = `schema` / `business` / `decoded-header`，`rule` 描述命中的规范条款）、`note`、`instance`（被校验对象）。
 3. fixtures **MUST NOT** 包含真实密钥、测试私钥、真实 token 或真实有效签名；哈希与签名字段为结构示例（如 `sha256:` + 模式化 hex），`note` MUST 标注"结构示例，非密码学有效证据"。
-4. `expected=invalid` 的 fixture MUST 能被第 8 节校验顺序中的**恰好一层**确定性捕获；fixture 的 `expected_violation.layer` 标明该层（`schema` = 第 4 层结构校验；`business` = 第 5–9 层不变量校验）。
-5. fixtures 不替代独立审核与运行时测试；当前全部**未执行**（无实现），仅作设计验收登记。
+4. `expected=invalid` 的 fixture MUST 能被第 8 节校验顺序中的**恰好一层**确定性捕获；fixture 的 `expected_violation.layer` 标明该层（`schema` = 第 4 层结构校验；`business` = 第 5–9 层不变量校验；`decoded-header` = 第 6 层签名层的 JWS 解码内容校验）。
+5. fixtures 不替代独立审核与运行时测试。当前 Schema Meta-Validation 与 Fixture Execution 已通过外部验证环境（Ajv 8.20.0 Draft 2020-12）运行并 PASS；Crypto/Runtime Validation 仍 UNVALIDATED（无实现）。
 6. **business-layer fixtures 必须包含确定性上下文**：对于依赖运行时状态（replay、revocation、session 历史、active policy bundle hash、detached signature manifest 等）才能判定的 fixture，MUST 在 `validation_context` 字段中提供完整的判定上下文，使校验方仅依赖文件内的 `instance` + `validation_context` 即可确定性地接受或拒绝。
 7. `validation_context` 允许字段包括但不限于：`evaluation_time`（NumericDate）、`accepted_jti_state`（已接受 jti 列表）、`recovered_replay_state`（从持久化恢复的 replay 状态）、`revocation_list`（当前有效撤销清单）、`prior_session_history`（历史会话列表）、`policy_bundle_content`（当前 policy bundle 完整内容）、`detached_signature_manifest`（detached signature sidecar）、`expected_computed_target_hash`（预期计算哈希）、`active_policy_bundle_hash`（当前加载的 policy bundle 哈希）、`invocation_binding_context`（绑定上下文：workflow_id / job_id / adapter_id / session_id）。
 8. `expected=invalid` 的 business fixture MUST 在 `expected_violation` 中标明触发拒绝的具体 `validation_context` 字段与判定规则。
@@ -180,6 +184,7 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 
 ## 11. 当前状态
 
-- 本契约包为 **PROPOSED** 设计契约；未实现、未运行验证（`Validation Status: UNVALIDATED`）。
+- 本契约包为 **PROPOSED** 设计契约；未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
+- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 编译）与 Fixture Execution（28/28 valid PASS、53/53 invalid 正确处理）已在外部验证环境运行并 PASS；Business Semantic Validation（20 项跨字段检查）PASS。验证环境为 `E:\omp-tools\json-schema-audit`，**未在仓库安装任何依赖**。
 - 本契约包的批准预期走 `GOVERNANCE_APPROVAL_0007`（**本轮未创建**）；`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
-- Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`。
+- 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 仍 `PROPOSED`。

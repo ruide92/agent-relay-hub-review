@@ -2,7 +2,7 @@
   "fixture_id": "invalid-a1-git-push",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "A1 + git:push — forbidden above A1 tier",
+  "note": "A1 + git:push — forbidden above A1",
   "expected_violation": {
     "layer": "schema",
     "rule": "A1 tier allOf: scope must NOT contain git:push"
@@ -16,7 +16,7 @@
     "exp": 1784679300,
     "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
-      "review:request",
+      "workflow:read",
       "git:push"
     ],
     "max_authorization_tier": "A1",

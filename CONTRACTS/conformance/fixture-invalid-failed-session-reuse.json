@@ -2,10 +2,10 @@
   "fixture_id": "invalid-failed-session-reuse",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "Token binds to session_id of a previously FAILED session; session_id must not be reused",
+  "note": "Token binds to FAILED session_id; session reuse forbidden",
   "expected_violation": {
     "layer": "business",
-    "rule": "§7 item 5: session_id belongs to prior FAILED session; MUST NOT be reused; recovery MUST create new session_id from LOADING"
+    "rule": "§7 item 5: session_id belongs to prior FAILED session; MUST NOT reuse"
   },
   "validation_context": {
     "evaluation_time": 1784678500,

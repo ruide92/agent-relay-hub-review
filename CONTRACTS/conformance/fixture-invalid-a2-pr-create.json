@@ -2,7 +2,7 @@
   "fixture_id": "invalid-a2-pr-create",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "A2 + pr:create — forbidden above A2 tier",
+  "note": "A2 + pr:create — forbidden above A2",
   "expected_violation": {
     "layer": "schema",
     "rule": "A2 tier allOf: scope must NOT contain pr:create"

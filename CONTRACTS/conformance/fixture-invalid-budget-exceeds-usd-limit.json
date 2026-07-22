@@ -1,8 +1,15 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-budget-exceeds-usd-limit",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "per_workflow max_usd exceeds V1.1 absolute ceiling $10 (business validation)",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "budgets: per_workflow max_usd (100) > absolute ceiling 10"
+  },
+  "validation_context": {
+    "business_rule": "per_workflow max_usd absolute ceiling: 10"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -116,7 +123,7 @@
         "budget_id": "b-wf",
         "scope": "per_workflow",
         "max_tokens": 2000000,
-        "max_usd": 10
+        "max_usd": 100
       },
       {
         "budget_id": "b-pd",

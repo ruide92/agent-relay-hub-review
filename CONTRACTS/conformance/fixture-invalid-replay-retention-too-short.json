@@ -1,8 +1,15 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-replay-retention-too-short",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "replay retention < max_ttl + clock_skew (business validation)",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "token_policy: replay_cache_retention_seconds (3000) < max_ttl (3600) + clock_skew (60) = 3660"
+  },
+  "validation_context": {
+    "business_rule": "replay_cache_retention_seconds MUST >= max_ttl + clock_skew"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -169,7 +176,7 @@
       "max_ttl_seconds": 3600,
       "default_ttl_seconds": 900,
       "clock_skew_seconds": 60,
-      "replay_cache_retention_seconds": 3720
+      "replay_cache_retention_seconds": 3000
     },
     "safe_mode": {
       "trigger": "policy_integrity_failure",

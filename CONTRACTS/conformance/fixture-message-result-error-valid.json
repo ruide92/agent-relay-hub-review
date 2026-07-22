@@ -1,12 +1,8 @@
 {
-  "fixture_id": "invalid-workflow-version-missing",
+  "fixture_id": "message-result-error-valid",
   "target_schema": "CONTRACTS/arp-message.schema.json",
-  "expected": "invalid",
-  "note": "result missing workflow_version",
-  "expected_violation": {
-    "layer": "schema",
-    "rule": "result requires workflow_version"
-  },
+  "expected": "valid",
+  "note": "结构示例，非密码学有效证据",
   "instance": {
     "protocol_version": 1,
     "schema_version": "1.0.0",
@@ -17,6 +13,7 @@
     "created_at": "2026-07-22T00:00:00Z",
     "security_classification": "INTERNAL",
     "workflow_id": "WF-001",
+    "workflow_version": "1.0.0",
     "job_id": "JOB-001",
     "correlation_id": "CORR-001",
     "artifacts": [
@@ -31,7 +28,18 @@
       "token_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     },
     "payload": {
-      "result_status": "success"
+      "result_status": "error",
+      "error_code": "E001",
+      "category": "validation",
+      "retriable": false,
+      "retry_after": 0,
+      "safe_to_retry": false,
+      "external_state_known": true,
+      "details": "schema violation",
+      "evidence": [
+        "E-001"
+      ],
+      "terminal_recommendation": "abort_job"
     },
     "integrity": {
       "hash_algorithm": "SHA-256",

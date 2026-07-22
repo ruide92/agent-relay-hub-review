@@ -2,10 +2,10 @@
   "fixture_id": "invalid-a5-tier",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "A5 is forbidden for capability tokens",
+  "note": "A5 forbidden for capability tokens",
   "expected_violation": {
     "layer": "schema",
-    "rule": "max_authorization_tier enum is [A0–A4]; A5 is not allowed"
+    "rule": "max_authorization_tier enum excludes A5"
   },
   "instance": {
     "iss": "arh:policy-engine",

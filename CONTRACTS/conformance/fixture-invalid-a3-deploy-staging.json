@@ -2,7 +2,7 @@
   "fixture_id": "invalid-a3-deploy-staging",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "A3 + deploy:staging — deploy is A4-only scope",
+  "note": "A3 + deploy:staging — forbidden above A3",
   "expected_violation": {
     "layer": "schema",
     "rule": "A3 tier allOf: scope must NOT contain deploy:staging"
@@ -17,7 +17,6 @@
     "jti": "01234567-89ab-4def-8123-abcdef123456",
     "scope": [
       "workflow:execute",
-      "git:commit",
       "deploy:staging"
     ],
     "max_authorization_tier": "A3",

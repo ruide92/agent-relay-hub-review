@@ -1,8 +1,12 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-clock-skew-exceeds-300",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "clock_skew > 300 absolute ceiling",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "token_policy.clock_skew_seconds: maximum is 300"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -168,7 +172,7 @@
     "token_policy": {
       "max_ttl_seconds": 3600,
       "default_ttl_seconds": 900,
-      "clock_skew_seconds": 60,
+      "clock_skew_seconds": 600,
       "replay_cache_retention_seconds": 3720
     },
     "safe_mode": {

@@ -2,10 +2,10 @@
   "fixture_id": "invalid-non-uuidv4-jti",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "jti has 13-char last segment (not valid UUIDv4)",
+  "note": "jti 13-char last segment",
   "expected_violation": {
     "layer": "schema",
-    "rule": "jti_v4 pattern requires UUIDv4: 8-4-4-4-12 hex chars with version=4 and variant=8/9/a/b"
+    "rule": "jti_v4 pattern: UUIDv4 required"
   },
   "instance": {
     "iss": "arh:policy-engine",

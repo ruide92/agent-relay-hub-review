@@ -2,7 +2,7 @@
   "fixture_id": "invalid-a0-deploy-staging",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "A0 + deploy:staging — forbidden above A0 tier",
+  "note": "A0 + deploy:staging — forbidden above A0",
   "expected_violation": {
     "layer": "schema",
     "rule": "A0 tier allOf: scope must NOT contain deploy:staging"

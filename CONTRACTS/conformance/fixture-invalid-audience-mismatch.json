@@ -2,10 +2,10 @@
   "fixture_id": "invalid-audience-mismatch",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "aud not in audience registry",
+  "note": "aud not in registry",
   "expected_violation": {
     "layer": "schema",
-    "rule": "aud enum is [arh:core, arh:adapter-host] only"
+    "rule": "aud enum is [arh:core, arh:adapter-host]"
   },
   "instance": {
     "iss": "arh:policy-engine",

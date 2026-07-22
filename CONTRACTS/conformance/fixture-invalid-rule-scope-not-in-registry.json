@@ -1,8 +1,12 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-rule-scope-not-in-registry",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "Rule scope 'admin:all' not in scope_registry enum (Schema rejects)",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "rule scope items must be in scope_registry enum; 'admin:all' is not allowed"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -106,9 +110,9 @@
         "authorization_tier_ceiling": "A3",
         "scope": [
           "workflow:execute",
-          "git:commit"
+          "admin:all"
         ],
-        "description": "allow workflow execution + git commit at A3"
+        "description": "bad scope"
       }
     ],
     "budgets": [

@@ -1,8 +1,15 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-duplicate-budget-scope",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "budgets: per_workflow appears twice; each scope must appear exactly once"
+  },
+  "validation_context": {
+    "business_rule": "budgets: each scope (per_workflow, per_project_daily, global_daily) must appear exactly once"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -117,6 +124,12 @@
         "scope": "per_workflow",
         "max_tokens": 2000000,
         "max_usd": 10
+      },
+      {
+        "budget_id": "b-wf2",
+        "scope": "per_workflow",
+        "max_tokens": 1000000,
+        "max_usd": 5
       },
       {
         "budget_id": "b-pd",

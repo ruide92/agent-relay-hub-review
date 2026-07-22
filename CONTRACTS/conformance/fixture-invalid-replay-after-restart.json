@@ -2,10 +2,10 @@
   "fixture_id": "invalid-replay-after-restart",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "Token jti already accepted before process restart; recovered from Event Ledger",
+  "note": "Replay after restart from Event Ledger",
   "expected_violation": {
     "layer": "business",
-    "rule": "§8 step 8: jti in recovered_replay_state (from durable Event Ledger); token rejected after restart"
+    "rule": "§8 step 8: jti in recovered_replay_state from durable Event Ledger"
   },
   "validation_context": {
     "evaluation_time": 1784678600,

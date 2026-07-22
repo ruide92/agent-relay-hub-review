@@ -2,10 +2,10 @@
   "fixture_id": "invalid-sig-manifest-no-signature-value",
   "target_schema": "CONTRACTS/signature-manifest.schema.json",
   "expected": "invalid",
-  "note": "signature_value is empty",
+  "note": "signature_value empty",
   "expected_violation": {
     "layer": "schema",
-    "rule": "signature_value pattern requires 86 base64url chars; empty string fails"
+    "rule": "signature_value pattern requires 86 base64url chars"
   },
   "instance": {
     "schema_version": "1.0.0",

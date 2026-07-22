@@ -2,18 +2,201 @@
   "fixture_id": "invalid-target-hash-mismatch",
   "target_schema": "CONTRACTS/signature-manifest.schema.json",
   "expected": "invalid",
-  "note": "Signature manifest target_hash does not match computed hash of policy bundle content",
+  "note": "Manifest target_hash does not match computed SHA-256 of policy_bundle_content JCS bytes",
   "expected_violation": {
     "layer": "business",
-    "rule": "§8 step 5: target_hash in manifest does not match SHA-256 of policy_bundle_content JCS canonical bytes"
+    "rule": "§8 step 5: manifest target_hash (sha256:0000000000000000000000000000000000000000000000000000000000000000) != computed SHA-256 of policy_bundle_content JCS bytes (sha256:b99d5f312e94887ff9d9dc8ed14f40aaa53ffcc4243c1f6e55280424cdf17d2b)"
   },
   "validation_context": {
-    "expected_computed_target_hash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "policy_bundle_content": {
       "schema_version": "1.0.0",
       "bundle_id": "pb-001",
-      "policy_version": "1.0.0"
-    }
+      "policy_version": "1.0.0",
+      "authorization_tiers": [
+        {
+          "tier": "A0",
+          "allowed_scopes": [
+            "workflow:read",
+            "artifact:read",
+            "message:receive",
+            "adapter:health_check"
+          ]
+        },
+        {
+          "tier": "A1",
+          "allowed_scopes": [
+            "workflow:read",
+            "artifact:read",
+            "message:receive",
+            "review:request",
+            "plan:generate",
+            "adapter:health_check"
+          ]
+        },
+        {
+          "tier": "A2",
+          "allowed_scopes": [
+            "workflow:read",
+            "artifact:read",
+            "artifact:write",
+            "message:send",
+            "message:receive",
+            "workflow:execute",
+            "review:request",
+            "plan:generate",
+            "adapter:health_check"
+          ]
+        },
+        {
+          "tier": "A3",
+          "allowed_scopes": [
+            "workflow:read",
+            "workflow:execute",
+            "artifact:read",
+            "artifact:write",
+            "message:send",
+            "message:receive",
+            "review:request",
+            "plan:generate",
+            "git:commit",
+            "git:push",
+            "pr:create",
+            "adapter:health_check"
+          ]
+        },
+        {
+          "tier": "A4",
+          "allowed_scopes": [
+            "workflow:read",
+            "workflow:execute",
+            "artifact:read",
+            "artifact:write",
+            "message:send",
+            "message:receive",
+            "review:request",
+            "plan:generate",
+            "git:commit",
+            "git:push",
+            "pr:create",
+            "deploy:staging",
+            "adapter:health_check"
+          ]
+        }
+      ],
+      "a5_policy": {
+        "default_deny": true,
+        "capability_token_grantable": false,
+        "requires_explicit_owner_authorization": true
+      },
+      "scope_registry": [
+        "workflow:read",
+        "workflow:execute",
+        "artifact:read",
+        "artifact:write",
+        "message:send",
+        "message:receive",
+        "review:request",
+        "plan:generate",
+        "git:commit",
+        "git:push",
+        "pr:create",
+        "deploy:staging",
+        "adapter:health_check"
+      ],
+      "default_decision": "blocked_needs_policy_decision",
+      "rules": [
+        {
+          "rule_id": "r-001",
+          "effect": "allow",
+          "authorization_tier_ceiling": "A3",
+          "scope": [
+            "workflow:execute",
+            "git:commit"
+          ],
+          "description": "allow workflow execution + git commit at A3"
+        }
+      ],
+      "budgets": [
+        {
+          "budget_id": "b-wf",
+          "scope": "per_workflow",
+          "max_tokens": 2000000,
+          "max_usd": 10
+        },
+        {
+          "budget_id": "b-pd",
+          "scope": "per_project_daily",
+          "max_tokens": 10000000,
+          "max_usd": 50
+        },
+        {
+          "budget_id": "b-gd",
+          "scope": "global_daily",
+          "max_tokens": 50000000,
+          "max_usd": 200
+        }
+      ],
+      "loop_limits": {
+        "max_delivery_attempts": 10,
+        "max_adapter_switches": 10,
+        "max_fix_rounds": 5,
+        "max_workflow_execution_seconds": 86400,
+        "max_step_execution_seconds": 14400
+      },
+      "path_boundaries": [
+        "/src/",
+        "/docs/"
+      ],
+      "domain_boundaries": [
+        "api.example.com"
+      ],
+      "credential_boundaries": {
+        "store": "vault",
+        "allowed_references": [
+          "ref-01"
+        ]
+      },
+      "routing": {
+        "adapter_priority": "official_api_sdk",
+        "fallback_chain": [
+          "cli",
+          "webhook"
+        ]
+      },
+      "release_gates": [
+        {
+          "gate_id": "g-001",
+          "gate_type": "verifier_evidence",
+          "required_severity_filter": "block_high_critical"
+        }
+      ],
+      "token_policy": {
+        "max_ttl_seconds": 3600,
+        "default_ttl_seconds": 900,
+        "clock_skew_seconds": 60,
+        "replay_cache_retention_seconds": 3720
+      },
+      "safe_mode": {
+        "trigger": "policy_integrity_failure",
+        "allowed_actions": [
+          "A0_diagnostic"
+        ]
+      },
+      "degraded_behavior": {
+        "on_capability_loss": "reroute",
+        "on_adapter_crash_threshold": 3
+      },
+      "adapter_allowlists": [
+        {
+          "adapter_type": "git",
+          "allowed_capabilities": [
+            "send",
+            "receive"
+          ]
+        }
+      ]
+    },
+    "expected_computed_target_hash": "sha256:b99d5f312e94887ff9d9dc8ed14f40aaa53ffcc4243c1f6e55280424cdf17d2b"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -22,7 +205,7 @@
       {
         "target_type": "policy_bundle",
         "target_id": "pb-001",
-        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        "target_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
         "key_id": "arh-key-01",
         "key_purpose": "policy_bundle",
         "algorithm": "ES256",

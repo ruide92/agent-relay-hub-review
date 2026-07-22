@@ -2,10 +2,10 @@
   "fixture_id": "invalid-jws-bad-base64",
   "target_schema": "CONTRACTS/capability-token.schema.json",
   "expected": "invalid",
-  "note": "First segment is not valid base64url (contains ! characters)",
+  "note": "First segment has invalid chars",
   "expected_violation": {
     "layer": "schema",
-    "rule": "JWS pattern requires base64url character set [A-Za-z0-9_-] only"
+    "rule": "JWS pattern requires base64url charset only"
   },
-  "instance": "!!!invalid_base64!!!.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
+  "instance": "!!!invalid!!!.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
 }

@@ -2,10 +2,10 @@
   "fixture_id": "invalid-health-no-capability-set",
   "target_schema": "CONTRACTS/health-check.schema.json",
   "expected": "invalid",
-  "note": "Health check missing required capability_set (minItems 1)",
+  "note": "Missing capability_set",
   "expected_violation": {
     "layer": "schema",
-    "rule": "capability_set is required with minItems 1"
+    "rule": "capability_set required with minItems 1"
   },
   "instance": {
     "schema_version": "1.0.0",

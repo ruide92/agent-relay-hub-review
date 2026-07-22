@@ -5,7 +5,7 @@
   "note": "key_purpose=sbom but target_type=policy_bundle",
   "expected_violation": {
     "layer": "schema",
-    "rule": "key_purpose/target_type if-then constraint: policy_bundle target requires key_purpose=policy_bundle"
+    "rule": "key_purpose/target_type if-then constraint"
   },
   "instance": {
     "schema_version": "1.0.0",

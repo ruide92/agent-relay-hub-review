@@ -2,10 +2,10 @@
   "fixture_id": "invalid-unknown-scope",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "scope item not in scope registry enum",
+  "note": "scope not in registry",
   "expected_violation": {
     "layer": "schema",
-    "rule": "scope items must be in closed scope_registry enum"
+    "rule": "scope items must be in closed registry"
   },
   "instance": {
     "iss": "arh:policy-engine",

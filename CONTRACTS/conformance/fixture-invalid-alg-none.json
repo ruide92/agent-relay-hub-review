@@ -4,8 +4,8 @@
   "expected": "invalid",
   "note": "alg=none is forbidden",
   "expected_violation": {
-    "layer": "schema",
-    "rule": "JWS pattern requires 3 base64url segments with 86-char signature; decoded header alg must be ES256 (const) — alg=none fails protected-header schema validation"
+    "layer": "decoded-header",
+    "rule": "Decoded header: alg must be const ES256 — alg=none fails"
   },
-  "instance": "eyJhbGciOiJub25lIiwidHlwIjoiYXJoLWNhcCtqd3QiLCJraWQiOiJhcmgta2V5LTAxIiwia2V5X3B1cnBvc2UiOiJjYXBhYmlsaXR5X3Rva2VuIn0.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
+  "instance": "eyJhbGciOiJub25lIiwia2V5X3B1cnBvc2UiOiJjYXBhYmlsaXR5X3Rva2VuIiwia2lkIjoiYXJoLWtleS0wMSIsInR5cCI6ImFyaC1jYXArand0In0.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
 }

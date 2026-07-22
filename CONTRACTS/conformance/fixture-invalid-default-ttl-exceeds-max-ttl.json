@@ -1,8 +1,15 @@
 {
-  "fixture_id": "policy-bundle-valid",
+  "fixture_id": "invalid-default-ttl-exceeds-max-ttl",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
-  "expected": "valid",
-  "note": "结构示例，非密码学有效证据; covers all required policy domains including a5_policy, dual-token/USD budgets, V1.1 loop limits, 5-step default decision ladder",
+  "expected": "invalid",
+  "note": "default_ttl > max_ttl (business validation)",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "token_policy: default_ttl_seconds (1800) > max_ttl_seconds (900)"
+  },
+  "validation_context": {
+    "business_rule": "default_ttl_seconds MUST <= max_ttl_seconds"
+  },
   "instance": {
     "schema_version": "1.0.0",
     "bundle_id": "pb-001",
@@ -166,8 +173,8 @@
       }
     ],
     "token_policy": {
-      "max_ttl_seconds": 3600,
-      "default_ttl_seconds": 900,
+      "max_ttl_seconds": 900,
+      "default_ttl_seconds": 1800,
       "clock_skew_seconds": 60,
       "replay_cache_retention_seconds": 3720
     },

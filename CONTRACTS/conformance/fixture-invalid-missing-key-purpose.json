@@ -5,7 +5,7 @@
   "note": "integrity has signature but missing key_purpose",
   "expected_violation": {
     "layer": "schema",
-    "rule": "integrity allOf: if signature present then key_purpose is required"
+    "rule": "integrity allOf: if signature present then key_purpose required"
   },
   "instance": {
     "protocol_version": 1,

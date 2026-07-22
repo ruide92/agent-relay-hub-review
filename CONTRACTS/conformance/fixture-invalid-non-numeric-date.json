@@ -2,10 +2,10 @@
   "fixture_id": "invalid-non-numeric-date",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "iat is RFC3339 string instead of NumericDate integer",
+  "note": "iat is string not integer",
   "expected_violation": {
     "layer": "schema",
-    "rule": "numeric_date requires integer type; string value fails"
+    "rule": "numeric_date requires integer type"
   },
   "instance": {
     "iss": "arh:policy-engine",

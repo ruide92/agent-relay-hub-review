@@ -2,10 +2,10 @@
   "fixture_id": "invalid-tier-scope-mismatch",
   "target_schema": "CONTRACTS/capability-token-claims.schema.json",
   "expected": "invalid",
-  "note": "A0 tier must not contain git:push (forbidden at A0 level)",
+  "note": "A0 + git:push forbidden",
   "expected_violation": {
     "layer": "schema",
-    "rule": "A0 tier allOf: scope must NOT contain git:push (forbidden above A0 tier)"
+    "rule": "A0 tier allOf: scope must NOT contain git:push"
   },
   "instance": {
     "iss": "arh:policy-engine",
