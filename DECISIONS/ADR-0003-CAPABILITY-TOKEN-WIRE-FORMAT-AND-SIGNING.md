@@ -10,7 +10,7 @@ Implemented By: executor（WorkBuddy）
 > 本 ADR 已由 Reviewer-2 对 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 独立审核 `PASS`，并由 owner 经 `GOVERNANCE_APPROVAL_0007.md` 批准，Status 为 **ACCEPTED**。
 > 本 ADR 只定义设计；**不代表运行时已实现**。
 > 本 ADR 解决 `PHASE_0_EXIT_CRITERIA.md` 中 `P0-CAPABILITY-TOKEN-SIGNING-CONTRACT` blocker。
-> 批准记录：`GOVERNANCE_APPROVAL_0007.md`；Approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；Effective commit `PENDING_EFFECTIVE_COMMIT_BACKFILL`。
+> 批准记录：`GOVERNANCE_APPROVAL_0007.md`；Approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；Effective commit `3019d2e25405f275b9d9e0c56af86b3b65c0bbb2`。
 > `GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 
 ---
@@ -203,7 +203,7 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 - **Governance Approver（治理批准者）**：owner
 - **Approval Record**：`GOVERNANCE_APPROVAL_0007.md`
 - **Corrective Record（纠正记录）**：—
-- **Effective Commit（生效 commit）**：`PENDING_EFFECTIVE_COMMIT_BACKFILL`
+- **Effective Commit（生效 commit）**：`3019d2e25405f275b9d9e0c56af86b3b65c0bbb2`
 - **Affected Normative Documents**：`PROTOCOL.md`（§13 新增 token 携带位置）、`SECURITY.md`（§8.1 新增 token 签名容器）、`ARCHITECTURE.md`（Schema bundle 模块边界）、`MACHINE_READABLE_CONTRACTS.md`、`CONTRACTS/` 内 capability-token 相关 Schema
 - **Supersedes / Superseded By**：无 / 无
 

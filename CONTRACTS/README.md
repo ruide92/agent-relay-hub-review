@@ -53,5 +53,5 @@
 > **诚实声明**：Schema Meta-Validation 与 Fixture Execution 已在隔离的仓库外验证环境（Ajv 8.20.0 + ajv-formats 3.0.1, Draft 2020-12）中运行，**未在仓库安装任何依赖**。全部 12 个 Schema 已在 Ajv **strict mode**（strict=true, strictTypes=true, strictSchema=true, strictRequired=true）下编译通过；无需关闭任何 strict 检查。以上验证结果为 executor self-check，不等于独立审核。Crypto/Runtime Validation 仍 `UNVALIDATED`。
 > 两个 Phase 0 契约条件（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）已由 `GOVERNANCE_APPROVAL_0007.md` 批准为 **OWNER_APPROVED**。这使总体门禁进入 `READY_FOR_CLOSURE`，但 Phase 0 仍 `OPEN`，未创建 closure；Phase 1 仍 `NOT AUTHORIZED`，ADR-0003 为 `ACCEPTED`。
 
-- 批准记录：`GOVERNANCE_APPROVAL_0007.md`；Approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；Effective commit `PENDING_EFFECTIVE_COMMIT_BACKFILL`
+- 批准记录：`GOVERNANCE_APPROVAL_0007.md`；Approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；Effective commit `3019d2e25405f275b9d9e0c56af86b3b65c0bbb2`
 - `GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
