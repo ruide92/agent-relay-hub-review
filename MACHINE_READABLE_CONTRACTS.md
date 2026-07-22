@@ -9,10 +9,10 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Schema count: 12
-Fixture count: 81 (28 valid + 53 invalid)
-Schema Static Check Status: PASS (JSON syntax 93 files; $id uniqueness 12 IDs; $ref resolvability 99 refs; duplicate-key detection 93 files 0 dupes; atomic preflight)
-Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12; 12/12 compiled; strict=false for contains-without-type and relative $ref compatibility; validator: E:\omp-tools\json-schema-audit; no deps installed in repo)
-Fixture Execution Status: PASS (28/28 valid passed instance validation; 53/53 invalid correctly handled: schema-layer rejected, business/decoded-header-layer schema-valid but caught by corresponding layer)
+Fixture count: 111 (28 valid + 83 invalid)
+Schema Static Check Status: PASS (JSON syntax 123 files; $id uniqueness 12 IDs; $ref resolvability 180 refs; duplicate-key detection 123 files 0 dupes; atomic preflight)
+Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true; validator: E:\omp-tools\json-schema-audit; no deps installed in repo; executor self-check, not independent review)
+Fixture Execution Status: PASS (28/28 valid passed instance validation; 83/83 invalid correctly handled: schema-layer rejected, business/decoded-header-layer schema-valid but caught by corresponding layer)
 Business Semantic Validation Status: PASS (20 cross-field checks: tier uniqueness/completeness, budget exact-once/ceilings, TTL ordering, a5_policy 3 consts, loop_limits V1.1 bounds, default decision 5-step ladder, expired/revoked/blind-retry directional failure, target SHA-256 recomputation consistency)
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
@@ -185,6 +185,6 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 ## 11. 当前状态
 
 - 本契约包为 **PROPOSED** 设计契约；未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
-- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 编译）与 Fixture Execution（28/28 valid PASS、53/53 invalid 正确处理）已在外部验证环境运行并 PASS；Business Semantic Validation（20 项跨字段检查）PASS。验证环境为 `E:\omp-tools\json-schema-audit`，**未在仓库安装任何依赖**。
+- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（28/28 valid PASS、83/83 invalid 正确处理）已在外部验证环境运行并 PASS；Business Semantic Validation（20 项跨字段检查）PASS。以上验证结果为 **executor self-check**，不等于独立审核。验证环境为 `E:\omp-tools\json-schema-audit`，**未在仓库安装任何依赖**。
 - 本契约包的批准预期走 `GOVERNANCE_APPROVAL_0007`（**本轮未创建**）；`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 - 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 仍 `PROPOSED`。
