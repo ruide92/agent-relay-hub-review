@@ -117,12 +117,14 @@ Code Status: NO PRODUCT CODE
 
 ### 4.2 公共必填字段语义
 
-- `sender_role` / `recipient_role`：MUST 命中以下封闭角色注册表；未登记角色族 MUST fail-closed：
-  - `policy.engine`（固定政策引擎服务角色）；
-  - `worker.<role>`（如 `worker.primary`）；
-  - `reviewer` 或 `reviewer.<specialty>`（如 `reviewer.security`）；
-  - `evidence_verifier` 或 `evidence_verifier.<specialty>`（如 `evidence_verifier.security`）。
-  - `<role>` / `<specialty>` 每段 MUST 匹配 `[a-z][a-z0-9_-]*`；不得以任意非空字符串代替角色注册。
+- `sender_role` / `recipient_role`：MUST 命中以下封闭角色注册表；未登记角色族 MUST fail-closed。V1.1 §6 逻辑角色到 wire role 的映射为穷尽式映射：
+  - `owner` → `owner`；`trigger` → `trigger`；`coordinator` → `coordinator`；`planner` → `planner`；
+  - `reviewer` → `reviewer` 或 `reviewer.<specialty>`（如 `reviewer.security`）；
+  - `evidence_verifier` → `evidence_verifier` 或 `evidence_verifier.<specialty>`（如 `evidence_verifier.security`）；
+  - `adjudicator` → `adjudicator`；`worker` → `worker` 或 `worker.<role>`（如 `worker.primary`）；
+  - `messenger` → `messenger`；`repository` → `repository`；`release_gate` → `release_gate`；`monitor` → `monitor`；`notifier` → `notifier`。
+  - `policy.engine` 是 `policy.decision` 消息使用的固定内部服务标识，**不是**任何 V1.1 §6 逻辑角色的替代编码；承担 `release_gate` 逻辑职责时仍 MUST 使用 `release_gate`。
+  - `<role>` / `<specialty>` 每段 MUST 匹配 `[a-z][a-z0-9_-]*`；不得以任意非空字符串代替角色注册，也不得把未登记角色静默映射到 `worker.*` 或 `policy.engine`。
 - `target`：描述作用对象；MUST 在能力 / 政策允许范围内。
 - `attempt`：delivery_attempt 序号，从 1 递增。
 - `expires_at`：消息过期时间；过期消息 MUST NOT 被当作新结果处理（V1.1 §11）。

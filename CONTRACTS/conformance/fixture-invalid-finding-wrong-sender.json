@@ -2,10 +2,10 @@
   "fixture_id": "invalid-finding-wrong-sender",
   "target_schema": "CONTRACTS/arp-message.schema.json",
   "expected": "invalid",
-  "note": "review.finding with sender_role=policy.engine (must be reviewer)",
+  "note": "review.finding with sender_role=policy.engine (must match the reviewer role family)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "review.finding sender_role must be const reviewer"
+    "rule": "review.finding sender_role must match the reviewer role family"
   },
   "instance": {
     "protocol_version": 1,

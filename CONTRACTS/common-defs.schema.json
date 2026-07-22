@@ -30,8 +30,8 @@
     },
     "role_identifier": {
       "type": "string",
-      "pattern": "^(?:policy\\.engine|worker\\.[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)*|reviewer(?:\\.[a-z][a-z0-9_-]*)*|evidence_verifier(?:\\.[a-z][a-z0-9_-]*)*)$",
-      "description": "Closed ARP role registry: policy.engine; worker.<role>; reviewer[.<specialty>]; evidence_verifier[.<specialty>]. Undefined role families MUST be rejected fail-closed."
+      "pattern": "^(?:owner|trigger|coordinator|planner|adjudicator|messenger|repository|release_gate|monitor|notifier|policy\\.engine|worker(?:\\.[a-z][a-z0-9_-]*)*|reviewer(?:\\.[a-z][a-z0-9_-]*)*|evidence_verifier(?:\\.[a-z][a-z0-9_-]*)*)$",
+      "description": "Closed ARP role registry covering every approved V1.1 §6 logical role: owner, trigger, coordinator, planner, reviewer[.<specialty>], evidence_verifier[.<specialty>], adjudicator, worker[.<role>], messenger, repository, release_gate, monitor, notifier. policy.engine is an additional fixed internal service identifier for policy.decision messages, not a replacement for any V1.1 logical role. Undefined role families MUST be rejected fail-closed."
     },
     "key_id": {
       "type": "string",

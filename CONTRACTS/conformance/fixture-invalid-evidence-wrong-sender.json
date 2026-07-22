@@ -2,10 +2,10 @@
   "fixture_id": "invalid-evidence-wrong-sender",
   "target_schema": "CONTRACTS/arp-message.schema.json",
   "expected": "invalid",
-  "note": "evidence with sender_role=policy.engine (must be evidence_verifier)",
+  "note": "evidence with sender_role=policy.engine (must match the evidence_verifier role family)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "evidence sender_role must be const evidence_verifier"
+    "rule": "evidence sender_role must match the evidence_verifier role family"
   },
   "instance": {
     "protocol_version": 1,

@@ -9,10 +9,10 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Schema count: 12
-Fixture count: 147 (29 valid + 118 invalid)
+Fixture count: 160 (40 valid + 120 invalid)
 Schema Static Check Status: PASS (JSON syntax 159 files; $id uniqueness 12 IDs; $ref resolvability 182 refs; duplicate-key detection 159 files 0 dupes; atomic preflight)
 Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true in an isolated external validator; no deps installed in repo; executor self-check, not independent review)
-Fixture Execution Status: PASS (29/29 valid passed instance validation; 118/118 invalid correctly handled: 105 schema-layer rejected, 11 business-layer predicates reproduced, 2 decoded-header failures)
+Fixture Execution Status: PASS (40/40 valid passed instance validation; 120/120 invalid correctly handled: 105 schema-layer rejected, 13 business-layer predicates reproduced, 2 decoded-header failures)
 Business Semantic Validation Status: PASS (11 deterministic vectors: default TTL ceiling, replay-retention floor, FAILED-session reuse, in-run replay, replay after restart, token expiry, token revocation, target SHA-256 mismatch, detached-preimage metadata substitution, nbf-after-iat, zero-lifetime iat==exp)
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
@@ -132,7 +132,8 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 11. **policy-bundle 跨字段一致性（business validation）**：以下约束跨越多个字段或依赖运行时上下文，超出 JSON Schema 表达能力，校验方 MUST 在 business 层强制执行：
     - `token_policy.default_ttl_seconds` MUST ≤ `token_policy.max_ttl_seconds`（跨字段数值比较，JSON Schema 无算术表达式能力）；
     - `token_policy.replay_cache_retention_seconds` MUST ≥ `max_ttl_seconds + clock_skew_seconds`（跨字段算术运算）；
-    - `scope_registry` 与 `authorization_tiers[*].allowed_scopes` 中的 scope 引用 MUST 一致（跨数组 membership 检查）。
+    - `authorization_tiers[*].allowed_scopes` 中的每个 scope MUST 存在于 `scope_registry`（跨数组 membership 检查）；
+    - `rules[*].scope` 中的每个 scope MUST 存在于 `scope_registry`（跨数组 membership 检查）。
 
     以下约束已由 JSON Schema 结构化表达，不再是 business validation：
     - `authorization_tiers` A0–A4 各精确出现一次：由 `contains` + `minContains:1` + `maxContains:1` + `maxItems:5` 结构约束；
@@ -144,7 +145,7 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
     - `budgets` 各层 token/USD 绝对上限：由 per-scope `if/then` 条件 Schema 约束；
     - `default_decision_ladder` 五步阶梯固定顺序：由 `prefixItems` const + `items:false` 约束；
     - `release_gates.required_severity_filter` 必须为阻断值（`block_high_critical` 或 `block_all`）：由封闭 enum 约束（`none` 已删除）。
-    - `sender_role` / `recipient_role` 必须命中 PROTOCOL §4.2 封闭角色注册表：由共享 `role_identifier` Schema 约束，全部 17 种消息类型共同继承。
+    - `sender_role` / `recipient_role` 必须命中 PROTOCOL §4.2 穷尽覆盖 V1.1 §6 的封闭角色注册表：由共享 `role_identifier` Schema 约束，全部 17 种消息类型共同继承；10 个此前未覆盖的精确逻辑角色与 `worker.primary` sender routing 新增 positive fixtures，`reviewer` / `evidence_verifier` / `policy.engine` 由既有 positive fixtures 覆盖。
 
 ---
 
@@ -197,6 +198,6 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 ## 11. 当前状态
 
 - 本契约包为 **PROPOSED** 设计契约；未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
-- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（29/29 valid PASS、118/118 invalid 正确处理：105 schema、11 business、2 decoded-header）已在隔离的仓库外验证环境运行并 PASS；Business Semantic Validation 为上述 11 个确定性 business vectors，不包含已由 Schema 结构化表达的 tier/budget/A5/loop/routing/ladder 检查。以上验证结果为 **executor self-check**，不等于独立审核；**仓库内未安装任何验证依赖**。
+- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（40/40 valid PASS、120/120 invalid 正确处理：105 schema、13 business、2 decoded-header）已在隔离的仓库外验证环境运行并 PASS；Business Semantic Validation 为上述 13 个确定性 business vectors（包含 tier/rule scope→registry membership），不包含已由 Schema 结构化表达的 tier/budget/A5/loop/routing/ladder 检查。以上验证结果为 **executor self-check**，不等于独立审核；**仓库内未安装任何验证依赖**。
 - 本契约包的批准预期走 `GOVERNANCE_APPROVAL_0007`（**本轮未创建**）；`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 - 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 仍 `PROPOSED`。
