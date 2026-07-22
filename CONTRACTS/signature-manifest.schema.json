@@ -12,8 +12,9 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["target_type", "target_id", "target_hash", "key_id", "key_purpose", "algorithm", "signed_at", "signature_value"],
+        "required": ["preimage_profile", "target_type", "target_id", "target_hash", "key_id", "key_purpose", "algorithm", "signed_at", "signature_value"],
         "properties": {
+          "preimage_profile": { "type": "string", "const": "arh-detached-signature-v1", "description": "Canonical signing-preimage profile defined by SECURITY.md §8.2 and MACHINE_READABLE_CONTRACTS.md §6" },
           "target_type": { "type": "string", "enum": ["policy_bundle", "sbom", "capability_token_revocation"] },
           "target_id": { "$ref": "common-defs.schema.json#/$defs/identifier", "description": "Identifier of the signed content artifact (e.g. bundle_id, revocation list_id)" },
           "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex", "description": "SHA-256 of the content artifact's JCS canonical bytes; no self-reference exclusion" },
@@ -21,7 +22,7 @@
           "key_purpose": { "type": "string", "enum": ["policy_bundle", "sbom", "capability_token_revocation"], "description": "MUST match target_type; capability_token MUST NOT use this manifest (uses JWS)" },
           "algorithm": { "type": "string", "const": "ES256", "description": "ECDSA P-256 / SHA-256; alg=none FORBIDDEN" },
           "signed_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
-          "signature_value": { "type": "string", "pattern": "^[A-Za-z0-9_-]{86}$", "description": "Detached ES256 signature: raw R||S (64 bytes) encoded as unpadded base64url, producing exactly 86 characters. MUST NOT be empty. Fixture values are structural placeholders, not cryptographically valid signatures." }
+          "signature_value": { "type": "string", "pattern": "^[A-Za-z0-9_-]{86}$", "description": "Detached ES256 signature over the SECURITY.md §8.2 arh-detached-signature-v1 canonical preimage: raw R||S (64 bytes) encoded as unpadded base64url, producing exactly 86 characters. MUST NOT be empty. Fixture values are structural placeholders, not cryptographically valid signatures." }
         },
         "additionalProperties": false,
         "allOf": [

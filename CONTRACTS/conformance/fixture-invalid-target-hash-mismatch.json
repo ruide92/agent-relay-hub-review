@@ -2,10 +2,10 @@
   "fixture_id": "invalid-target-hash-mismatch",
   "target_schema": "CONTRACTS/signature-manifest.schema.json",
   "expected": "invalid",
-  "note": "Manifest target_hash does not match computed SHA-256 of policy_bundle_content JCS bytes",
+  "note": "Manifest target_hash does not match computed SHA-256 of the current schema-valid policy_bundle_content JCS bytes",
   "expected_violation": {
     "layer": "business",
-    "rule": "§8 step 5: manifest target_hash (sha256:0000000000000000000000000000000000000000000000000000000000000000) != computed SHA-256 of policy_bundle_content JCS bytes (sha256:b99d5f312e94887ff9d9dc8ed14f40aaa53ffcc4243c1f6e55280424cdf17d2b)"
+    "rule": "§8 step 5: manifest target_hash (sha256:0000000000000000000000000000000000000000000000000000000000000000) != computed SHA-256 of current schema-valid policy_bundle_content JCS bytes (sha256:5ab2e5a44b06ba07bee5aaf138b208c76987ab749a922bc25887afde363d97e0)"
   },
   "validation_context": {
     "policy_bundle_content": {
@@ -103,7 +103,6 @@
         "deploy:staging",
         "adapter:health_check"
       ],
-      "default_decision": "blocked_needs_policy_decision",
       "rules": [
         {
           "rule_id": "r-001",
@@ -157,8 +156,16 @@
         ]
       },
       "routing": {
-        "adapter_priority": "official_api_sdk",
-        "fallback_chain": [
+        "adapter_priority_order": [
+          "official_api_sdk",
+          "cli",
+          "webhook",
+          "playwright_dom",
+          "uia",
+          "visual_coordinate"
+        ],
+        "enabled_adapters": [
+          "official_api_sdk",
           "cli",
           "webhook"
         ]
@@ -184,7 +191,9 @@
       },
       "degraded_behavior": {
         "on_capability_loss": "reroute",
-        "on_adapter_crash_threshold": 3
+        "on_adapter_crash_threshold": 3,
+        "crash_observation_window_minutes": 10,
+        "circuit_breaker_cooldown_minutes": 15
       },
       "adapter_allowlists": [
         {
@@ -194,15 +203,23 @@
             "receive"
           ]
         }
+      ],
+      "default_decision_ladder": [
+        "safe_skip",
+        "conservative_default",
+        "equivalent_fallback",
+        "degraded_completion",
+        "blocked_needs_policy_decision"
       ]
     },
-    "expected_computed_target_hash": "sha256:b99d5f312e94887ff9d9dc8ed14f40aaa53ffcc4243c1f6e55280424cdf17d2b"
+    "expected_computed_target_hash": "sha256:5ab2e5a44b06ba07bee5aaf138b208c76987ab749a922bc25887afde363d97e0"
   },
   "instance": {
     "schema_version": "1.0.0",
     "manifest_id": "sm-001",
     "signatures": [
       {
+        "preimage_profile": "arh-detached-signature-v1",
         "target_type": "policy_bundle",
         "target_id": "pb-001",
         "target_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",

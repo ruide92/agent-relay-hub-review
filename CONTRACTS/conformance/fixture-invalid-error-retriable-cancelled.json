@@ -1,12 +1,8 @@
 {
-  "fixture_id": "invalid-external-state-unknown-but-safe-to-retry",
+  "fixture_id": "invalid-error-retriable-cancelled",
   "target_schema": "CONTRACTS/arp-message.schema.json",
   "expected": "invalid",
-  "note": "external_state_known=false but safe_to_retry=true — blind retry forbidden",
-  "expected_violation": {
-    "layer": "schema",
-    "rule": "result payload allOf: external_state_known=false → safe_to_retry must be false"
-  },
+  "note": "cancelled is a fixed non-retriable category but retriable/safe_to_retry are true",
   "instance": {
     "protocol_version": 1,
     "schema_version": "1.0.0",
@@ -33,19 +29,25 @@
     },
     "payload": {
       "result_status": "error",
-      "error_code": "E002",
-      "category": "external_state_unknown",
-      "retriable": false,
+      "error_code": "E001",
+      "category": "cancelled",
+      "retriable": true,
       "retry_after": 0,
       "safe_to_retry": true,
-      "external_state_known": false,
-      "details": "unknown state",
-      "evidence": [],
-      "terminal_recommendation": "RECONCILIATION_REQUIRED"
+      "external_state_known": true,
+      "details": "schema violation",
+      "evidence": [
+        "E-001"
+      ],
+      "terminal_recommendation": "FAILED_EXTERNAL_DEPENDENCY"
     },
     "integrity": {
       "hash_algorithm": "SHA-256",
       "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
     }
+  },
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "result category conditional: cancelled requires retriable=false and safe_to_retry=false"
   }
 }

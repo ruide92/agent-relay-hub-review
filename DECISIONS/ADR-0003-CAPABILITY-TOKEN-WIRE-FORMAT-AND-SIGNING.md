@@ -153,7 +153,7 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 2. **Protected header 检查**：解码 protected header 段，校验 `capability-token-protected-header.schema.json`：`alg=ES256`、`typ=arh-cap+jwt`、`kid` 存在、`key_purpose=capability_token`；失败 → `validation`。
 3. **签名验证**：`kid` 在可信钥集且未撤销；ECDSA P-256/SHA-256 验签；失败 → `authentication`。
 4. **Claims 结构校验**：解码 payload 段，执行 `capability-token-claims.schema.json` 校验（含 tier/scope 级联规则）；失败 → `validation`。
-5. **时间校验**：`nbf ≤ now+skew`、`now−skew ≤ exp`、`iat ≤ exp`、`exp−iat ≤ max_TTL`；失败 → `authorization`（过期/未生效）。
+5. **时间校验**：先强制 claims 内部顺序 `nbf ≤ iat < exp`（严格禁止 `iat == exp` 的零生命周期 token），再校验 `nbf ≤ now+skew`、`now−skew ≤ exp`、`exp−iat ≤ max_TTL`；任一失败 → `authorization`（时间顺序错误 / 过期 / 未生效）。clock skew 只用于与 `now` 的比较，MUST NOT 放宽 `nbf ≤ iat < exp`。
 6. **注册表校验**：`iss=arh:policy-engine`、`aud` 在 audience 注册表、`scope` 每项在 scope 注册表、`max_authorization_tier ≠ A5`；失败 → `authorization`。
 7. **绑定校验**：`workflow_id/job_id/adapter_id/session_id` 与上下文一致、`policy_bundle_hash` 与当前 bundle 一致；失败 → `authorization`。
 8. **撤销检查**：`jti` 不在最新有效撤销清单中；失败 → `authorization`（已撤销）。

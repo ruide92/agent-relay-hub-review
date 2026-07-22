@@ -265,13 +265,15 @@
               "terminal_recommendation": {
                 "type": "string",
                 "enum": [
-                  "safe_skip",
-                  "retry",
-                  "escalate",
-                  "abort_workflow",
-                  "abort_job",
-                  "manual_intervention",
-                  "none"
+                  "BLOCKED_REDESIGN_REQUIRED",
+                  "BLOCKED_AUTH_EXPIRED",
+                  "BLOCKED_BUDGET_EXHAUSTED",
+                  "BLOCKED_NEEDS_POLICY_DECISION",
+                  "QUARANTINED_SECURITY_RISK",
+                  "FAILED_EXTERNAL_DEPENDENCY",
+                  "CANCELLED_BY_POLICY",
+                  "POLICY_INTEGRITY_SAFE_MODE",
+                  "RECONCILIATION_REQUIRED"
                 ]
               }
             },
@@ -348,21 +350,24 @@
                     "terminal_recommendation": {
                       "type": "string",
                       "enum": [
-                        "safe_skip",
-                        "retry",
-                        "escalate",
-                        "abort_workflow",
-                        "abort_job",
-                        "manual_intervention",
-                        "none"
+                        "BLOCKED_REDESIGN_REQUIRED",
+                        "BLOCKED_AUTH_EXPIRED",
+                        "BLOCKED_BUDGET_EXHAUSTED",
+                        "BLOCKED_NEEDS_POLICY_DECISION",
+                        "QUARANTINED_SECURITY_RISK",
+                        "FAILED_EXTERNAL_DEPENDENCY",
+                        "CANCELLED_BY_POLICY",
+                        "POLICY_INTEGRITY_SAFE_MODE",
+                        "RECONCILIATION_REQUIRED"
                       ]
                     }
                   }
                 }
               },
               {
-                "description": "external_state_known=false MUST NOT coexist with safe_to_retry=true",
+                "description": "external_state_known=false MUST be non-retriable and enter reconciliation",
                 "if": {
+                  "required": ["external_state_known"],
                   "properties": {
                     "external_state_known": {
                       "const": false
@@ -371,11 +376,75 @@
                 },
                 "then": {
                   "properties": {
+                    "retriable": {
+                      "const": false
+                    },
                     "safe_to_retry": {
                       "const": false
+                    },
+                    "terminal_recommendation": {
+                      "const": "RECONCILIATION_REQUIRED"
                     }
                   }
                 }
+              },
+              {
+                "description": "retriable=true requires both safe_to_retry=true and known external state",
+                "if": {
+                  "required": ["retriable"],
+                  "properties": { "retriable": { "const": true } }
+                },
+                "then": {
+                  "properties": {
+                    "safe_to_retry": { "const": true },
+                    "external_state_known": { "const": true }
+                  }
+                }
+              },
+              {
+                "description": "validation is non-retriable and maps to BLOCKED_REDESIGN_REQUIRED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "validation" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_REDESIGN_REQUIRED" } } }
+              },
+              {
+                "description": "authentication is non-retriable and maps to BLOCKED_AUTH_EXPIRED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "authentication" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_AUTH_EXPIRED" } } }
+              },
+              {
+                "description": "authorization is non-retriable and maps to BLOCKED_AUTH_EXPIRED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "authorization" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_AUTH_EXPIRED" } } }
+              },
+              {
+                "description": "capability is non-retriable and maps to FAILED_EXTERNAL_DEPENDENCY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "capability" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "FAILED_EXTERNAL_DEPENDENCY" } } }
+              },
+              {
+                "description": "external_state_unknown is non-retriable, marks state unknown, and enters reconciliation",
+                "if": { "required": ["category"], "properties": { "category": { "const": "external_state_unknown" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "external_state_known": { "const": false }, "terminal_recommendation": { "const": "RECONCILIATION_REQUIRED" } } }
+              },
+              {
+                "description": "policy_denied is non-retriable and maps to CANCELLED_BY_POLICY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "policy_denied" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "CANCELLED_BY_POLICY" } } }
+              },
+              {
+                "description": "budget_exhausted is non-retriable and maps to BLOCKED_BUDGET_EXHAUSTED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "budget_exhausted" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_BUDGET_EXHAUSTED" } } }
+              },
+              {
+                "description": "protocol_incompatible is non-retriable and maps to FAILED_EXTERNAL_DEPENDENCY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "protocol_incompatible" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "FAILED_EXTERNAL_DEPENDENCY" } } }
+              },
+              {
+                "description": "cancelled is non-retriable and maps to CANCELLED_BY_POLICY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "cancelled" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "CANCELLED_BY_POLICY" } } }
               }
             ]
           }

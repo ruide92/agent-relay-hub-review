@@ -42,7 +42,7 @@
       "evidence": [
         "E-001"
       ],
-      "terminal_recommendation": "abort_job"
+      "terminal_recommendation": "BLOCKED_REDESIGN_REQUIRED"
     },
     "integrity": {
       "hash_algorithm": "SHA-256",

@@ -9,11 +9,11 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Schema count: 12
-Fixture count: 118 (28 valid + 90 invalid)
-Schema Static Check Status: PASS (JSON syntax 130 files; $id uniqueness 12 IDs; $ref resolvability 180 refs; duplicate-key detection 130 files 0 dupes; atomic preflight)
-Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true; validator: E:\omp-tools\json-schema-audit; no deps installed in repo; executor self-check, not independent review)
-Fixture Execution Status: PASS (28/28 valid passed instance validation; 90/90 invalid correctly handled: schema-layer rejected, business/decoded-header-layer schema-valid but caught by corresponding layer)
-Business Semantic Validation Status: PASS (20 cross-field checks: tier uniqueness/completeness, budget exact-once/ceilings, TTL ordering, a5_policy 3 consts, loop_limits V1.1 bounds, default decision 5-step ladder, expired/revoked/blind-retry directional failure, target SHA-256 recomputation consistency)
+Fixture count: 147 (29 valid + 118 invalid)
+Schema Static Check Status: PASS (JSON syntax 159 files; $id uniqueness 12 IDs; $ref resolvability 182 refs; duplicate-key detection 159 files 0 dupes; atomic preflight)
+Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true in an isolated external validator; no deps installed in repo; executor self-check, not independent review)
+Fixture Execution Status: PASS (29/29 valid passed instance validation; 118/118 invalid correctly handled: 105 schema-layer rejected, 11 business-layer predicates reproduced, 2 decoded-header failures)
+Business Semantic Validation Status: PASS (11 deterministic vectors: default TTL ceiling, replay-retention floor, FAILED-session reuse, in-run replay, replay after restart, token expiry, token revocation, target SHA-256 mismatch, detached-preimage metadata substitution, nbf-after-iat, zero-lifetime iat==exp)
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
 
@@ -110,7 +110,8 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 2. **哈希算法**：SHA-256；哈希字符串统一 `sha256:<64 位小写 hex>` 格式（共享定义 `common-defs`）。
 3. **Envelope 哈希预映像**：与 `PROTOCOL.md` §4.3 一致——`hash_preimage = canonical_json(完整消息排除 integrity.content_hash 与 integrity.signature)`；`hash_algorithm` 与实际存在的其他 integrity 元数据 MUST 纳入预映像；`content_hash` MUST NOT 参与其自身计算。
 4. **Detached 对象哈希**：policy bundle / SBOM / revocation list 的 `target_hash` = 其 canonical JSON 字节的 SHA-256；一致性校验 MUST 重算比对，不一致 MUST 拒绝。
-5. **JWS 签名预映像**：capability token 的签名输入为 `ASCII(BASE64URL(protected header)) + "." + ASCII(BASE64URL(payload))`（RFC 7515）；payload 由签发方按 JCS canonical 序列化，验证方对原始字节验证、MUST NOT 重新序列化。token 层与 envelope 层的 canonicalization 各自独立、不得混用（见 ADR-0003）。
+5. **Detached manifest 签名预映像**：每个 signature entry MUST 声明 `preimage_profile=arh-detached-signature-v1`。构造 JCS 对象 `{algorithm, extensions, key_id, key_purpose, manifest_id, preimage_profile, schema_version, signed_at, target_hash, target_id, target_type}`（`extensions` 缺失时为 `{}`），精确预映像为 `UTF8("ARH-DETACHED-SIGNATURE-V1\n") || JCS_UTF8(该对象)`；`signature_value` 为对该预映像执行 ES256 后 raw `R||S` 的无填充 BASE64URL。验证方 MUST 重构同一预映像；任一 manifest/entry 安全元数据替换 MUST 导致验签失败。详见 `SECURITY.md` §8.2。
+6. **JWS 签名预映像**：capability token 的签名输入为 `ASCII(BASE64URL(protected header)) + "." + ASCII(BASE64URL(payload))`（RFC 7515）；payload 由签发方按 JCS canonical 序列化，验证方对原始字节验证、MUST NOT 重新序列化。token 层与 envelope 层的 canonicalization 各自独立、不得混用（见 ADR-0003）。
 
 ---
 
@@ -119,9 +120,9 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 以下不变量跨越多个 Schema，属于业务校验层（JSON Schema 结构校验之外），校验方 MUST 强制执行；任一违反 MUST 拒绝：
 
 1. **签名四元组共现**：`integrity.signature_algorithm`、`integrity.key_id`、`integrity.key_purpose`、`integrity.signature` 要么全部存在要么全部省略（`PROTOCOL.md` §4.3）；不得伪造空签名。
-2. **key_purpose / target_type 匹配**：detached signature manifest 的每个签名条目 `key_purpose` MUST 与 `target_type` 一致（`policy_bundle`↔`policy_bundle`、`sbom`↔`sbom`、`capability_token_revocation_list`↔`capability_token_revocation`）；capability token MUST NOT 使用 detached manifest 作为签名容器（其容器为 JWS，见 ADR-0003），MUST NOT 与 policy bundle / SBOM 共用模糊 key purpose。
+2. **key_purpose / target_type 匹配**：detached signature manifest 的每个签名条目 `key_purpose` MUST 与 `target_type` 一致（`policy_bundle`↔`policy_bundle`、`sbom`↔`sbom`、`capability_token_revocation`↔`capability_token_revocation`）；capability token MUST NOT 使用 detached manifest 作为签名容器（其容器为 JWS，见 ADR-0003），MUST NOT 与 policy bundle / SBOM 共用模糊 key purpose。
 3. **`alg=none` 禁止**：任何签名容器不得声明 `alg=none` 或无算法；capability token 的 `alg` 仅允许 `ES256`。
-4. **时间一致性**：token `nbf ≤ iat < exp`；`exp − iat` MUST ≤ 最大 TTL（候选默认 15 分钟，政策可收紧）；`expires_at`（envelope）晚于 `created_at`；clock skew 候选容忍 60 秒（ADR-0003）。
+4. **时间一致性**：token `nbf ≤ iat < exp`（严格禁止 `iat == exp`）；`exp − iat` MUST ≤ 最大 TTL（候选默认 15 分钟，政策可收紧）；`expires_at`（envelope）晚于 `created_at`；clock skew 候选容忍 60 秒且只用于与 `now` 的比较，MUST NOT 放宽 claims 内部顺序（ADR-0003）。
 5. **生命周期合法迁移**：迁移对 MUST 在 `PROTOCOL.md` §7 白名单内；`FAILED` / `STOPPED` 为（实例）终态；`FAILED` 实例的 `session_id` MUST NOT 复用，恢复 MUST 产生新 `session_id` 并从 `LOADING` 开始。
 6. **撤销优先**：`jti` 出现在有效撤销清单中的 token MUST 被拒绝，即使签名与时间有效；撤销清单 `list_version` MUST 单调递增，低于已见版本的清单 MUST 被拒绝（防回滚）。
 7. **防重放**：`jti` 在 replay cache（缓存至 `exp + clock skew`）中已见的 token MUST 被拒绝。
@@ -143,6 +144,7 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
     - `budgets` 各层 token/USD 绝对上限：由 per-scope `if/then` 条件 Schema 约束；
     - `default_decision_ladder` 五步阶梯固定顺序：由 `prefixItems` const + `items:false` 约束；
     - `release_gates.required_severity_filter` 必须为阻断值（`block_high_critical` 或 `block_all`）：由封闭 enum 约束（`none` 已删除）。
+    - `sender_role` / `recipient_role` 必须命中 PROTOCOL §4.2 封闭角色注册表：由共享 `role_identifier` Schema 约束，全部 17 种消息类型共同继承。
 
 ---
 
@@ -155,7 +157,7 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 3. **版本层**：`schema_version` 在支持集合内；`protocol_version` 协商区间重叠（PROTOCOL §1）；失败 → 拒绝（`protocol_incompatible`）。
 4. **结构层**：Schema 校验（必填、类型、封闭枚举、条件必填、`additionalProperties`）；失败 → 拒绝（`validation`）。
 5. **完整性层**：canonical hash 重算比对（envelope `content_hash`、detached `target_hash`）；失败 → 拒绝。
-6. **签名层**：签名容器形式检查（JWS 三段 / detached manifest）、`alg` 白名单、签名验证、`kid` 在可信钥集且未撤销；失败 → 拒绝（`authentication`）。
+6. **签名层**：签名容器形式检查（JWS 三段 / detached manifest）、`alg` 白名单；detached manifest 按 `arh-detached-signature-v1` 重构 canonical preimage，JWS 按 RFC 7515 重构 signing input；随后验签并确认 `kid` 在可信钥集且未撤销；失败 → 拒绝（`authentication`）。
 7. **时间与注册表层**：`iat/nbf/exp/TTL`、clock skew、issuer/audience/scope 注册表；失败 → 拒绝（`authorization`）。
 8. **状态层**：撤销清单、replay cache、生命周期迁移白名单、session 复用禁止；失败 → 拒绝。
 9. **授权上下文层**：绑定对象与政策裁决一致性（`policy_bundle_hash` / `policy_decision_id` / 三层授权上限）；失败 → 拒绝（`authorization` / `policy_denied`）。
@@ -195,6 +197,6 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 ## 11. 当前状态
 
 - 本契约包为 **PROPOSED** 设计契约；未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
-- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（28/28 valid PASS、90/90 invalid 正确处理）已在外部验证环境运行并 PASS；Business Semantic Validation（20 项跨字段检查）PASS。以上验证结果为 **executor self-check**，不等于独立审核。验证环境为 `E:\omp-tools\json-schema-audit`，**未在仓库安装任何依赖**。
+- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（29/29 valid PASS、118/118 invalid 正确处理：105 schema、11 business、2 decoded-header）已在隔离的仓库外验证环境运行并 PASS；Business Semantic Validation 为上述 11 个确定性 business vectors，不包含已由 Schema 结构化表达的 tier/budget/A5/loop/routing/ladder 检查。以上验证结果为 **executor self-check**，不等于独立审核；**仓库内未安装任何验证依赖**。
 - 本契约包的批准预期走 `GOVERNANCE_APPROVAL_0007`（**本轮未创建**）；`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 - 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 仍 `PROPOSED`。

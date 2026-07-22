@@ -30,7 +30,7 @@
 
 ## conformance/ 目录
 
-`conformance/` 下的 JSON fixtures 为非执行型设计验收向量，用于表达"该校验路径必须接受/拒绝"。当前 118 个 fixtures（28 valid + 90 invalid），详见 `MACHINE_READABLE_CONTRACTS.md` §10。
+`conformance/` 下的 JSON fixtures 为非执行型设计验收向量，用于表达"该校验路径必须接受/拒绝"。当前 147 个 fixtures（29 valid + 118 invalid），详见 `MACHINE_READABLE_CONTRACTS.md` §10。
 
 ## 当前状态
 
@@ -38,19 +38,19 @@
 - Phase 1：`NOT AUTHORIZED`
 - Code Status：`NO PRODUCT CODE`
 - Schema count：**12** 个 JSON Schema 文件
-- Fixture count：**118** 个 conformance fixtures（28 valid + 90 invalid）
+- Fixture count：**147** 个 conformance fixtures（29 valid + 118 invalid）
 
 ### 分层 Validation Status
 
 | 层 | 状态 | 说明 |
 |---|---|---|
-| Static Precheck | `PASS` | JSON 语法（130 文件 = 12 schema + 118 fixture）、$id 唯一性（12 ID）、$ref 可解析性（180 ref）、duplicate-key 检测（130 文件，0 重复键）、atomic preflight（UUIDv4/hash/base64url/required） |
+| Static Precheck | `PASS` | JSON 语法（159 文件 = 12 schema + 147 fixture）、$id 唯一性（12 ID）、$ref 可解析性（182 ref）、duplicate-key 检测（159 文件，0 重复键）、atomic preflight（UUIDv4/hash/base64url/required） |
 | Schema Meta-Validation | `PASS` | 12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译（strict=true, strictTypes=true, strictSchema=true, strictRequired=true） |
-| Fixture Execution | `PASS` | 28/28 valid fixtures 通过对应 Schema instance validation；90/90 invalid fixtures 被正确处理（schema-layer 被拒绝；business/decoded-header-layer 为 schema-valid 但被对应业务层拒绝） |
-| Business Semantic Validation | `PASS` | 20 项跨字段语义检查通过（tier 唯一性/完备性、budget 唯一性/上限、TTL 排序、a5_policy 三 const、loop_limits V1.1 上下界、default decision 五级阶梯、expired/revoked/blind-retry 定向失败、target SHA-256 重算一致性） |
+| Fixture Execution | `PASS` | 29/29 valid fixtures 通过；118/118 invalid fixtures 被正确处理（105 schema-layer、11 business-layer、2 decoded-header） |
+| Business Semantic Validation | `PASS` | 11 个确定性 business vectors：default TTL、replay retention、FAILED session reuse、两类 replay、expiry、revocation、target hash、detached-preimage metadata substitution、`nbf > iat`、`iat == exp`；已由 Schema 表达的 tier/budget/A5/loop/routing/ladder 不再冒充 business checks |
 | Crypto/Runtime Validation | `UNVALIDATED` | 设计契约，未实现；签名/验签/replay/revocation 均未运行 |
 
-> **诚实声明**：Schema Meta-Validation 与 Fixture Execution 已在外部验证环境 `E:\omp-tools\json-schema-audit`（Ajv 8.20.0 + ajv-formats 3.0.1, Draft 2020-12）中运行，**未在仓库安装任何依赖**。全部 12 个 Schema 已在 Ajv **strict mode**（strict=true, strictTypes=true, strictSchema=true, strictRequired=true）下编译通过；无需关闭任何 strict 检查。以上验证结果为 executor self-check，不等于独立审核。Crypto/Runtime Validation 仍 `UNVALIDATED`。
+> **诚实声明**：Schema Meta-Validation 与 Fixture Execution 已在隔离的仓库外验证环境（Ajv 8.20.0 + ajv-formats 3.0.1, Draft 2020-12）中运行，**未在仓库安装任何依赖**。全部 12 个 Schema 已在 Ajv **strict mode**（strict=true, strictTypes=true, strictSchema=true, strictRequired=true）下编译通过；无需关闭任何 strict 检查。以上验证结果为 executor self-check，不等于独立审核。Crypto/Runtime Validation 仍 `UNVALIDATED`。
 > 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`，Phase 1 仍 `NOT AUTHORIZED`，ADR-0003 仍 `PROPOSED`。
 
 - 预期批准编号：`GOVERNANCE_APPROVAL_0007`（**本轮未创建**）

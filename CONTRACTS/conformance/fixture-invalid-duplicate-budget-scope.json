@@ -2,7 +2,7 @@
   "fixture_id": "invalid-duplicate-budget-scope",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "Duplicate per_workflow budget scope; Schema budgets maxContains rejects it",
   "expected_violation": {
     "layer": "schema",
     "rule": "budgets allOf: per_workflow maxContains 1 exceeded"

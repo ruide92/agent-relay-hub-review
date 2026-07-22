@@ -1,12 +1,8 @@
 {
-  "fixture_id": "invalid-external-state-unknown-but-safe-to-retry",
+  "fixture_id": "message-result-external-state-unknown-valid",
   "target_schema": "CONTRACTS/arp-message.schema.json",
-  "expected": "invalid",
-  "note": "external_state_known=false but safe_to_retry=true — blind retry forbidden",
-  "expected_violation": {
-    "layer": "schema",
-    "rule": "result payload allOf: external_state_known=false → safe_to_retry must be false"
-  },
+  "expected": "valid",
+  "note": "结构示例，非密码学有效证据；external_state_unknown 正确进入 RECONCILIATION_REQUIRED",
   "instance": {
     "protocol_version": 1,
     "schema_version": "1.0.0",
@@ -33,14 +29,16 @@
     },
     "payload": {
       "result_status": "error",
-      "error_code": "E002",
+      "error_code": "E-EXTERNAL-UNKNOWN",
       "category": "external_state_unknown",
       "retriable": false,
       "retry_after": 0,
-      "safe_to_retry": true,
+      "safe_to_retry": false,
       "external_state_known": false,
-      "details": "unknown state",
-      "evidence": [],
+      "details": "schema violation",
+      "evidence": [
+        "E-001"
+      ],
       "terminal_recommendation": "RECONCILIATION_REQUIRED"
     },
     "integrity": {

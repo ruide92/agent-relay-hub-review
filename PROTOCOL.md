@@ -117,7 +117,12 @@ Code Status: NO PRODUCT CODE
 
 ### 4.2 公共必填字段语义
 
-- `sender_role` / `recipient_role`：MUST 为已定义角色（如 `worker.primary`、`reviewer.security`、`policy.engine`）。
+- `sender_role` / `recipient_role`：MUST 命中以下封闭角色注册表；未登记角色族 MUST fail-closed：
+  - `policy.engine`（固定政策引擎服务角色）；
+  - `worker.<role>`（如 `worker.primary`）；
+  - `reviewer` 或 `reviewer.<specialty>`（如 `reviewer.security`）；
+  - `evidence_verifier` 或 `evidence_verifier.<specialty>`（如 `evidence_verifier.security`）。
+  - `<role>` / `<specialty>` 每段 MUST 匹配 `[a-z][a-z0-9_-]*`；不得以任意非空字符串代替角色注册。
 - `target`：描述作用对象；MUST 在能力 / 政策允许范围内。
 - `attempt`：delivery_attempt 序号，从 1 递增。
 - `expires_at`：消息过期时间；过期消息 MUST NOT 被当作新结果处理（V1.1 §11）。
@@ -310,7 +315,21 @@ terminal_recommendation
 规则：
 
 - `external_state_known=false` 时 MUST NOT 自动盲重试；MUST 进入对账或安全终态。
-- `terminal_recommendation` 由政策引擎裁决，MUST 映射到 V1.1 §8.2 已有终态之一。
+- `terminal_recommendation` 由政策引擎裁决；除外部状态未知时使用 `RECONCILIATION_REQUIRED` 外，MUST 映射到 V1.1 §8.2 已有终态。固定非重试类别的映射如下，Schema MUST 同步约束：
+
+| category | retriable / safe_to_retry | terminal_recommendation |
+|---|---|---|
+| `validation` | `false / false` | `BLOCKED_REDESIGN_REQUIRED` |
+| `authentication` | `false / false` | `BLOCKED_AUTH_EXPIRED` |
+| `authorization` | `false / false` | `BLOCKED_AUTH_EXPIRED` |
+| `capability` | `false / false` | `FAILED_EXTERNAL_DEPENDENCY` |
+| `external_state_unknown` | `false / false`，且 `external_state_known=false` | `RECONCILIATION_REQUIRED` |
+| `policy_denied` | `false / false` | `CANCELLED_BY_POLICY` |
+| `budget_exhausted` | `false / false` | `BLOCKED_BUDGET_EXHAUSTED` |
+| `protocol_incompatible` | `false / false` | `FAILED_EXTERNAL_DEPENDENCY` |
+| `cancelled` | `false / false` | `CANCELLED_BY_POLICY` |
+
+`timeout` / `transport` / `internal` 仍由上下文和政策裁决；但 `retriable=true` 时 MUST 同时满足 `safe_to_retry=true` 与 `external_state_known=true`。`external_state_known=false` 时 MUST 设置 `retriable=false`、`safe_to_retry=false` 并进入 `RECONCILIATION_REQUIRED`。
 
 ### 8.1 自动重试前置条件
 

@@ -12,6 +12,7 @@
     "manifest_id": "sm-001",
     "signatures": [
       {
+        "preimage_profile": "arh-detached-signature-v1",
         "target_type": "policy_bundle",
         "target_id": "pb-001",
         "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",

@@ -2,7 +2,7 @@
   "fixture_id": "invalid-missing-a4-tier",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Missing A4 tier (business validation: all A0-A4 required)",
+  "note": "Missing A4 tier; Schema authorization_tiers minContains rejects it",
   "expected_violation": {
     "layer": "schema",
     "rule": "authorization_tiers allOf: A4 minContains 1 not met"

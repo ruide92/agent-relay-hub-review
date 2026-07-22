@@ -2,7 +2,7 @@
   "fixture_id": "invalid-duplicate-authorization-tier",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate A0 tier (business validation: each tier exactly once)",
+  "note": "Duplicate A0 tier; Schema authorization_tiers maxContains rejects it",
   "expected_violation": {
     "layer": "schema",
     "rule": "authorization_tiers allOf: A0 maxContains 1 exceeded"

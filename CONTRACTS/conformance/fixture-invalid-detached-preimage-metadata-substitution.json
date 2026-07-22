@@ -1,8 +1,8 @@
 {
-  "fixture_id": "sig-manifest-valid",
+  "fixture_id": "invalid-detached-preimage-metadata-substitution",
   "target_schema": "CONTRACTS/signature-manifest.schema.json",
-  "expected": "valid",
-  "note": "结构与 canonical preimage 正向向量，非密码学有效签名证据；signature_value 为占位值",
+  "expected": "invalid",
+  "note": "target_id substitution changes the canonical detached-signature preimage; structural vector only, not a real cryptographic signature",
   "instance": {
     "schema_version": "1.0.0",
     "manifest_id": "sm-001",
@@ -10,7 +10,7 @@
       {
         "preimage_profile": "arh-detached-signature-v1",
         "target_type": "policy_bundle",
-        "target_id": "pb-001",
+        "target_id": "pb-tampered",
         "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
         "key_id": "arh-key-01",
         "key_purpose": "policy_bundle",
@@ -36,6 +36,12 @@
       "target_type": "policy_bundle"
     },
     "expected_signing_preimage_utf8": "ARH-DETACHED-SIGNATURE-V1\n{\"algorithm\":\"ES256\",\"extensions\":{},\"key_id\":\"arh-key-01\",\"key_purpose\":\"policy_bundle\",\"manifest_id\":\"sm-001\",\"preimage_profile\":\"arh-detached-signature-v1\",\"schema_version\":\"1.0.0\",\"signed_at\":\"2026-07-22T00:00:00Z\",\"target_hash\":\"sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789\",\"target_id\":\"pb-001\",\"target_type\":\"policy_bundle\"}",
-    "expected_signing_preimage_sha256": "sha256:842e0b4b3007040091ca947901a22e9818f9baca9608b2e1f20d0726b3254fee"
+    "expected_signing_preimage_sha256": "sha256:842e0b4b3007040091ca947901a22e9818f9baca9608b2e1f20d0726b3254fee",
+    "original_signing_preimage_sha256": "sha256:842e0b4b3007040091ca947901a22e9818f9baca9608b2e1f20d0726b3254fee",
+    "reconstructed_signing_preimage_sha256": "sha256:82af0048eaf158168eb270c41a2d694ac4595b86d2b55cc783875ab79b877546"
+  },
+  "expected_violation": {
+    "layer": "business",
+    "rule": "SECURITY.md §8.2: reconstructed preimage hash after target_id substitution differs from the originally signed preimage hash"
   }
 }
