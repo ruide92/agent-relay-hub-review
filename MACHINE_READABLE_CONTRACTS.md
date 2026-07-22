@@ -10,10 +10,10 @@ Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Schema count: 12
 Fixture count: 160 (40 valid + 120 invalid)
-Schema Static Check Status: PASS (JSON syntax 159 files; $id uniqueness 12 IDs; $ref resolvability 182 refs; duplicate-key detection 159 files 0 dupes; atomic preflight)
+Schema Static Check Status: PASS (JSON syntax 172 files; $id uniqueness 12 IDs; $ref resolvability 182 refs; duplicate-key detection 172 files 0 dupes; atomic preflight)
 Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true in an isolated external validator; no deps installed in repo; executor self-check, not independent review)
 Fixture Execution Status: PASS (40/40 valid passed instance validation; 120/120 invalid correctly handled: 105 schema-layer rejected, 13 business-layer predicates reproduced, 2 decoded-header failures)
-Business Semantic Validation Status: PASS (11 deterministic vectors: default TTL ceiling, replay-retention floor, FAILED-session reuse, in-run replay, replay after restart, token expiry, token revocation, target SHA-256 mismatch, detached-preimage metadata substitution, nbf-after-iat, zero-lifetime iat==exp)
+Business Semantic Validation Status: PASS (13 deterministic vectors: default TTL ceiling, replay-retention floor, FAILED-session reuse, in-run replay, replay after restart, token expiry, token revocation, target SHA-256 mismatch, detached-preimage metadata substitution, nbf-after-iat, zero-lifetime iat==exp, tier scope→scope_registry membership, rule scope→scope_registry membership)
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
 
