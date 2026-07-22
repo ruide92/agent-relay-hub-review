@@ -195,6 +195,6 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 ## 11. 当前状态
 
 - 本契约包为 **PROPOSED** 设计契约；未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
-- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（28/28 valid PASS、83/83 invalid 正确处理）已在外部验证环境运行并 PASS；Business Semantic Validation（20 项跨字段检查）PASS。以上验证结果为 **executor self-check**，不等于独立审核。验证环境为 `E:\omp-tools\json-schema-audit`，**未在仓库安装任何依赖**。
+- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（28/28 valid PASS、90/90 invalid 正确处理）已在外部验证环境运行并 PASS；Business Semantic Validation（20 项跨字段检查）PASS。以上验证结果为 **executor self-check**，不等于独立审核。验证环境为 `E:\omp-tools\json-schema-audit`，**未在仓库安装任何依赖**。
 - 本契约包的批准预期走 `GOVERNANCE_APPROVAL_0007`（**本轮未创建**）；`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 - 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 仍 `PROPOSED`。
