@@ -65,10 +65,19 @@
       "additionalProperties": false,
       "allOf": [
         {
-          "if": { "required": ["signature"] },
-          "then": { "required": ["signature_algorithm", "key_id", "key_purpose"] }
+          "description": "If signature is present, signature_algorithm, key_id, and key_purpose MUST be present",
+          "if": { "required": ["signature"], "properties": { "signature": { "type": "string", "minLength": 1 } } },
+          "then": {
+            "required": ["signature_algorithm", "key_id", "key_purpose"],
+            "properties": {
+              "signature_algorithm": { "type": "string", "enum": ["ES256"] },
+              "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
+              "key_purpose": { "type": "string", "const": "envelope" }
+            }
+          }
         },
         {
+          "description": "If signature is NOT present, signature_algorithm, key_id, and key_purpose MUST NOT be present",
           "if": { "not": { "required": ["signature"] } },
           "then": {
             "not": {

@@ -40,22 +40,23 @@
   "additionalProperties": false,
   "allOf": [
     {
-      "description": "A0 tier: scope MUST NOT contain any tier above A0 (forbidden: review:request, plan:generate, workflow:execute, artifact:write, message:send, git:commit, git:push, pr:create, deploy:staging)",
+      "description": "A0 tier: scope MUST NOT contain any tier above A0",
       "if": { "properties": { "max_authorization_tier": { "const": "A0" } } },
       "then": {
         "properties": {
           "scope": {
+            "type": "array",
             "not": {
               "anyOf": [
-                { "contains": { "const": "review:request" } },
-                { "contains": { "const": "plan:generate" } },
-                { "contains": { "const": "workflow:execute" } },
-                { "contains": { "const": "artifact:write" } },
-                { "contains": { "const": "message:send" } },
-                { "contains": { "const": "git:commit" } },
-                { "contains": { "const": "git:push" } },
-                { "contains": { "const": "pr:create" } },
-                { "contains": { "const": "deploy:staging" } }
+                { "type": "array", "contains": { "const": "review:request" } },
+                { "type": "array", "contains": { "const": "plan:generate" } },
+                { "type": "array", "contains": { "const": "workflow:execute" } },
+                { "type": "array", "contains": { "const": "artifact:write" } },
+                { "type": "array", "contains": { "const": "message:send" } },
+                { "type": "array", "contains": { "const": "git:commit" } },
+                { "type": "array", "contains": { "const": "git:push" } },
+                { "type": "array", "contains": { "const": "pr:create" } },
+                { "type": "array", "contains": { "const": "deploy:staging" } }
               ]
             }
           }
@@ -63,20 +64,21 @@
       }
     },
     {
-      "description": "A1 tier: scope MUST NOT contain any tier above A1 (forbidden: workflow:execute, artifact:write, message:send, git:commit, git:push, pr:create, deploy:staging)",
+      "description": "A1 tier: scope MUST NOT contain any tier above A1",
       "if": { "properties": { "max_authorization_tier": { "const": "A1" } } },
       "then": {
         "properties": {
           "scope": {
+            "type": "array",
             "not": {
               "anyOf": [
-                { "contains": { "const": "workflow:execute" } },
-                { "contains": { "const": "artifact:write" } },
-                { "contains": { "const": "message:send" } },
-                { "contains": { "const": "git:commit" } },
-                { "contains": { "const": "git:push" } },
-                { "contains": { "const": "pr:create" } },
-                { "contains": { "const": "deploy:staging" } }
+                { "type": "array", "contains": { "const": "workflow:execute" } },
+                { "type": "array", "contains": { "const": "artifact:write" } },
+                { "type": "array", "contains": { "const": "message:send" } },
+                { "type": "array", "contains": { "const": "git:commit" } },
+                { "type": "array", "contains": { "const": "git:push" } },
+                { "type": "array", "contains": { "const": "pr:create" } },
+                { "type": "array", "contains": { "const": "deploy:staging" } }
               ]
             }
           }
@@ -84,17 +86,18 @@
       }
     },
     {
-      "description": "A2 tier: scope MUST NOT contain any tier above A2 (forbidden: git:commit, git:push, pr:create, deploy:staging)",
+      "description": "A2 tier: scope MUST NOT contain any tier above A2",
       "if": { "properties": { "max_authorization_tier": { "const": "A2" } } },
       "then": {
         "properties": {
           "scope": {
+            "type": "array",
             "not": {
               "anyOf": [
-                { "contains": { "const": "git:commit" } },
-                { "contains": { "const": "git:push" } },
-                { "contains": { "const": "pr:create" } },
-                { "contains": { "const": "deploy:staging" } }
+                { "type": "array", "contains": { "const": "git:commit" } },
+                { "type": "array", "contains": { "const": "git:push" } },
+                { "type": "array", "contains": { "const": "pr:create" } },
+                { "type": "array", "contains": { "const": "deploy:staging" } }
               ]
             }
           }
@@ -102,14 +105,15 @@
       }
     },
     {
-      "description": "A3 tier: scope MUST NOT contain A4 deploy:staging (forbidden: deploy:staging only)",
+      "description": "A3 tier: scope MUST NOT contain A4 deploy:staging",
       "if": { "properties": { "max_authorization_tier": { "const": "A3" } } },
       "then": {
         "properties": {
           "scope": {
+            "type": "array",
             "not": {
               "anyOf": [
-                { "contains": { "const": "deploy:staging" } }
+                { "type": "array", "contains": { "const": "deploy:staging" } }
               ]
             }
           }

@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-duplicate-budget-scope",
+  "fixture_id": "invalid-allow-empty-scope",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "effect=allow rule with empty scope (minItems 1 required)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "budgets allOf: per_workflow maxContains 1 exceeded"
+    "rule": "rules allOf[0].then: scope minItems 1"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -102,16 +102,20 @@
       "deploy:staging",
       "adapter:health_check"
     ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
+    ],
     "rules": [
       {
-        "rule_id": "r-001",
+        "rule_id": "r-bad",
         "effect": "allow",
         "authorization_tier_ceiling": "A3",
-        "scope": [
-          "workflow:execute",
-          "git:commit"
-        ],
-        "description": "allow workflow execution + git commit at A3"
+        "scope": [],
+        "description": "allow with empty scope"
       }
     ],
     "budgets": [
@@ -120,12 +124,6 @@
         "scope": "per_workflow",
         "max_tokens": 2000000,
         "max_usd": 10
-      },
-      {
-        "budget_id": "b-wf2",
-        "scope": "per_workflow",
-        "max_tokens": 1000000,
-        "max_usd": 5
       },
       {
         "budget_id": "b-pd",
@@ -164,7 +162,8 @@
       "adapter_priority": "official_api_sdk",
       "fallback_chain": [
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom"
       ]
     },
     "release_gates": [
@@ -200,13 +199,6 @@
           "receive"
         ]
       }
-    ],
-    "default_decision_ladder": [
-      "safe_skip",
-      "conservative_default",
-      "equivalent_fallback",
-      "degraded_completion",
-      "blocked_needs_policy_decision"
     ]
   }
 }

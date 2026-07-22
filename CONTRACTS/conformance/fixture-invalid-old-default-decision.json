@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-duplicate-budget-scope",
+  "fixture_id": "invalid-old-default-decision",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "Uses old default_decision field instead of required default_decision_ladder",
   "expected_violation": {
     "layer": "schema",
-    "rule": "budgets allOf: per_workflow maxContains 1 exceeded"
+    "rule": "required: default_decision_ladder is missing"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -122,12 +122,6 @@
         "max_usd": 10
       },
       {
-        "budget_id": "b-wf2",
-        "scope": "per_workflow",
-        "max_tokens": 1000000,
-        "max_usd": 5
-      },
-      {
         "budget_id": "b-pd",
         "scope": "per_project_daily",
         "max_tokens": 10000000,
@@ -164,7 +158,8 @@
       "adapter_priority": "official_api_sdk",
       "fallback_chain": [
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom"
       ]
     },
     "release_gates": [
@@ -201,12 +196,6 @@
         ]
       }
     ],
-    "default_decision_ladder": [
-      "safe_skip",
-      "conservative_default",
-      "equivalent_fallback",
-      "degraded_completion",
-      "blocked_needs_policy_decision"
-    ]
+    "default_decision": "blocked_needs_policy_decision"
   }
 }

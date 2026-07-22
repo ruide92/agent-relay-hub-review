@@ -4,11 +4,8 @@
   "expected": "invalid",
   "note": "Missing A4 tier (business validation: all A0-A4 required)",
   "expected_violation": {
-    "layer": "business",
-    "rule": "authorization_tiers: A4 is missing; all A0-A4 required"
-  },
-  "validation_context": {
-    "business_rule": "authorization_tiers: A0-A4 each required exactly once"
+    "layer": "schema",
+    "rule": "authorization_tiers allOf: A4 minContains 1 not met"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -66,7 +63,6 @@
       "deploy:staging",
       "adapter:health_check"
     ],
-    "default_decision": "blocked_needs_policy_decision",
     "rules": [
       {
         "rule_id": "r-001",
@@ -147,7 +143,9 @@
     },
     "degraded_behavior": {
       "on_capability_loss": "reroute",
-      "on_adapter_crash_threshold": 3
+      "on_adapter_crash_threshold": 3,
+      "crash_observation_window_minutes": 10,
+      "circuit_breaker_cooldown_minutes": 15
     },
     "adapter_allowlists": [
       {
@@ -157,6 +155,13 @@
           "receive"
         ]
       }
+    ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
     ]
   }
 }

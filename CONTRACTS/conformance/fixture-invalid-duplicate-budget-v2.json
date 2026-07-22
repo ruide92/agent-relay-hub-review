@@ -1,8 +1,8 @@
 {
-  "fixture_id": "invalid-duplicate-budget-scope",
+  "fixture_id": "invalid-duplicate-budget-v2",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "Duplicate per_workflow budget — maxContains:1 violated",
   "expected_violation": {
     "layer": "schema",
     "rule": "budgets allOf: per_workflow maxContains 1 exceeded"
@@ -102,6 +102,13 @@
       "deploy:staging",
       "adapter:health_check"
     ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
+    ],
     "rules": [
       {
         "rule_id": "r-001",
@@ -132,12 +139,6 @@
         "scope": "per_project_daily",
         "max_tokens": 10000000,
         "max_usd": 50
-      },
-      {
-        "budget_id": "b-gd",
-        "scope": "global_daily",
-        "max_tokens": 50000000,
-        "max_usd": 200
       }
     ],
     "loop_limits": {
@@ -164,7 +165,8 @@
       "adapter_priority": "official_api_sdk",
       "fallback_chain": [
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom"
       ]
     },
     "release_gates": [
@@ -200,13 +202,6 @@
           "receive"
         ]
       }
-    ],
-    "default_decision_ladder": [
-      "safe_skip",
-      "conservative_default",
-      "equivalent_fallback",
-      "degraded_completion",
-      "blocked_needs_policy_decision"
     ]
   }
 }

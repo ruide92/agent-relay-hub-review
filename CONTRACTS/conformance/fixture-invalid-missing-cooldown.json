@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-duplicate-budget-scope",
+  "fixture_id": "invalid-missing-cooldown",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "degraded_behavior missing circuit_breaker_cooldown_minutes",
   "expected_violation": {
     "layer": "schema",
-    "rule": "budgets allOf: per_workflow maxContains 1 exceeded"
+    "rule": "degraded_behavior required: circuit_breaker_cooldown_minutes"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -102,6 +102,13 @@
       "deploy:staging",
       "adapter:health_check"
     ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
+    ],
     "rules": [
       {
         "rule_id": "r-001",
@@ -120,12 +127,6 @@
         "scope": "per_workflow",
         "max_tokens": 2000000,
         "max_usd": 10
-      },
-      {
-        "budget_id": "b-wf2",
-        "scope": "per_workflow",
-        "max_tokens": 1000000,
-        "max_usd": 5
       },
       {
         "budget_id": "b-pd",
@@ -164,7 +165,8 @@
       "adapter_priority": "official_api_sdk",
       "fallback_chain": [
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom"
       ]
     },
     "release_gates": [
@@ -189,8 +191,7 @@
     "degraded_behavior": {
       "on_capability_loss": "reroute",
       "on_adapter_crash_threshold": 3,
-      "crash_observation_window_minutes": 10,
-      "circuit_breaker_cooldown_minutes": 15
+      "crash_observation_window_minutes": 10
     },
     "adapter_allowlists": [
       {
@@ -200,13 +201,6 @@
           "receive"
         ]
       }
-    ],
-    "default_decision_ladder": [
-      "safe_skip",
-      "conservative_default",
-      "equivalent_fallback",
-      "degraded_completion",
-      "blocked_needs_policy_decision"
     ]
   }
 }

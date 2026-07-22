@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-duplicate-budget-scope",
+  "fixture_id": "invalid-a1-rule-a3-scope",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "Rule with A1 ceiling authorizes git:commit (A3+ scope) — forbidden above ceiling",
   "expected_violation": {
     "layer": "schema",
-    "rule": "budgets allOf: per_workflow maxContains 1 exceeded"
+    "rule": "A1 ceiling allOf: rule scope must NOT contain git:commit"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -102,16 +102,22 @@
       "deploy:staging",
       "adapter:health_check"
     ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
+    ],
     "rules": [
       {
-        "rule_id": "r-001",
+        "rule_id": "r-bad",
         "effect": "allow",
-        "authorization_tier_ceiling": "A3",
+        "authorization_tier_ceiling": "A1",
         "scope": [
-          "workflow:execute",
           "git:commit"
         ],
-        "description": "allow workflow execution + git commit at A3"
+        "description": "A1 ceiling but git:commit scope (A3+)"
       }
     ],
     "budgets": [
@@ -120,12 +126,6 @@
         "scope": "per_workflow",
         "max_tokens": 2000000,
         "max_usd": 10
-      },
-      {
-        "budget_id": "b-wf2",
-        "scope": "per_workflow",
-        "max_tokens": 1000000,
-        "max_usd": 5
       },
       {
         "budget_id": "b-pd",
@@ -164,7 +164,8 @@
       "adapter_priority": "official_api_sdk",
       "fallback_chain": [
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom"
       ]
     },
     "release_gates": [
@@ -200,13 +201,6 @@
           "receive"
         ]
       }
-    ],
-    "default_decision_ladder": [
-      "safe_skip",
-      "conservative_default",
-      "equivalent_fallback",
-      "degraded_completion",
-      "blocked_needs_policy_decision"
     ]
   }
 }

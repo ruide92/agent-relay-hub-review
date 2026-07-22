@@ -2,13 +2,10 @@
   "fixture_id": "invalid-budget-exceeds-token-limit",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "per_workflow max_tokens exceeds V1.1 absolute ceiling 2,000,000 (business validation)",
+  "note": "per_workflow max_tokens exceeds Schema maximum 2000000 (now enforced in Schema)",
   "expected_violation": {
-    "layer": "business",
-    "rule": "budgets: per_workflow max_tokens (3000000) > absolute ceiling 2000000"
-  },
-  "validation_context": {
-    "business_rule": "per_workflow max_tokens absolute ceiling: 2000000"
+    "layer": "schema",
+    "rule": "budgets if/then: per_workflow max_tokens maximum 2000000"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -105,7 +102,6 @@
       "deploy:staging",
       "adapter:health_check"
     ],
-    "default_decision": "blocked_needs_policy_decision",
     "rules": [
       {
         "rule_id": "r-001",
@@ -186,7 +182,9 @@
     },
     "degraded_behavior": {
       "on_capability_loss": "reroute",
-      "on_adapter_crash_threshold": 3
+      "on_adapter_crash_threshold": 3,
+      "crash_observation_window_minutes": 10,
+      "circuit_breaker_cooldown_minutes": 15
     },
     "adapter_allowlists": [
       {
@@ -196,6 +194,13 @@
           "receive"
         ]
       }
+    ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
     ]
   }
 }

@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-duplicate-budget-scope",
+  "fixture_id": "invalid-duplicate-tier-v2",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "Duplicate per_workflow budget scope (business validation: exactly once)",
+  "note": "Duplicate A0 tier — maxContains:1 violated",
   "expected_violation": {
     "layer": "schema",
-    "rule": "budgets allOf: per_workflow maxContains 1 exceeded"
+    "rule": "authorization_tiers allOf: A0 maxContains 1 exceeded"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -15,70 +15,31 @@
       {
         "tier": "A0",
         "allowed_scopes": [
-          "workflow:read",
-          "artifact:read",
-          "message:receive",
-          "adapter:health_check"
+          "workflow:read"
+        ]
+      },
+      {
+        "tier": "A0",
+        "allowed_scopes": [
+          "artifact:read"
         ]
       },
       {
         "tier": "A1",
         "allowed_scopes": [
-          "workflow:read",
-          "artifact:read",
-          "message:receive",
-          "review:request",
-          "plan:generate",
-          "adapter:health_check"
+          "review:request"
         ]
       },
       {
         "tier": "A2",
         "allowed_scopes": [
-          "workflow:read",
-          "artifact:read",
-          "artifact:write",
-          "message:send",
-          "message:receive",
-          "workflow:execute",
-          "review:request",
-          "plan:generate",
-          "adapter:health_check"
+          "workflow:execute"
         ]
       },
       {
         "tier": "A3",
         "allowed_scopes": [
-          "workflow:read",
-          "workflow:execute",
-          "artifact:read",
-          "artifact:write",
-          "message:send",
-          "message:receive",
-          "review:request",
-          "plan:generate",
-          "git:commit",
-          "git:push",
-          "pr:create",
-          "adapter:health_check"
-        ]
-      },
-      {
-        "tier": "A4",
-        "allowed_scopes": [
-          "workflow:read",
-          "workflow:execute",
-          "artifact:read",
-          "artifact:write",
-          "message:send",
-          "message:receive",
-          "review:request",
-          "plan:generate",
-          "git:commit",
-          "git:push",
-          "pr:create",
-          "deploy:staging",
-          "adapter:health_check"
+          "git:commit"
         ]
       }
     ],
@@ -102,6 +63,13 @@
       "deploy:staging",
       "adapter:health_check"
     ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
+    ],
     "rules": [
       {
         "rule_id": "r-001",
@@ -120,12 +88,6 @@
         "scope": "per_workflow",
         "max_tokens": 2000000,
         "max_usd": 10
-      },
-      {
-        "budget_id": "b-wf2",
-        "scope": "per_workflow",
-        "max_tokens": 1000000,
-        "max_usd": 5
       },
       {
         "budget_id": "b-pd",
@@ -164,7 +126,8 @@
       "adapter_priority": "official_api_sdk",
       "fallback_chain": [
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom"
       ]
     },
     "release_gates": [
@@ -200,13 +163,6 @@
           "receive"
         ]
       }
-    ],
-    "default_decision_ladder": [
-      "safe_skip",
-      "conservative_default",
-      "equivalent_fallback",
-      "degraded_completion",
-      "blocked_needs_policy_decision"
     ]
   }
 }
