@@ -158,10 +158,17 @@
       ]
     },
     "routing": {
-      "adapter_priority": "official_api_sdk",
-      "fallback_chain": [
+      "adapter_priority_order": [
+        "official_api_sdk",
         "cli",
-        "webhook"
+        "webhook",
+        "playwright_dom",
+        "uia",
+        "visual_coordinate"
+      ],
+      "enabled_adapters": [
+        "official_api_sdk",
+        "cli"
       ]
     },
     "release_gates": [

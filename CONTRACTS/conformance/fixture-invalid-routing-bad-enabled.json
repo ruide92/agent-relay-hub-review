@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-a5-policy",
+  "fixture_id": "invalid-routing-bad-enabled",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "a5_policy.default_deny must be true (const)",
+  "note": "enabled_adapters contains invalid_adapter not in closed enum",
   "expected_violation": {
     "layer": "schema",
-    "rule": "a5_policy.default_deny: const true; false is rejected"
+    "rule": "routing.enabled_adapters items enum: invalid_adapter not allowed"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -83,7 +83,7 @@
       }
     ],
     "a5_policy": {
-      "default_deny": false,
+      "default_deny": true,
       "capability_token_grantable": false,
       "requires_explicit_owner_authorization": true
     },
@@ -165,7 +165,7 @@
       ],
       "enabled_adapters": [
         "official_api_sdk",
-        "cli"
+        "invalid_adapter"
       ]
     },
     "release_gates": [

@@ -9,10 +9,10 @@ Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
 Schema count: 12
-Fixture count: 111 (28 valid + 83 invalid)
-Schema Static Check Status: PASS (JSON syntax 123 files; $id uniqueness 12 IDs; $ref resolvability 180 refs; duplicate-key detection 123 files 0 dupes; atomic preflight)
+Fixture count: 118 (28 valid + 90 invalid)
+Schema Static Check Status: PASS (JSON syntax 130 files; $id uniqueness 12 IDs; $ref resolvability 180 refs; duplicate-key detection 130 files 0 dupes; atomic preflight)
 Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true; validator: E:\omp-tools\json-schema-audit; no deps installed in repo; executor self-check, not independent review)
-Fixture Execution Status: PASS (28/28 valid passed instance validation; 83/83 invalid correctly handled: schema-layer rejected, business/decoded-header-layer schema-valid but caught by corresponding layer)
+Fixture Execution Status: PASS (28/28 valid passed instance validation; 90/90 invalid correctly handled: schema-layer rejected, business/decoded-header-layer schema-valid but caught by corresponding layer)
 Business Semantic Validation Status: PASS (20 cross-field checks: tier uniqueness/completeness, budget exact-once/ceilings, TTL ordering, a5_policy 3 consts, loop_limits V1.1 bounds, default decision 5-step ladder, expired/revoked/blind-retry directional failure, target SHA-256 recomputation consistency)
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
@@ -128,11 +128,21 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 8. **三层授权一致性**：token `scope`、`max_authorization_tier`、绑定对象（`workflow_id` / `job_id` / `adapter_id` / `session_id` / `policy_bundle_hash` / `policy_decision_id`）与实际调用上下文 MUST 一致；最终授权上限 = min(自报能力, 政策上限, 令牌权限)（V1.1 §4.2.1）。
 9. **禁止字段**：适配器能力上报 MUST NOT 含 `supports_exactly_once_claim`（V1.1 §10.2）；任何对象 MUST NOT 含明文密钥、真实 token 值（`PROTOCOL.md` §12）。
 10. **capability token 泄漏防护**：完整 token MUST NOT 出现在 ARP envelope payload、Event Ledger、日志或截图中；引用 MUST 仅含 `jti` 与 token 哈希（见 `PROTOCOL.md` §13 与 `SECURITY.md` §8.1）。JSON Schema 约束 `capability_token_ref` 仅含 `jti` 与 `token_hash`，但 envelope 层 `additionalProperties: true` 允许未知字段，故完整 token 通过未知字段携带的禁令属于 **business validation**（见 §8 第 9 步），JSON Schema 无法完全禁止。
-11. **policy-bundle 跨字段一致性（business validation）**：以下约束跨越多个字段，超出 JSON Schema 表达能力，校验方 MUST 在 business 层强制执行：
-    - `token_policy.default_ttl_seconds` MUST ≤ `token_policy.max_ttl_seconds`；
-    - `token_policy.replay_cache_retention_seconds` MUST ≥ `max_ttl_seconds + clock_skew_seconds`；
-    - `authorization_tiers` 不得重复（同 `tier` 值出现一次），且 MUST 包含 A0–A4 五档（A5 为禁止档但 MUST 登记）；
-    - `scope_registry` 与 `authorization_tiers[*].allowed_scopes` 中的 scope 引用 MUST 一致（不存在 registry 未登记的 scope）。
+11. **policy-bundle 跨字段一致性（business validation）**：以下约束跨越多个字段或依赖运行时上下文，超出 JSON Schema 表达能力，校验方 MUST 在 business 层强制执行：
+    - `token_policy.default_ttl_seconds` MUST ≤ `token_policy.max_ttl_seconds`（跨字段数值比较，JSON Schema 无算术表达式能力）；
+    - `token_policy.replay_cache_retention_seconds` MUST ≥ `max_ttl_seconds + clock_skew_seconds`（跨字段算术运算）；
+    - `scope_registry` 与 `authorization_tiers[*].allowed_scopes` 中的 scope 引用 MUST 一致（跨数组 membership 检查）。
+
+    以下约束已由 JSON Schema 结构化表达，不再是 business validation：
+    - `authorization_tiers` A0–A4 各精确出现一次：由 `contains` + `minContains:1` + `maxContains:1` + `maxItems:5` 结构约束；
+    - A5 不得出现在 `authorization_tiers` 数组：由 tier enum 限制为 A0–A4；
+    - A5 由独立 `a5_policy` 对象表达，三 const 字段由 Schema const 约束；
+    - `adapter_priority_order` 六级固定顺序：由 `prefixItems` const + `items:false` + `minItems/maxItems:6` 结构约束；
+    - `enabled_adapters` 仅为启用集合（封闭 enum + uniqueItems + minItems:1）；运行时按 `adapter_priority_order` 固定顺序过滤；
+    - 各 tier 的 `allowed_scopes` 禁止上级 scope：由 per-tier `not/anyOf/type:array/contains` 结构约束；
+    - `budgets` 各层 token/USD 绝对上限：由 per-scope `if/then` 条件 Schema 约束；
+    - `default_decision_ladder` 五步阶梯固定顺序：由 `prefixItems` const + `items:false` 约束；
+    - `release_gates.required_severity_filter` 必须为阻断值（`block_high_critical` 或 `block_all`）：由封闭 enum 约束（`none` 已删除）。
 
 ---
 

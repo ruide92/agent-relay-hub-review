@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-a5-policy",
+  "fixture_id": "invalid-routing-order-too-short",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "a5_policy.default_deny must be true (const)",
+  "note": "adapter_priority_order only 3 items — minItems 6 required",
   "expected_violation": {
     "layer": "schema",
-    "rule": "a5_policy.default_deny: const true; false is rejected"
+    "rule": "routing.adapter_priority_order minItems 6"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -83,7 +83,7 @@
       }
     ],
     "a5_policy": {
-      "default_deny": false,
+      "default_deny": true,
       "capability_token_grantable": false,
       "requires_explicit_owner_authorization": true
     },
@@ -158,14 +158,10 @@
       "adapter_priority_order": [
         "official_api_sdk",
         "cli",
-        "webhook",
-        "playwright_dom",
-        "uia",
-        "visual_coordinate"
+        "webhook"
       ],
       "enabled_adapters": [
-        "official_api_sdk",
-        "cli"
+        "official_api_sdk"
       ]
     },
     "release_gates": [

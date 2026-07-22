@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-a5-policy",
+  "fixture_id": "invalid-routing-empty-enabled",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "a5_policy.default_deny must be true (const)",
+  "note": "enabled_adapters is empty — minItems 1 required",
   "expected_violation": {
     "layer": "schema",
-    "rule": "a5_policy.default_deny: const true; false is rejected"
+    "rule": "routing.enabled_adapters minItems 1"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -83,7 +83,7 @@
       }
     ],
     "a5_policy": {
-      "default_deny": false,
+      "default_deny": true,
       "capability_token_grantable": false,
       "requires_explicit_owner_authorization": true
     },
@@ -163,10 +163,7 @@
         "uia",
         "visual_coordinate"
       ],
-      "enabled_adapters": [
-        "official_api_sdk",
-        "cli"
-      ]
+      "enabled_adapters": []
     },
     "release_gates": [
       {

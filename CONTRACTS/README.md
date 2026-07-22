@@ -30,7 +30,7 @@
 
 ## conformance/ 目录
 
-`conformance/` 下的 JSON fixtures 为非执行型设计验收向量，用于表达"该校验路径必须接受/拒绝"。当前 111 个 fixtures（28 valid + 83 invalid），详见 `MACHINE_READABLE_CONTRACTS.md` §10。
+`conformance/` 下的 JSON fixtures 为非执行型设计验收向量，用于表达"该校验路径必须接受/拒绝"。当前 118 个 fixtures（28 valid + 90 invalid），详见 `MACHINE_READABLE_CONTRACTS.md` §10。
 
 ## 当前状态
 
@@ -38,15 +38,15 @@
 - Phase 1：`NOT AUTHORIZED`
 - Code Status：`NO PRODUCT CODE`
 - Schema count：**12** 个 JSON Schema 文件
-- Fixture count：**111** 个 conformance fixtures（28 valid + 83 invalid）
+- Fixture count：**118** 个 conformance fixtures（28 valid + 90 invalid）
 
 ### 分层 Validation Status
 
 | 层 | 状态 | 说明 |
 |---|---|---|
-| Static Precheck | `PASS` | JSON 语法（123 文件 = 12 schema + 111 fixture）、$id 唯一性（12 ID）、$ref 可解析性（180 ref）、duplicate-key 检测（123 文件，0 重复键）、atomic preflight（UUIDv4/hash/base64url/required） |
+| Static Precheck | `PASS` | JSON 语法（130 文件 = 12 schema + 118 fixture）、$id 唯一性（12 ID）、$ref 可解析性（180 ref）、duplicate-key 检测（130 文件，0 重复键）、atomic preflight（UUIDv4/hash/base64url/required） |
 | Schema Meta-Validation | `PASS` | 12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译（strict=true, strictTypes=true, strictSchema=true, strictRequired=true） |
-| Fixture Execution | `PASS` | 28/28 valid fixtures 通过对应 Schema instance validation；83/83 invalid fixtures 被正确处理（schema-layer 被拒绝；business/decoded-header-layer 为 schema-valid 但被对应业务层拒绝） |
+| Fixture Execution | `PASS` | 28/28 valid fixtures 通过对应 Schema instance validation；90/90 invalid fixtures 被正确处理（schema-layer 被拒绝；business/decoded-header-layer 为 schema-valid 但被对应业务层拒绝） |
 | Business Semantic Validation | `PASS` | 20 项跨字段语义检查通过（tier 唯一性/完备性、budget 唯一性/上限、TTL 排序、a5_policy 三 const、loop_limits V1.1 上下界、default decision 五级阶梯、expired/revoked/blind-retry 定向失败、target SHA-256 重算一致性） |
 | Crypto/Runtime Validation | `UNVALIDATED` | 设计契约，未实现；签名/验签/replay/revocation 均未运行 |
 

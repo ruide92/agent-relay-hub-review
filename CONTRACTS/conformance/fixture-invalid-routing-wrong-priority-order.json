@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-a5-policy",
+  "fixture_id": "invalid-routing-wrong-priority-order",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "a5_policy.default_deny must be true (const)",
+  "note": "adapter_priority_order has visual_coordinate first instead of official_api_sdk — prefixItems[0] must be official_api_sdk",
   "expected_violation": {
     "layer": "schema",
-    "rule": "a5_policy.default_deny: const true; false is rejected"
+    "rule": "routing.adapter_priority_order prefixItems[0]: const official_api_sdk"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -83,7 +83,7 @@
       }
     ],
     "a5_policy": {
-      "default_deny": false,
+      "default_deny": true,
       "capability_token_grantable": false,
       "requires_explicit_owner_authorization": true
     },
@@ -156,12 +156,12 @@
     },
     "routing": {
       "adapter_priority_order": [
-        "official_api_sdk",
+        "visual_coordinate",
         "cli",
         "webhook",
         "playwright_dom",
         "uia",
-        "visual_coordinate"
+        "official_api_sdk"
       ],
       "enabled_adapters": [
         "official_api_sdk",

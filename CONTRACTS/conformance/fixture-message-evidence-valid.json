@@ -7,7 +7,7 @@
     "protocol_version": 1,
     "schema_version": "1.0.0",
     "message_id": "MSG-001",
-    "sender_role": "evidence_verifier",
+    "sender_role": "evidence_verifier.security",
     "recipient_role": "worker.primary",
     "message_type": "evidence",
     "created_at": "2026-07-22T00:00:00Z",

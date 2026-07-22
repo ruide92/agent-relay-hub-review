@@ -961,24 +961,41 @@
     "routing": {
       "type": "object",
       "required": [
-        "adapter_priority",
-        "fallback_chain"
+        "adapter_priority_order",
+        "enabled_adapters"
       ],
       "properties": {
-        "adapter_priority": {
-          "type": "string",
-          "enum": [
-            "official_api_sdk",
-            "cli",
-            "webhook",
-            "playwright_dom",
-            "uia",
-            "visual_coordinate"
-          ]
+        "adapter_priority_order": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            {
+              "const": "official_api_sdk"
+            },
+            {
+              "const": "cli"
+            },
+            {
+              "const": "webhook"
+            },
+            {
+              "const": "playwright_dom"
+            },
+            {
+              "const": "uia"
+            },
+            {
+              "const": "visual_coordinate"
+            }
+          ],
+          "items": false,
+          "description": "Fixed V1.1 unified adapter priority order. MUST be exactly [official_api_sdk, cli, webhook, playwright_dom, uia, visual_coordinate]. Enforced via prefixItems const + items:false + minItems/maxItems:6. Runtime selects adapters by filtering enabled_adapters in this fixed order."
         },
-        "fallback_chain": {
+        "enabled_adapters": {
           "type": "array",
           "minItems": 1,
+          "uniqueItems": true,
           "items": {
             "type": "string",
             "enum": [
@@ -990,12 +1007,11 @@
               "visual_coordinate"
             ]
           },
-          "uniqueItems": true,
-          "description": "Fallback chain MUST follow V1.1 unified priority order: official_api_sdk > cli > webhook > playwright_dom > uia > visual_coordinate. visual_coordinate MUST NOT appear before official_api_sdk (business validation for ordering)."
+          "description": "Set of enabled adapter types. MUST be non-empty subset of the six V1.1 adapter types. Runtime selects by filtering in adapter_priority_order sequence."
         }
       },
       "additionalProperties": false,
-      "description": "Routing priority per V1.1 §10.5 / §16.1. adapter_priority and all fallback_chain items use closed enum. Unified order: official_api_sdk > cli > webhook > playwright_dom > uia > visual_coordinate."
+      "description": "Routing priority per V1.1 §10.5 / §16.1. adapter_priority_order is a fixed const array enforcing the unified priority. enabled_adapters is the active subset. No runtime reordering allowed."
     },
     "release_gates": {
       "type": "array",
@@ -1023,14 +1039,14 @@
             "type": "string",
             "enum": [
               "block_high_critical",
-              "block_all",
-              "none"
-            ]
+              "block_all"
+            ],
+            "description": "Severity filter for release gate. MUST be block_high_critical or block_all. 'none' is forbidden — unconditional gates are rejected."
           }
         },
         "additionalProperties": false
       },
-      "description": "Release gates; each gate MUST specify required_severity_filter. Empty or unconditional gates are rejected."
+      "description": "Release gates; each gate MUST specify required_severity_filter with a blocking value (block_high_critical or block_all). Unconditional or bypassable gates are rejected."
     },
     "token_policy": {
       "type": "object",
@@ -1158,5 +1174,5 @@
     }
   },
   "additionalProperties": false,
-  "description": "Policy bundle content only; signed via external sidecar signature-manifest. No embedded target_hash or signature_manifest. target_hash = SHA-256 of this content's JCS canonical bytes (no self-reference exclusion). Remaining business validation: token_policy.default_ttl<=max_ttl, replay_cache_retention>=max_ttl+clock_skew, scope_registry consistency with tiers, routing fallback_chain ordering."
+  "description": "Policy bundle content only; signed via external sidecar signature-manifest. No embedded target_hash or signature_manifest. target_hash = SHA-256 of this content's JCS canonical bytes (no self-reference exclusion). Remaining business validation: token_policy.default_ttl<=max_ttl, replay_cache_retention>=max_ttl+clock_skew, scope_registry consistency with tiers."
 }

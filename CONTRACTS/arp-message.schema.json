@@ -19,7 +19,9 @@
       "then": {
         "properties": {
           "sender_role": {
-            "const": "reviewer"
+            "type": "string",
+            "pattern": "^reviewer(?:\\.[a-z][a-z0-9_-]*)*$",
+            "description": "Sender role for review.finding MUST be reviewer or a reviewer sub-role (e.g. reviewer.security, reviewer.ux)"
           }
         },
         "required": [
@@ -39,7 +41,9 @@
       "then": {
         "properties": {
           "sender_role": {
-            "const": "evidence_verifier"
+            "type": "string",
+            "pattern": "^evidence_verifier(?:\\.[a-z][a-z0-9_-]*)*$",
+            "description": "Sender role for evidence MUST be evidence_verifier or an evidence_verifier sub-role (e.g. evidence_verifier.security)"
           }
         },
         "required": [

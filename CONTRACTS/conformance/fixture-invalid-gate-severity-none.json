@@ -1,11 +1,11 @@
 {
-  "fixture_id": "invalid-a5-policy",
+  "fixture_id": "invalid-gate-severity-none",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "a5_policy.default_deny must be true (const)",
+  "note": "release_gate required_severity_filter=none is now forbidden (must be block_high_critical or block_all)",
   "expected_violation": {
     "layer": "schema",
-    "rule": "a5_policy.default_deny: const true; false is rejected"
+    "rule": "release_gates.required_severity_filter enum: none not allowed"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -83,7 +83,7 @@
       }
     ],
     "a5_policy": {
-      "default_deny": false,
+      "default_deny": true,
       "capability_token_grantable": false,
       "requires_explicit_owner_authorization": true
     },
@@ -165,14 +165,15 @@
       ],
       "enabled_adapters": [
         "official_api_sdk",
-        "cli"
+        "cli",
+        "webhook"
       ]
     },
     "release_gates": [
       {
         "gate_id": "g-001",
         "gate_type": "verifier_evidence",
-        "required_severity_filter": "block_high_critical"
+        "required_severity_filter": "none"
       }
     ],
     "token_policy": {

@@ -2,10 +2,10 @@
   "fixture_id": "invalid-routing-bad-adapter",
   "target_schema": "CONTRACTS/policy-bundle.schema.json",
   "expected": "invalid",
-  "note": "routing fallback_chain contains invalid adapter type not in closed enum",
+  "note": "routing enabled_adapters contains invalid adapter type not in closed enum",
   "expected_violation": {
     "layer": "schema",
-    "rule": "routing.fallback_chain items enum: invalid_adapter_type not allowed"
+    "rule": "routing.enabled_adapters items enum: invalid_adapter_type not allowed"
   },
   "instance": {
     "schema_version": "1.0.0",
@@ -162,9 +162,16 @@
       ]
     },
     "routing": {
-      "adapter_priority": "official_api_sdk",
-      "fallback_chain": [
+      "adapter_priority_order": [
+        "official_api_sdk",
         "cli",
+        "webhook",
+        "playwright_dom",
+        "uia",
+        "visual_coordinate"
+      ],
+      "enabled_adapters": [
+        "official_api_sdk",
         "invalid_adapter_type"
       ]
     },
