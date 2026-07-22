@@ -9,7 +9,7 @@ Governance Approval Record: GOVERNANCE_APPROVAL_0002.md
 Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
-Overall Status: NOT READY
+Overall Status: READY FOR CLOSURE
 Phase 0: OPEN
 ```
 
@@ -18,7 +18,7 @@ Phase 0: OPEN
 > 本文件定义 Phase 0 关闭所必须满足的退出条件、证据要求、状态与批准程序。
 > **创建本文件不代表 Phase 0 已通过**；在全部条件满足并经独立审核与 owner 批准前，
 > `Overall Status` 不得标记为就绪，`Phase 0` 不得关闭，`Phase 1` 不得授权。
-> 本文件（作为退出门禁契约本身）已通过 Reviewer-2 对 target commit `b8ef21978544e1261081389ecf736e72b80e49d7` 的独立审核，并已由 `GOVERNANCE_APPROVAL_0002.md` 批准，当前为 **Phase 0 Source of Truth**；批准表示门禁契约生效，**不表示** Phase 0 已满足退出条件——Phase 0 仍为 `OPEN` / `NOT READY`，Phase 1 仍未授权。其自身状态与各条件的演进见第 1、5、6 节。
+> 本文件（作为退出门禁契约本身）已通过 Reviewer-2 对 target commit `b8ef21978544e1261081389ecf736e72b80e49d7` 的独立审核，并已由 `GOVERNANCE_APPROVAL_0002.md` 批准，当前为 **Phase 0 Source of Truth**。随着 `GOVERNANCE_APPROVAL_0007.md` 批准最后两项实质性契约条件，Overall Status 晋级为 `READY_FOR_CLOSURE`；Phase 0 仍为 `OPEN`，且 Phase 1 仍未授权。其自身状态与各条件的演进见第 1、5、6 节。
 
 ---
 
@@ -49,7 +49,7 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 1. 所有实质性条件满足后，整体才能进入 `READY_FOR_CLOSURE`；
 2. `PHASE_0_CLOSURE_APPROVAL_0001.md` 是把状态从 `READY_FOR_CLOSURE` 转为 `CLOSED` 的治理事件；
 3. 关闭记录**不是**"进入 `READY_FOR_CLOSURE` 前已经存在"的前置条件；
-4. 当前状态仍为 `NOT_READY / OPEN`；
+4. 当前状态为 `READY_FOR_CLOSURE / OPEN`；尚未创建关闭记录；
 5. Phase 1 授权仍必须通过独立的 `PHASE_1_AUTHORIZATION_0001.md`。
 
 ---
@@ -150,7 +150,7 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 
 **两项治理证据（governance evidence，独立审核与批准记录，非设计产物）**：
 - `VISUAL_PACKAGE_REVIEW_0001.md`（独立审核记录，预期由独立于 Reviewer-2 的 visual design lead / Phase 0 design lead 完成设计后，由 Reviewer-2 独立审核）；
-- `GOVERNANCE_APPROVAL_0005.md`（owner 批准记录，预期由 owner 最终批准，专用于第四包视觉设计产物；与批准本次治理一致性修订 / ADR-0001 / ADR-0002 的 `GOVERNANCE_APPROVAL_0004.md` 区分）。Phase 0 仍为 `OPEN` / `NOT READY`、Phase 1 仍 `NOT AUTHORIZED` 是因为其他未满足条件（机器可读契约、capability token 契约等），而非视觉包。
+- `GOVERNANCE_APPROVAL_0005.md`（owner 批准记录，预期由 owner 最终批准，专用于第四包视觉设计产物；与批准本次治理一致性修订 / ADR-0001 / ADR-0002 的 `GOVERNANCE_APPROVAL_0004.md` 区分）。机器可读契约与 capability-token signing contract 已由 `GOVERNANCE_APPROVAL_0007.md` 批准，Phase 0 当前为 `READY_FOR_CLOSURE` / `OPEN`；Phase 1 仍 `NOT AUTHORIZED`。视觉包仍不是 Phase 0 blocker，且当前未启动。
 
 ---
 
@@ -190,8 +190,8 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 | P0-GOV-CONSISTENCY | Phase 0 治理一致性修订（§2/§4 文档分类与优先级 / §10.2 独立审核证据规则 / ROADMAP 关闭-授权分离门禁与第四包改登记为 Phase 1 UI 入口门禁 / 本矩阵门禁登记 / ADR-0001 治理批准真实性 / ADR-0002 视觉基线作为 Phase 1 UI 实现入口门禁 / SECURITY.md §8–§15 与 T-05 一致性 / SBOM_POLICY §8 签名基线一致性 / V1.1_TRACEABILITY_MATRIX §5 表述修正 / PRODUCT_PROPOSAL 优先级链修正 / README 当前状态描述） | README.md、SOURCE_OF_TRUTH.md（§2 / §4 / §5.1 / §10.2）、PRODUCT_PROPOSAL.md、ROADMAP.md、V1.1_TRACEABILITY_MATRIX.md、SBOM_POLICY.md、SECURITY.md（§8 / §15 / T-05）、PHASE_0_EXIT_CRITERIA.md、DECISIONS/README.md、DECISIONS/ADR-0001、DECISIONS/ADR-0002（已重命名为 ...UI-IMPLEMENTATION-GATE.md） | README.md、SOURCE_OF_TRUTH.md、PRODUCT_PROPOSAL.md、ROADMAP.md、V1.1_TRACEABILITY_MATRIX.md、SBOM_POLICY.md、SECURITY.md、PHASE_0_EXIT_CRITERIA.md、DECISIONS/README.md、ADR-0001、ADR-0002（本轮提案；target commit `fd2574c28843ee2885460cb191c735dd0d257d1a`；PROTOCOL.md 经核查无重复 §5 标题，本轮未改） | fd2574c28843ee2885460cb191c735dd0d257d1a | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0004.md | OWNER_APPROVED | — | 批准已生效：GOV-APP-0004 Commit A/B/C 经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`；PR #2 越权合并由 `GOVERNANCE_APPROVAL_0006.md` 追认并登记纠正；Phase 0 仍 OPEN / NOT_READY；Phase 1 仍 NOT AUTHORIZED；NO PRODUCT CODE |
 | P0-APPROVAL-AUTHENTICITY-ADR | 治理批准真实性 ADR（人工批准证据构成 / 不得虚假声称加密签名 / 机器授权签名边界） | SOURCE_OF_TRUTH.md §5.1；SECURITY.md §15；SECURITY.md §8（referenced signing baseline）；DECISIONS/README.md §3 / §5 / §7 | DECISIONS/ADR-0001-GOVERNANCE-APPROVAL-AUTHENTICITY.md | fd2574c28843ee2885460cb191c735dd0d257d1a | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0004.md | OWNER_APPROVED | — | ADR-0001 已通过独立 Reviewer-2 审核（review_run_id `29fe1f22-6b59-4f69-9c5a-82a6fa8deceb`，评论 `5035425502`）并经 owner 批准；批准已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达生效，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`；纠正记录 `GOVERNANCE_APPROVAL_0006.md` |
 | P0-VISUAL-GATE-ADR | 将视觉设计基线与视觉资产治理包登记为 Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道（非 Phase 0 关闭前置）的阶段边界决策 | SOURCE_OF_TRUTH.md §9 / §10；DECISIONS/README.md §5 / §7 / §8；ROADMAP.md；本文件 | DECISIONS/ADR-0002-VISUAL-BASELINE-AS-UI-IMPLEMENTATION-GATE.md | fd2574c28843ee2885460cb191c735dd0d257d1a | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0004.md | OWNER_APPROVED | — | ADR-0002 已批准，仅表示“视觉包是 Phase 1 UI 实现入口门禁”决策生效，不表示视觉产物已完成或获 `GOVERNANCE_APPROVAL_0005` 批准；批准已经晋级 PR #2 合并（merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`）并可从 main 到达生效，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`；第四包视觉产物另由未来 `GOVERNANCE_APPROVAL_0005.md` 批准（编号保留，当前不存在）；视觉包不阻塞 Phase 0 关闭；纠正记录 `GOVERNANCE_APPROVAL_0006.md` |
-| P0-CAPABILITY-TOKEN-SIGNING-CONTRACT | capability token 完整签名契约（规范化 payload / issuer / audience / 最小权限 scope / issued_at / expires_at / token ID 或 nonce / 防重放 / 撤销 / 签名算法引用 / 签名预映像 / 独立 key_purpose / 校验失败 fail-closed） | V1.1 §4.2.1；SECURITY.md §8 / §15；PROTOCOL.md §4.3；ADR-0001；ADR-0003（PROPOSED） | `DECISIONS/ADR-0003-CAPABILITY-TOKEN-WIRE-FORMAT-AND-SIGNING.md`、`CONTRACTS/capability-token.schema.json`、`CONTRACTS/capability-token-protected-header.schema.json`、`CONTRACTS/capability-token-claims.schema.json`、`CONTRACTS/capability-token-revocation.schema.json`、`SECURITY.md` §8.1、`PROTOCOL.md` §13.3 | PENDING_PROPOSAL | — | — | — | DRAFT | 提案 #0007 已提出 capability token wire format (JWS/ES256)、protected header、claims、签名预映像、防重放、撤销、key rotation、clock skew、校验顺序与 fail-closed 设计契约；待独立审核与 owner 批准（预期 GOV-APP-0007，本轮未创建）；Schema Meta-Validation (12/12 Ajv 8.20.0 Draft 2020-12 strict mode PASS) 与 Fixture Execution (40/40 valid PASS、120/120 invalid 正确处理) 已在外部验证环境运行（executor self-check）；Phase 0 仍不得进入 READY_FOR_CLOSURE |
-| P0-MACHINE-READABLE-CONTRACTS | 机器可读契约（ARP envelope / message types、adapter capability / lifecycle、health_check、policy bundle、signature manifest、capability token Schema）形成规范性文件 | V1.1 §4.2.1 / §10 / §11 / §20.1；PROTOCOL.md §1–§13；SECURITY.md §8 / §15；ADR-0001；ADR-0003（PROPOSED） | `MACHINE_READABLE_CONTRACTS.md`、`CONTRACTS/README.md`、`CONTRACTS/common-defs.schema.json`、`CONTRACTS/arp-envelope.schema.json`、`CONTRACTS/arp-message.schema.json`、`CONTRACTS/adapter-capability.schema.json`、`CONTRACTS/adapter-lifecycle-event.schema.json`、`CONTRACTS/health-check.schema.json`、`CONTRACTS/policy-bundle.schema.json`、`CONTRACTS/signature-manifest.schema.json`、`CONTRACTS/capability-token-claims.schema.json`、`CONTRACTS/capability-token-protected-header.schema.json`、`CONTRACTS/capability-token.schema.json`、`CONTRACTS/capability-token-revocation.schema.json`、`CONTRACTS/conformance/` (160 fixtures)、`PROTOCOL.md` §13、`SECURITY.md` §8.1、`SECURITY.md` §8.2、`ARCHITECTURE.md` §11 | PENDING_PROPOSAL | — | — | — | DRAFT | 提案 #0007 已提出整套机器可读契约 Schema bundle（12 个 Schema + 160 个 conformance fixtures (40 valid + 120 invalid)）与规范性总说明；待独立审核与 owner 批准（预期 GOV-APP-0007，本轮未创建）；Phase 0 仍不得进入 READY_FOR_CLOSURE |
+| P0-CAPABILITY-TOKEN-SIGNING-CONTRACT | capability token 完整签名契约（规范化 payload / issuer / audience / 最小权限 scope / issued_at / expires_at / token ID 或 nonce / 防重放 / 撤销 / 签名算法引用 / 签名预映像 / 独立 key_purpose / 校验失败 fail-closed） | V1.1 §4.2.1；SECURITY.md §8 / §15；PROTOCOL.md §4.3；ADR-0001；ADR-0003（ACCEPTED） | `DECISIONS/ADR-0003-CAPABILITY-TOKEN-WIRE-FORMAT-AND-SIGNING.md`、`CONTRACTS/capability-token.schema.json`、`CONTRACTS/capability-token-protected-header.schema.json`、`CONTRACTS/capability-token-claims.schema.json`、`CONTRACTS/capability-token-revocation.schema.json`、`SECURITY.md` §8.1、`PROTOCOL.md` §13.3 | 19fdff1beaa5208fec23653f83b47046fe8c3427 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0007.md | OWNER_APPROVED | — | Reviewer-2 独立审核 PASS（review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`，PR #4 评论 `5051429528`）；owner 已批准；approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；effective commit `PENDING_EFFECTIVE_COMMIT_BACKFILL`；设计契约满足，Crypto/Runtime 仍 UNVALIDATED |
+| P0-MACHINE-READABLE-CONTRACTS | 机器可读契约（ARP envelope / message types、adapter capability / lifecycle、health_check、policy bundle、signature manifest、capability token Schema）形成规范性文件 | V1.1 §4.2.1 / §10 / §11 / §20.1；PROTOCOL.md §1–§13；SECURITY.md §8 / §15；ADR-0001；ADR-0003（ACCEPTED） | `MACHINE_READABLE_CONTRACTS.md`、`CONTRACTS/README.md`、`CONTRACTS/common-defs.schema.json`、`CONTRACTS/arp-envelope.schema.json`、`CONTRACTS/arp-message.schema.json`、`CONTRACTS/adapter-capability.schema.json`、`CONTRACTS/adapter-lifecycle-event.schema.json`、`CONTRACTS/health-check.schema.json`、`CONTRACTS/policy-bundle.schema.json`、`CONTRACTS/signature-manifest.schema.json`、`CONTRACTS/capability-token-claims.schema.json`、`CONTRACTS/capability-token-protected-header.schema.json`、`CONTRACTS/capability-token.schema.json`、`CONTRACTS/capability-token-revocation.schema.json`、`CONTRACTS/conformance/` (160 fixtures)、`PROTOCOL.md` §13、`SECURITY.md` §8.1、`SECURITY.md` §8.2、`ARCHITECTURE.md` §11 | 19fdff1beaa5208fec23653f83b47046fe8c3427 | Reviewer-2 | PASS | GOVERNANCE_APPROVAL_0007.md | OWNER_APPROVED | — | Reviewer-2 独立审核 PASS（review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`，PR #4 评论 `5051429528`）；owner 已批准；approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；effective commit `PENDING_EFFECTIVE_COMMIT_BACKFILL`；12 Schema + 160 fixtures 成为规范性设计契约，运行时未实现 |
 
 ---
 
@@ -203,7 +203,7 @@ Phase 0 总体状态 MUST 使用以下三值之一：
 - `PHASE_0_CLOSURE_APPROVAL_0001.md` 是把总体状态从 `READY_FOR_CLOSURE` 转为 `CLOSED` 的治理事件（见 §1.2）；它**不是**进入 `READY_FOR_CLOSURE` 的前置条件。
 - Phase 1 授权 MUST 引用已关闭的 Phase 0 commit（即 `PHASE_0_CLOSURE_APPROVAL_0001.md` 的 effective commit）。
 - 两份记录均须 owner 或有效 governance_approver 批准（见 SOURCE_OF_TRUTH.md §10）。
-- **当前两份记录均不存在**，因此 Phase 0 仍为 `OPEN` / `NOT_READY`，Phase 1 仍为 `NOT AUTHORIZED`。
+- **当前两份记录均不存在**。因此 Phase 0 虽为 `READY_FOR_CLOSURE`，仍保持 `OPEN`；Phase 1 仍为 `NOT AUTHORIZED`。
 
 ---
 

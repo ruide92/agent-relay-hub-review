@@ -1,8 +1,8 @@
-# CONTRACTS — 机器可读契约 Schema 索引（提案 #0007）
+# CONTRACTS — 机器可读契约 Schema 索引（GOV-APP-0007 已批准）
 
 > 本目录收录 Agent Relay Hub（ARH）的机器可读契约 JSON Schema 设计文件。
-> **全部 Schema 为 Phase 0 设计契约（提案 #0007），状态 PROPOSED，未实现、未运行验证、未获批准。**
-> 经独立审核与 owner 批准（预期 `GOVERNANCE_APPROVAL_0007`，本轮未创建）后方可成为 Source of Truth。
+> **全部 Schema 为经 `GOVERNANCE_APPROVAL_0007.md` 批准的 Phase 0 设计契约，状态 APPROVED，当前为 Source of Truth；仍未实现。**
+> Reviewer-2 对 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 独立审核 `PASS`；批准不等于运行时实现或 Crypto/Runtime Validation 通过。
 > 语义服从已批准 V1.1、`PROTOCOL.md`、`SECURITY.md` 与 `MACHINE_READABLE_CONTRACTS.md`，不得与它们冲突。
 
 ## Schema dialect
@@ -15,18 +15,18 @@
 
 | # | 文件 | 契约 | 对应规范性 prose | 状态 |
 |---|---|---|---|---|
-| 0 | `common-defs.schema.json` | 共享原子定义 | `MACHINE_READABLE_CONTRACTS.md` §3 | PROPOSED |
-| 1 | `arp-envelope.schema.json` | ARP 消息信封 | `PROTOCOL.md` §1–§4；V1.1 §11 | PROPOSED |
-| 2 | `arp-message.schema.json` | ARP 消息类型与载荷基线 | `PROTOCOL.md` §5、§8、§11 | PROPOSED |
-| 3 | `adapter-capability.schema.json` | 适配器能力上报 | `PROTOCOL.md` §6；V1.1 §10.2 | PROPOSED |
-| 4 | `adapter-lifecycle-event.schema.json` | 适配器生命周期事件 | `PROTOCOL.md` §7；V1.1 §20.1 | PROPOSED |
-| 5 | `health-check.schema.json` | 健康检查 | `PROTOCOL.md` §9；V1.1 §20.1 | PROPOSED |
-| 6 | `policy-bundle.schema.json` | 政策包（content only） | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 | PROPOSED |
-| 7 | `signature-manifest.schema.json` | 签名清单（detached sidecar） | `SECURITY.md` §8 | PROPOSED |
-| 8 | `capability-token-claims.schema.json` | capability token claims (decoded view) | `DECISIONS/ADR-0003-…`（PROPOSED）；V1.1 §4.2.1 | PROPOSED |
-| 9 | `capability-token-protected-header.schema.json` | capability token JWS protected header (decoded view) | `DECISIONS/ADR-0003-…`（PROPOSED） | PROPOSED |
-| 10 | `capability-token.schema.json` | capability token wire format (JWS compact string) | `DECISIONS/ADR-0003-…`（PROPOSED） | PROPOSED |
-| 11 | `capability-token-revocation.schema.json` | capability token 撤销清单（content only） | `DECISIONS/ADR-0003-…`（PROPOSED）；`SECURITY.md` §8 | PROPOSED |
+| 0 | `common-defs.schema.json` | 共享原子定义 | `MACHINE_READABLE_CONTRACTS.md` §3 | APPROVED |
+| 1 | `arp-envelope.schema.json` | ARP 消息信封 | `PROTOCOL.md` §1–§4；V1.1 §11 | APPROVED |
+| 2 | `arp-message.schema.json` | ARP 消息类型与载荷基线 | `PROTOCOL.md` §5、§8、§11 | APPROVED |
+| 3 | `adapter-capability.schema.json` | 适配器能力上报 | `PROTOCOL.md` §6；V1.1 §10.2 | APPROVED |
+| 4 | `adapter-lifecycle-event.schema.json` | 适配器生命周期事件 | `PROTOCOL.md` §7；V1.1 §20.1 | APPROVED |
+| 5 | `health-check.schema.json` | 健康检查 | `PROTOCOL.md` §9；V1.1 §20.1 | APPROVED |
+| 6 | `policy-bundle.schema.json` | 政策包（content only） | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 | APPROVED |
+| 7 | `signature-manifest.schema.json` | 签名清单（detached sidecar） | `SECURITY.md` §8 | APPROVED |
+| 8 | `capability-token-claims.schema.json` | capability token claims (decoded view) | `DECISIONS/ADR-0003-…`（ACCEPTED）；V1.1 §4.2.1 | APPROVED |
+| 9 | `capability-token-protected-header.schema.json` | capability token JWS protected header (decoded view) | `DECISIONS/ADR-0003-…`（ACCEPTED） | APPROVED |
+| 10 | `capability-token.schema.json` | capability token wire format (JWS compact string) | `DECISIONS/ADR-0003-…`（ACCEPTED） | APPROVED |
+| 11 | `capability-token-revocation.schema.json` | capability token 撤销清单（content only） | `DECISIONS/ADR-0003-…`（ACCEPTED）；`SECURITY.md` §8 | APPROVED |
 
 ## conformance/ 目录
 
@@ -34,7 +34,7 @@
 
 ## 当前状态
 
-- Phase 0：`OPEN / NOT_READY`
+- Phase 0：`OPEN / READY_FOR_CLOSURE`（尚未关闭）
 - Phase 1：`NOT AUTHORIZED`
 - Code Status：`NO PRODUCT CODE`
 - Schema count：**12** 个 JSON Schema 文件
@@ -51,7 +51,7 @@
 | Crypto/Runtime Validation | `UNVALIDATED` | 设计契约，未实现；签名/验签/replay/revocation 均未运行 |
 
 > **诚实声明**：Schema Meta-Validation 与 Fixture Execution 已在隔离的仓库外验证环境（Ajv 8.20.0 + ajv-formats 3.0.1, Draft 2020-12）中运行，**未在仓库安装任何依赖**。全部 12 个 Schema 已在 Ajv **strict mode**（strict=true, strictTypes=true, strictSchema=true, strictRequired=true）下编译通过；无需关闭任何 strict 检查。以上验证结果为 executor self-check，不等于独立审核。Crypto/Runtime Validation 仍 `UNVALIDATED`。
-> 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`，Phase 1 仍 `NOT AUTHORIZED`，ADR-0003 仍 `PROPOSED`。
+> 两个 Phase 0 契约条件（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）已由 `GOVERNANCE_APPROVAL_0007.md` 批准为 **OWNER_APPROVED**。这使总体门禁进入 `READY_FOR_CLOSURE`，但 Phase 0 仍 `OPEN`，未创建 closure；Phase 1 仍 `NOT AUTHORIZED`，ADR-0003 为 `ACCEPTED`。
 
-- 预期批准编号：`GOVERNANCE_APPROVAL_0007`（**本轮未创建**）
+- 批准记录：`GOVERNANCE_APPROVAL_0007.md`；Approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；Effective commit `PENDING_EFFECTIVE_COMMIT_BACKFILL`
 - `GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。

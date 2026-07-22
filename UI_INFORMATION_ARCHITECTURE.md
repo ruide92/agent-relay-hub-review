@@ -21,7 +21,7 @@ Last Revised: 2026-07-21 (Reviewer-2 Round 2, mechanical cleanup)
 > 当前为 Phase 0 Source of Truth；
 > 批准只表示设计契约生效；
 > 不表示 UI、代码、组件、skill、依赖或验收已经实现；
-> Phase 0 仍为 OPEN / NOT_READY；
+> Phase 0 当前为 OPEN / READY_FOR_CLOSURE（尚未关闭）；
 > Phase 1 仍为 NOT AUTHORIZED。
 > 所有内容必须服从已批准基线；UI 权威数据仅来自 Event Ledger 派生 projection（ARCHITECTURE.md §2、§4）。
 > 不得生成图片或外部设计链接；本文件仅用 Markdown ASCII / Mermaid 表达结构。

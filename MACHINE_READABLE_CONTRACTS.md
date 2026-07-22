@@ -1,10 +1,13 @@
 ```text
-Document Status: PROPOSED
-Normative Status: 未批准——本文件为 Phase 0 治理提案 #0007 的设计契约草案，经独立审核与 owner 批准（预期 GOVERNANCE_APPROVAL_0007）后方成为 Source of Truth
+Document Status: APPROVED
+Normative Status: 已由 GOVERNANCE_APPROVAL_0007 批准，当前为 Phase 0 Source of Truth（设计契约；非运行时实现）
 Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
 Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
-Proposal PR: PENDING_PROPOSAL
-Approval Record: 无（未创建；预期未来 GOVERNANCE_APPROVAL_0007，本轮未创建）
+Approval Target Commit: 19fdff1beaa5208fec23653f83b47046fe8c3427
+Proposal PR: #4
+Approval Record: GOVERNANCE_APPROVAL_0007.md
+Approval Commit: f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238
+Effective Commit: PENDING_EFFECTIVE_COMMIT_BACKFILL
 Current Phase: Phase 0
 Phase 1: NOT AUTHORIZED
 Code Status: NO PRODUCT CODE
@@ -17,12 +20,12 @@ Business Semantic Validation Status: PASS (13 deterministic vectors: default TTL
 Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
 ```
 
-# MACHINE_READABLE_CONTRACTS.md（机器可读契约规范性总说明，提案 #0007）
+# MACHINE_READABLE_CONTRACTS.md（机器可读契约规范性总说明，GOV-APP-0007 已批准）
 
 > 本文件是 Agent Relay Hub（ARH）全部机器可读契约（JSON Schema bundle）的**规范性总说明**。
-> 本文件与其登记的 `CONTRACTS/` Schema 均为 **Phase 0 设计契约（提案 #0007）**：**未实现、未获批准**。
+> 本文件与其登记的 `CONTRACTS/` Schema 均为经 `GOVERNANCE_APPROVAL_0007.md` 批准的 **Phase 0 设计契约**，当前属于 Source of Truth；它们仍**未实现**。
 > Schema Meta-Validation 与 Fixture Execution 已在外部验证环境（Ajv 8.20.0 Draft 2020-12）中运行并 PASS，但 Crypto/Runtime Validation 仍 UNVALIDATED。
-> 本提案不授权 Phase 1，不授权编写产品代码；只有经独立审核与 owner 批准（预期 `GOVERNANCE_APPROVAL_0007`，本轮未创建）后，本文件才成为 Source of Truth。
+> 本批准不关闭 Phase 0、不授权 Phase 1、不授权编写产品代码；Reviewer-2 审核与 owner 批准证据见 `GOVERNANCE_APPROVAL_0007.md`。
 > 语义服从已批准 V1.1（`AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md`）、`PROTOCOL.md` 与 `SECURITY.md`，不得与它们冲突。
 
 ---
@@ -40,10 +43,10 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 | 健康检查 | `CONTRACTS/health-check.schema.json` | `PROTOCOL.md` §9；V1.1 §20.1 |
 | 政策包 | `CONTRACTS/policy-bundle.schema.json` | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 |
 | 签名清单（detached） | `CONTRACTS/signature-manifest.schema.json` | `SECURITY.md` §8 |
-| capability token claims | `CONTRACTS/capability-token-claims.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED）；V1.1 §4.2.1 |
-| capability token protected header | `CONTRACTS/capability-token-protected-header.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED） |
-| capability token wire format | `CONTRACTS/capability-token.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED） |
-| capability token 撤销清单 | `CONTRACTS/capability-token-revocation.schema.json` | `DECISIONS/ADR-0003-…`（PROPOSED）；`SECURITY.md` §8 |
+| capability token claims | `CONTRACTS/capability-token-claims.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED）；V1.1 §4.2.1 |
+| capability token protected header | `CONTRACTS/capability-token-protected-header.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED） |
+| capability token wire format | `CONTRACTS/capability-token.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED） |
+| capability token 撤销清单 | `CONTRACTS/capability-token-revocation.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED）；`SECURITY.md` §8 |
 | 共享定义 | `CONTRACTS/common-defs.schema.json` | 本文件 §3 |
 
 明确不包含：任何产品代码、运行时配置、真实密钥、真实 token、真实签名、数据库、CI、依赖清单。
@@ -197,7 +200,7 @@ Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented
 
 ## 11. 当前状态
 
-- 本契约包为 **PROPOSED** 设计契约；未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
+- 本契约包为 **APPROVED** 设计契约与 Phase 0 Source of Truth；仍未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
 - Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（40/40 valid PASS、120/120 invalid 正确处理：105 schema、13 business、2 decoded-header）已在隔离的仓库外验证环境运行并 PASS；Business Semantic Validation 为上述 13 个确定性 business vectors（包含 tier/rule scope→registry membership），不包含已由 Schema 结构化表达的 tier/budget/A5/loop/routing/ladder 检查。以上验证结果为 **executor self-check**，不等于独立审核；**仓库内未安装任何验证依赖**。
-- 本契约包的批准预期走 `GOVERNANCE_APPROVAL_0007`（**本轮未创建**）；`GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
-- 两个 Phase 0 blocker（`P0-CAPABILITY-TOKEN-SIGNING-CONTRACT`、`P0-MACHINE-READABLE-CONTRACTS`）仍为 **DRAFT**，未关闭。Phase 0 仍 `OPEN / NOT_READY`；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 仍 `PROPOSED`。
+- 本契约包已由 Reviewer-2 对 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 独立审核 `PASS`（review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`，评论 `5051429528`），并由 `GOVERNANCE_APPROVAL_0007.md` 批准；`GOVERNANCE_APPROVAL_0005.md` 仍保留给第四包视觉产物且当前不存在。
+- `P0-CAPABILITY-TOKEN-SIGNING-CONTRACT` 与 `P0-MACHINE-READABLE-CONTRACTS` 已晋级为 **OWNER_APPROVED**。所有 Phase 0 实质性条件由主矩阵登记为满足，因此 Overall Status 为 `READY_FOR_CLOSURE`，但 Phase 0 仍 `OPEN`，且本批准不创建 closure；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 为 `ACCEPTED`。

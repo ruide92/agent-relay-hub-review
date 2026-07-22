@@ -417,9 +417,9 @@ terminal_recommendation
 
 ---
 
-## 13. 机器可读契约映射（提案 #0007，PROPOSED）
+## 13. 机器可读契约映射（GOV-APP-0007，APPROVED DESIGN）
 
-> 本节为 **Phase 0 治理提案 #0007** 的新增内容，状态 **PROPOSED**，未经独立审核与 owner 批准，当前仅为提案映射草案。
+> 本节已随 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 通过独立审核，并由 `GOVERNANCE_APPROVAL_0007.md` 批准为 Phase 0 设计契约；不代表运行时已实现。
 > 语义服从已批准 V1.1 与本文件 §1–§12 既有内容，不得与之冲突。
 
 ### 13.1 Prose ↔ Schema 映射
@@ -451,7 +451,7 @@ terminal_recommendation
 - **MUST NOT** 将完整 token 字符串作为 ARP envelope `payload` 的普通字段。
 - 在 ARP envelope 中引用 token 时，MUST 仅含 `jti`（token ID）与 token 哈希（`sha256:<hex>`），不得包含完整 token 字符串。
 - **MUST NOT** 将完整 token 写入 Event Ledger、日志或截图。
-- Token 的 wire format、签名容器、claims 与校验链见 `DECISIONS/ADR-0003-…`（PROPOSED）与 `CONTRACTS/capability-token.schema.json`。
+- Token 的 wire format、签名容器、claims 与校验链见 `DECISIONS/ADR-0003-…`（ACCEPTED）与 `CONTRACTS/capability-token.schema.json`。
 
 ### 13.4 Schema 冲突裁决
 

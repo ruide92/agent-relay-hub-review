@@ -285,9 +285,9 @@ RECONCILIATION_REQUIRED → VERIFIED
 
 ---
 
-## 11. 机器可读契约模块边界（提案 #0007，PROPOSED）
+## 11. 机器可读契约模块边界（GOV-APP-0007，APPROVED DESIGN）
 
-> 本节为 **Phase 0 治理提案 #0007** 的新增内容，状态 **PROPOSED**，未经独立审核与 owner 批准。
+> 本节已随 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 通过独立审核，并由 `GOVERNANCE_APPROVAL_0007.md` 批准为 Phase 0 设计契约。
 > 所有运行时机制当前 **未实现**，`Validation Status` 仍为 `UNVALIDATED`。
 
 ### 11.1 Schema Bundle 职责
@@ -310,4 +310,4 @@ RECONCILIATION_REQUIRED → VERIFIED
 
 - Phase 1 **仅加载 mock adapter**（§1.1 不变）；Schema 系统的运行时验证也仅在 mock 环境内执行。
 - 真实适配器在 Phase 3 引入后，校验链自动适用于真实数据。
-- 本节不得描述为已实现；当前为 Phase 0 设计提案。
+- 本节不得描述为已实现；当前为已批准的 Phase 0 设计契约，Phase 1 仍未授权。

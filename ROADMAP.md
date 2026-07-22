@@ -16,8 +16,8 @@
 ## Phase 0：产品设计与契约冻结（当前所处）
 
 - **目标**：冻结产品设计、协议、角色、权限、状态机、适配器 SDK 契约、威胁模型与验收标准。
-- **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准、**机器可读契约（JSON Schema bundle，提案 #0007 PROPOSED）**、**capability token 签名契约（ADR-0003 PROPOSED）**。
-- **视觉设计包（第四包方向，非 Phase 0 关闭前置）**：视觉设计基线与视觉资产治理包（精确视觉设计任务书 `VISUAL_DESIGN_BRIEF.md`、Control Room 高保真基准、视觉资产清单 `VISUAL_ASSET_MANIFEST.md`、独立审核 `VISUAL_PACKAGE_REVIEW_0001.md`、owner 批准 `GOVERNANCE_APPROVAL_0005.md`）经 `ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）登记为 **Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道**，**不再是 Phase 0 关闭前置条件**。因此本包不阻塞 Phase 0 关闭；Phase 0 仍为 `NOT_READY` / `OPEN` 是因为其他未满足条件（如机器可读契约、capability token 契约），而非视觉包；Phase 1 仍 `NOT AUTHORIZED`。
+- **交付物**：产品书（V1.1）、Source of Truth 文档集、协议/架构/安全文档、SDK 契约文档化、许可政策、验收标准、**机器可读契约（12 个 JSON Schema + 160 fixtures，GOV-APP-0007 APPROVED）**、**capability token 签名契约（ADR-0003 ACCEPTED）**。
+- **视觉设计包（第四包方向，非 Phase 0 关闭前置）**：视觉设计基线与视觉资产治理包（精确视觉设计任务书 `VISUAL_DESIGN_BRIEF.md`、Control Room 高保真基准、视觉资产清单 `VISUAL_ASSET_MANIFEST.md`、独立审核 `VISUAL_PACKAGE_REVIEW_0001.md`、owner 批准 `GOVERNANCE_APPROVAL_0005.md`）经 `ADR-0002`（视觉基线作为 Phase 1 UI 实现入口门禁）登记为 **Phase 1 UI 实现入口门禁 / Phase 1 并行准备轨道**，**不再是 Phase 0 关闭前置条件**。因此本包不阻塞 Phase 0 关闭；`GOVERNANCE_APPROVAL_0005.md` 当前仍不存在，视觉设计未启动；Phase 0 为 `READY_FOR_CLOSURE` / `OPEN`，Phase 1 仍 `NOT AUTHORIZED`。
 - **明确不包含**：任何产品代码实现；任何真实适配器。
 - **进入条件**：项目启动（已满足）。
 - **退出门禁（实质性条件）**：
@@ -31,7 +31,10 @@
   - 威胁模型已建立；
   - 许可与 SBOM 政策已落地（`LICENSE.md` / `SBOM_POLICY.md`）；
   - 全部 Phase 0 设计冲突关闭；
+  - machine-readable contracts 已由 `GOVERNANCE_APPROVAL_0007.md` 批准；
+  - capability-token signing contract（ADR-0003）已由 `GOVERNANCE_APPROVAL_0007.md` 批准；
   - 视觉设计包（第四包）**不列为 Phase 0 退出门禁**；经 `ADR-0002` 登记为 Phase 1 UI 实现入口门禁（见上文“第四包方向”说明），其完成与批准在 Phase 1 授权前/准备阶段进行，不阻塞 Phase 0 关闭。
+- **当前门禁状态**：上述实质性条件已登记满足，Phase 0 为 `READY_FOR_CLOSURE` / `OPEN`；仍须通过独立 `PHASE_0_CLOSURE_APPROVAL_*` 治理事件才能关闭。本批准与本路线图状态不授权 Phase 1。
 - **Phase 0 关闭与 Phase 1 授权（两阶段、相互独立，不得合并或自动触发）**：
   1. 上述实质性条件全部满足后，Phase 0 状态进入 `READY_FOR_CLOSURE`；
   2. owner 通过**独立** `PHASE_0_CLOSURE_APPROVAL_*` 记录关闭 Phase 0；

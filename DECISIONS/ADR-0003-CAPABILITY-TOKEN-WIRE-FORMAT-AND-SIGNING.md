@@ -1,16 +1,16 @@
 # ADR-0003 — Capability Token Wire Format and Signing Contract
 
-Status: PROPOSED
+Status: ACCEPTED
 ADR Number: ADR-0003
 Title: Capability Token 线格式与签名契约（Phase 0 设计关闭前必须形成的规范性契约）
 Date: 2026-07-22
 Proposed By: Phase 0 design lead / external product architect
 Implemented By: executor（WorkBuddy）
 
-> 本 ADR 为 **PROPOSED**，未经独立审核与 owner 批准，Status 不得标记 ACCEPTED。
+> 本 ADR 已由 Reviewer-2 对 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 独立审核 `PASS`，并由 owner 经 `GOVERNANCE_APPROVAL_0007.md` 批准，Status 为 **ACCEPTED**。
 > 本 ADR 只定义设计；**不代表运行时已实现**。
 > 本 ADR 解决 `PHASE_0_EXIT_CRITERIA.md` 中 `P0-CAPABILITY-TOKEN-SIGNING-CONTRACT` blocker。
-> 预期批准编号：`GOVERNANCE_APPROVAL_0007`（**本轮未创建**）。
+> 批准记录：`GOVERNANCE_APPROVAL_0007.md`；Approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`；Effective commit `PENDING_EFFECTIVE_COMMIT_BACKFILL`。
 > `GOVERNANCE_APPROVAL_0005.md` 保留给第四包视觉产物，当前不存在。
 
 ---
@@ -192,19 +192,21 @@ signing_input = ASCII(BASE64URL(protected_header)) + "." + ASCII(BASE64URL(paylo
 - `GOVERNANCE_APPROVAL_0006.md` §4（限定纠正：不得推迟到 Phase 1）。
 - `MACHINE_READABLE_CONTRACTS.md` §5（注册表）、§6（canonicalization）、§7（不变量）、§8（校验顺序）。
 - `CONTRACTS/capability-token.schema.json` / `capability-token-claims.schema.json` / `capability-token-revocation.schema.json`。
+- Reviewer-2 独立审核 `PASS`：target `19fdff1beaa5208fec23653f83b47046fe8c3427`，review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`，PR #4 评论 `5051429528`。
+- Owner 批准：`GOVERNANCE_APPROVAL_0007.md`。
 
 ## 6. 批准字段
 
-- **批准 commit（Approval commit）**：—（未批准）
+- **批准 commit（Approval commit）**：`f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`
 - **Decision Owner**：owner
-- **Reviewer（独立审核者）**：—（未审核；不得为本提案的 executor 本人）
-- **Governance Approver（治理批准者）**：—（未批准）
-- **Approval Record**：—（预期 `GOVERNANCE_APPROVAL_0007`，本轮未创建）
+- **Reviewer（独立审核者）**：Reviewer-2；review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`；PR #4 评论 `5051429528`
+- **Governance Approver（治理批准者）**：owner
+- **Approval Record**：`GOVERNANCE_APPROVAL_0007.md`
 - **Corrective Record（纠正记录）**：—
-- **Effective Commit（生效 commit）**：—
+- **Effective Commit（生效 commit）**：`PENDING_EFFECTIVE_COMMIT_BACKFILL`
 - **Affected Normative Documents**：`PROTOCOL.md`（§13 新增 token 携带位置）、`SECURITY.md`（§8.1 新增 token 签名容器）、`ARCHITECTURE.md`（Schema bundle 模块边界）、`MACHINE_READABLE_CONTRACTS.md`、`CONTRACTS/` 内 capability-token 相关 Schema
 - **Supersedes / Superseded By**：无 / 无
 
 ## 7. 状态规则声明
 
-没有有效 `Approval Record` 时，本 ADR 状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见 `SOURCE_OF_TRUTH.md` 第 10 节与 `DECISIONS/README.md` 第 3 节）。本 ADR 不得修改 V1.1 正文。本 ADR 仅为设计契约，不代表运行时已实现。
+没有有效 `Approval Record` 时，ADR 状态只能为 `PROPOSED`，不得标记 `ACCEPTED`（见 `SOURCE_OF_TRUTH.md` 第 10 节与 `DECISIONS/README.md` 第 3 节）。本 ADR 已由 `GOVERNANCE_APPROVAL_0007.md` 批准并晋级为 `ACCEPTED`；不修改 V1.1 正文，也不代表运行时已实现或 Crypto/Runtime Validation 已通过。
