@@ -1,0 +1,39 @@
+{
+  "fixture_id": "invalid-failed-session-reuse",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
+  "expected": "invalid",
+  "note": "Token binds to FAILED session_id; session reuse forbidden",
+  "expected_violation": {
+    "layer": "business",
+    "rule": "§7 item 5: session_id belongs to prior FAILED session; MUST NOT reuse"
+  },
+  "validation_context": {
+    "evaluation_time": 1784678500,
+    "prior_session_history": [
+      {
+        "session_id": "s-failed-01",
+        "final_state": "FAILED",
+        "ended_at": "2026-07-22T00:02:00Z"
+      }
+    ]
+  },
+  "instance": {
+    "iss": "arh:policy-engine",
+    "aud": "arh:core",
+    "sub": "adapter-01",
+    "iat": 1784678400,
+    "nbf": 1784678400,
+    "exp": 1784679300,
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
+    "scope": [
+      "workflow:read"
+    ],
+    "max_authorization_tier": "A0",
+    "workflow_id": "WF-001",
+    "job_id": "JOB-001",
+    "adapter_id": "ad-01",
+    "session_id": "s-failed-01",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "policy_decision_id": "pd-01"
+  }
+}

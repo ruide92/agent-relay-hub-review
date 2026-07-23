@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/adapter-lifecycle-event.schema.json",
+  "title": "Adapter Lifecycle Event",
+  "type": "object",
+  "required": ["schema_version", "adapter_id", "session_id", "from_state", "to_state", "timestamp"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "from_state": { "$ref": "common-defs.schema.json#/$defs/lifecycle_state" },
+    "to_state": { "$ref": "common-defs.schema.json#/$defs/lifecycle_state" },
+    "timestamp": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+    "reason": { "type": "string", "minLength": 1 },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    { "properties": { "from_state": { "const": "LOADING" }, "to_state": { "const": "NEGOTIATING" } } },
+    { "properties": { "from_state": { "const": "NEGOTIATING" }, "to_state": { "const": "READY" } } },
+    { "properties": { "from_state": { "const": "READY" }, "to_state": { "const": "BUSY" } } },
+    { "properties": { "from_state": { "const": "READY" }, "to_state": { "const": "STOPPING" } } },
+    { "properties": { "from_state": { "const": "BUSY" }, "to_state": { "const": "READY" } } },
+    { "properties": { "from_state": { "const": "BUSY" }, "to_state": { "const": "DEGRADED" } } },
+    { "properties": { "from_state": { "const": "BUSY" }, "to_state": { "const": "STOPPING" } } },
+    { "properties": { "from_state": { "const": "BUSY" }, "to_state": { "const": "FAILED" } } },
+    { "properties": { "from_state": { "const": "DEGRADED" }, "to_state": { "const": "READY" } } },
+    { "properties": { "from_state": { "const": "DEGRADED" }, "to_state": { "const": "STOPPING" } } },
+    { "properties": { "from_state": { "const": "DEGRADED" }, "to_state": { "const": "FAILED" } } },
+    { "properties": { "from_state": { "const": "STOPPING" }, "to_state": { "const": "STOPPED" } } }
+  ],
+  "description": "Legal transitions enforced by oneOf (PROTOCOL §7 white list). FAILED/STOPPED are terminal; recovery creates new session_id from LOADING. Business layer MUST enforce session_id non-reuse after FAILED."
+}

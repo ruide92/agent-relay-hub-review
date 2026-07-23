@@ -1,0 +1,41 @@
+{
+  "fixture_id": "sig-manifest-valid",
+  "target_schema": "CONTRACTS/signature-manifest.schema.json",
+  "expected": "valid",
+  "note": "结构与 canonical preimage 正向向量，非密码学有效签名证据；signature_value 为占位值",
+  "instance": {
+    "schema_version": "1.0.0",
+    "manifest_id": "sm-001",
+    "signatures": [
+      {
+        "preimage_profile": "arh-detached-signature-v1",
+        "target_type": "policy_bundle",
+        "target_id": "pb-001",
+        "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        "key_id": "arh-key-01",
+        "key_purpose": "policy_bundle",
+        "algorithm": "ES256",
+        "signed_at": "2026-07-22T00:00:00Z",
+        "signature_value": "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
+      }
+    ]
+  },
+  "validation_context": {
+    "preimage_profile": "arh-detached-signature-v1",
+    "canonical_signing_object": {
+      "algorithm": "ES256",
+      "extensions": {},
+      "key_id": "arh-key-01",
+      "key_purpose": "policy_bundle",
+      "manifest_id": "sm-001",
+      "preimage_profile": "arh-detached-signature-v1",
+      "schema_version": "1.0.0",
+      "signed_at": "2026-07-22T00:00:00Z",
+      "target_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+      "target_id": "pb-001",
+      "target_type": "policy_bundle"
+    },
+    "expected_signing_preimage_utf8": "ARH-DETACHED-SIGNATURE-V1\n{\"algorithm\":\"ES256\",\"extensions\":{},\"key_id\":\"arh-key-01\",\"key_purpose\":\"policy_bundle\",\"manifest_id\":\"sm-001\",\"preimage_profile\":\"arh-detached-signature-v1\",\"schema_version\":\"1.0.0\",\"signed_at\":\"2026-07-22T00:00:00Z\",\"target_hash\":\"sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789\",\"target_id\":\"pb-001\",\"target_type\":\"policy_bundle\"}",
+    "expected_signing_preimage_sha256": "sha256:842e0b4b3007040091ca947901a22e9818f9baca9608b2e1f20d0726b3254fee"
+  }
+}

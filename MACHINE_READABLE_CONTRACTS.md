@@ -1,0 +1,206 @@
+```text
+Document Status: APPROVED
+Normative Status: 已由 GOVERNANCE_APPROVAL_0007 批准，当前为 Phase 0 Source of Truth（设计契约；非运行时实现）
+Product Baseline: AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md
+Product Baseline Commit: c9cc522b4ab01008fed390c282d6bd5a816ee779
+Approval Target Commit: 19fdff1beaa5208fec23653f83b47046fe8c3427
+Proposal PR: #4
+Approval Record: GOVERNANCE_APPROVAL_0007.md
+Approval Commit: f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238
+Effective Commit: 3019d2e25405f275b9d9e0c56af86b3b65c0bbb2
+Current Phase: Phase 0
+Phase 1: NOT AUTHORIZED
+Code Status: NO PRODUCT CODE
+Schema count: 12
+Fixture count: 160 (40 valid + 120 invalid)
+Schema Static Check Status: PASS (JSON syntax 172 files; $id uniqueness 12 IDs; $ref resolvability 182 refs; duplicate-key detection 172 files 0 dupes; atomic preflight)
+Schema Meta-Validation Status: PASS (Ajv 8.20.0 Draft 2020-12 strict mode; 12/12 compiled with strict=true/strictTypes=true/strictSchema=true/strictRequired=true in an isolated external validator; no deps installed in repo; executor self-check, not independent review)
+Fixture Execution Status: PASS (40/40 valid passed instance validation; 120/120 invalid correctly handled: 105 schema-layer rejected, 13 business-layer predicates reproduced, 2 decoded-header failures)
+Business Semantic Validation Status: PASS (13 deterministic vectors: default TTL ceiling, replay-retention floor, FAILED-session reuse, in-run replay, replay after restart, token expiry, token revocation, target SHA-256 mismatch, detached-preimage metadata substitution, nbf-after-iat, zero-lifetime iat==exp, tier scope→scope_registry membership, rule scope→scope_registry membership)
+Crypto/Runtime Validation Status: UNVALIDATED (design contracts, not implemented)
+```
+
+# MACHINE_READABLE_CONTRACTS.md（机器可读契约规范性总说明，GOV-APP-0007 已批准）
+
+> 本文件是 Agent Relay Hub（ARH）全部机器可读契约（JSON Schema bundle）的**规范性总说明**。
+> 本文件与其登记的 `CONTRACTS/` Schema 均为经 `GOVERNANCE_APPROVAL_0007.md` 批准的 **Phase 0 设计契约**，当前属于 Source of Truth；它们仍**未实现**。
+> Schema Meta-Validation 与 Fixture Execution 已在外部验证环境（Ajv 8.20.0 Draft 2020-12）中运行并 PASS，但 Crypto/Runtime Validation 仍 UNVALIDATED。
+> 本批准不关闭 Phase 0、不授权 Phase 1、不授权编写产品代码；Reviewer-2 审核与 owner 批准证据见 `GOVERNANCE_APPROVAL_0007.md`。
+> 语义服从已批准 V1.1（`AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md`）、`PROTOCOL.md` 与 `SECURITY.md`，不得与它们冲突。
+
+---
+
+## 1. 范围与契约清单
+
+本契约包覆盖以下机器可读契约（Schema 位于 `CONTRACTS/`，索引见 `CONTRACTS/README.md`）：
+
+| 契约 | Schema | 对应规范性 prose |
+|---|---|---|
+| ARP 消息信封 | `CONTRACTS/arp-envelope.schema.json` | `PROTOCOL.md` §1–§4；V1.1 §11 |
+| ARP 消息类型与载荷基线 | `CONTRACTS/arp-message.schema.json` | `PROTOCOL.md` §5、§8、§11；V1.1 §11 |
+| 适配器能力上报 | `CONTRACTS/adapter-capability.schema.json` | `PROTOCOL.md` §6；V1.1 §10.2 |
+| 适配器生命周期事件 | `CONTRACTS/adapter-lifecycle-event.schema.json` | `PROTOCOL.md` §7；V1.1 §20.1 |
+| 健康检查 | `CONTRACTS/health-check.schema.json` | `PROTOCOL.md` §9；V1.1 §20.1 |
+| 政策包 | `CONTRACTS/policy-bundle.schema.json` | `SECURITY.md` §6–§8；V1.1 §4.2、§15.5 |
+| 签名清单（detached） | `CONTRACTS/signature-manifest.schema.json` | `SECURITY.md` §8 |
+| capability token claims | `CONTRACTS/capability-token-claims.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED）；V1.1 §4.2.1 |
+| capability token protected header | `CONTRACTS/capability-token-protected-header.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED） |
+| capability token wire format | `CONTRACTS/capability-token.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED） |
+| capability token 撤销清单 | `CONTRACTS/capability-token-revocation.schema.json` | `DECISIONS/ADR-0003-…`（ACCEPTED）；`SECURITY.md` §8 |
+| 共享定义 | `CONTRACTS/common-defs.schema.json` | 本文件 §3 |
+
+明确不包含：任何产品代码、运行时配置、真实密钥、真实 token、真实签名、数据库、CI、依赖清单。
+
+---
+
+## 2. JSON Schema dialect、版本规则与执行模型
+
+### 2.1 Schema 文件层（meta-validation）
+
+加载 Schema bundle 时执行以下校验，失败则拒绝加载整个 bundle：
+
+1. **dialect**：每个 Schema 文件 MUST 自身声明 `$schema: "https://json-schema.org/draft/2020-12/schema"`。缺失、不可识别或非 Draft 2020-12 时拒绝。
+2. **`$id`**：每个 Schema 全局唯一（见 §3）。
+3. **`$ref`**：所有 `$ref` 目标 MUST 在本地 bundle 中可解析（不允许外部 URL）。
+4. **format-assertion**：validator MUST 启用 Draft 2020-12 format-assertion；若 validator 实现不支持 format-assertion，则安全关键字段（时间戳、UUID、哈希）MUST 额外使用显式 `pattern` 以保证 fail-closed。
+5. **Schema 文件自身不包含 `$schema` 以外的实例字段**：`$schema` 是 Schema 文件自身的 dialect 声明，**不是**业务实例应携带的字段。
+
+### 2.2 实例层（instance validation）
+
+验证业务实例时执行以下校验：
+
+1. **实例不携带 `$schema`**：业务实例 MUST NOT 包含 `$schema` 字段；实例的 dialect 由校验方选定的 Schema 决定，不由实例自行声明。
+2. **schema_version**：实例 MUST 携带 `schema_version`；v1 Schema 中 `schema_version` 为 `const: "1.0.0"`（不接受其他值）。未来 v2 将使用不同 const 值。版本不支持时 MUST 拒绝（fail-closed）。
+3. **protocol_version**：v1 中为 `const: 1`。
+4. **兼容性规则**：
+   - 同 `MAJOR` 内：仅允许新增**可选**字段、扩展枚举须同步注册表（见 §5）与 prose；
+   - 删除字段、收窄类型或修改语义为 breaking，MUST 升 `MAJOR`（`/v2/`），经治理提案批准；
+   - 实例 `schema_version` 不在支持集合内时 MUST 拒绝，不得按最近版本猜测解析。
+
+---
+
+## 3. `$id`、`$schema` 与共享定义
+
+1. **`$id` 规则**：每个 Schema 具有稳定、全局唯一的 `$id`，形如 `https://agent-relay-hub.dev/contracts/v1/<name>.schema.json`。`$id` 是**稳定标识符而非网络位置**：校验方 MUST NOT 对 `$id` 发起网络请求；解析 MUST 仅使用本地 Schema bundle。
+2. **共享定义**：跨 Schema 复用的原子定义集中于 `CONTRACTS/common-defs.schema.json`（标识符、RFC3339 时间戳、SHA-256 哈希字符串、`key_id`、`jti`、scope 格式、namespaced extensions 容器等）。其他 Schema MUST 以 `$ref` 引用共享定义，MUST NOT 复制定义造成漂移。
+3. **`$ref` 规则**：仅允许相对路径引用本仓库 `CONTRACTS/` 内的 Schema 文件；MUST NOT 引用外部 URL；`$ref` 目标 MUST 存在且 `$id` 全 bundle 唯一。
+
+---
+
+## 4. 兼容性与未知字段处理
+
+1. **Envelope 层（ARP 消息信封）**：与 `PROTOCOL.md` §3 一致——接收方 MUST 保留未知字段用于透传/审计，MUST NOT 因未知字段拒绝合法消息。因此 `arp-envelope.schema.json` 在信封顶层允许额外字段；**所有实际存在的字段（含未知字段）MUST 纳入 canonical hash**（见 §6 与 `PROTOCOL.md` §4.3），防止未签名字段被篡改。
+2. **安全关键对象**（capability token claims、signature manifest、policy bundle、revocation list、adapter capability）采用 **fail-closed**：`additionalProperties: false`，未命名字段 MUST 被拒绝。
+3. **扩展机制**：安全关键对象的合法扩展 MUST 放入明确的 **namespaced `extensions` 容器**（对象键 MUST 为 dotted namespace，如 `arh.experimental`、`vendor.example`）；MUST NOT 在安全关键对象顶层新增未命名模糊权限字段。
+4. **安全关键枚举 MUST 使用封闭枚举**，MUST NOT 用自由文本替代（如 `key_purpose`、`alg`、`delivery_semantics`、生命周期状态、撤销原因）。
+
+---
+
+## 5. 注册表（prose 层封闭集合）
+
+以下集合在本契约包中以封闭枚举或 prose 注册表固定；新增取值 MUST 经治理提案并同步 Schema：
+
+- **audience 注册表**（capability token `aud` 允许值）：`arh:core`、`arh:adapter-host`。不在注册表内的 audience MUST 被拒绝。
+- **scope 注册表**（capability token `scope` 允许动作）：`workflow:read`、`workflow:execute`、`artifact:read`、`artifact:write`、`message:send`、`message:receive`、`review:request`、`plan:generate`、`git:commit`、`git:push`、`pr:create`、`deploy:staging`、`adapter:health_check`。scope 格式 MUST 匹配 `<domain>:<action>`；未登记动作 MUST 被拒绝。
+- **授权档位与 scope 映射**（V1.1 §4.2）：`A0`→读取类；`A1`→`review:request`、`plan:generate`；`A2`→`workflow:execute`；`A3`→`git:commit`、`git:push`、`pr:create`；`A4`→`deploy:staging`；`A5` **MUST NOT** 由 capability token 授予（V1.1 §4.2：A5 默认禁止）。token 的 `max_authorization_tier` 与 `scope` 必须一致；超权 MUST 被拒绝。
+- **issuer 注册表**：`arh:policy-engine`（capability token 唯一合法签发者）。
+
+---
+
+## 6. Canonical JSON 与 hashing 规则
+
+1. **Canonical JSON**：所有需要哈希或签名的 JSON 值 MUST 先规范化为 **RFC 8785（JSON Canonicalization Scheme, JCS）** 形式：UTF-8、对象键按码点排序、无冗余空白、数字最短精确形式。
+2. **哈希算法**：SHA-256；哈希字符串统一 `sha256:<64 位小写 hex>` 格式（共享定义 `common-defs`）。
+3. **Envelope 哈希预映像**：与 `PROTOCOL.md` §4.3 一致——`hash_preimage = canonical_json(完整消息排除 integrity.content_hash 与 integrity.signature)`；`hash_algorithm` 与实际存在的其他 integrity 元数据 MUST 纳入预映像；`content_hash` MUST NOT 参与其自身计算。
+4. **Detached 对象哈希**：policy bundle / SBOM / revocation list 的 `target_hash` = 其 canonical JSON 字节的 SHA-256；一致性校验 MUST 重算比对，不一致 MUST 拒绝。
+5. **Detached manifest 签名预映像**：每个 signature entry MUST 声明 `preimage_profile=arh-detached-signature-v1`。构造 JCS 对象 `{algorithm, extensions, key_id, key_purpose, manifest_id, preimage_profile, schema_version, signed_at, target_hash, target_id, target_type}`（`extensions` 缺失时为 `{}`），精确预映像为 `UTF8("ARH-DETACHED-SIGNATURE-V1\n") || JCS_UTF8(该对象)`；`signature_value` 为对该预映像执行 ES256 后 raw `R||S` 的无填充 BASE64URL。验证方 MUST 重构同一预映像；任一 manifest/entry 安全元数据替换 MUST 导致验签失败。详见 `SECURITY.md` §8.2。
+6. **JWS 签名预映像**：capability token 的签名输入为 `ASCII(BASE64URL(protected header)) + "." + ASCII(BASE64URL(payload))`（RFC 7515）；payload 由签发方按 JCS canonical 序列化，验证方对原始字节验证、MUST NOT 重新序列化。token 层与 envelope 层的 canonicalization 各自独立、不得混用（见 ADR-0003）。
+
+---
+
+## 7. 跨 Schema 不变量
+
+以下不变量跨越多个 Schema，属于业务校验层（JSON Schema 结构校验之外），校验方 MUST 强制执行；任一违反 MUST 拒绝：
+
+1. **签名四元组共现**：`integrity.signature_algorithm`、`integrity.key_id`、`integrity.key_purpose`、`integrity.signature` 要么全部存在要么全部省略（`PROTOCOL.md` §4.3）；不得伪造空签名。
+2. **key_purpose / target_type 匹配**：detached signature manifest 的每个签名条目 `key_purpose` MUST 与 `target_type` 一致（`policy_bundle`↔`policy_bundle`、`sbom`↔`sbom`、`capability_token_revocation`↔`capability_token_revocation`）；capability token MUST NOT 使用 detached manifest 作为签名容器（其容器为 JWS，见 ADR-0003），MUST NOT 与 policy bundle / SBOM 共用模糊 key purpose。
+3. **`alg=none` 禁止**：任何签名容器不得声明 `alg=none` 或无算法；capability token 的 `alg` 仅允许 `ES256`。
+4. **时间一致性**：token `nbf ≤ iat < exp`（严格禁止 `iat == exp`）；`exp − iat` MUST ≤ 最大 TTL（候选默认 15 分钟，政策可收紧）；`expires_at`（envelope）晚于 `created_at`；clock skew 候选容忍 60 秒且只用于与 `now` 的比较，MUST NOT 放宽 claims 内部顺序（ADR-0003）。
+5. **生命周期合法迁移**：迁移对 MUST 在 `PROTOCOL.md` §7 白名单内；`FAILED` / `STOPPED` 为（实例）终态；`FAILED` 实例的 `session_id` MUST NOT 复用，恢复 MUST 产生新 `session_id` 并从 `LOADING` 开始。
+6. **撤销优先**：`jti` 出现在有效撤销清单中的 token MUST 被拒绝，即使签名与时间有效；撤销清单 `list_version` MUST 单调递增，低于已见版本的清单 MUST 被拒绝（防回滚）。
+7. **防重放**：`jti` 在 replay cache（缓存至 `exp + clock skew`）中已见的 token MUST 被拒绝。
+8. **三层授权一致性**：token `scope`、`max_authorization_tier`、绑定对象（`workflow_id` / `job_id` / `adapter_id` / `session_id` / `policy_bundle_hash` / `policy_decision_id`）与实际调用上下文 MUST 一致；最终授权上限 = min(自报能力, 政策上限, 令牌权限)（V1.1 §4.2.1）。
+9. **禁止字段**：适配器能力上报 MUST NOT 含 `supports_exactly_once_claim`（V1.1 §10.2）；任何对象 MUST NOT 含明文密钥、真实 token 值（`PROTOCOL.md` §12）。
+10. **capability token 泄漏防护**：完整 token MUST NOT 出现在 ARP envelope payload、Event Ledger、日志或截图中；引用 MUST 仅含 `jti` 与 token 哈希（见 `PROTOCOL.md` §13 与 `SECURITY.md` §8.1）。JSON Schema 约束 `capability_token_ref` 仅含 `jti` 与 `token_hash`，但 envelope 层 `additionalProperties: true` 允许未知字段，故完整 token 通过未知字段携带的禁令属于 **business validation**（见 §8 第 9 步），JSON Schema 无法完全禁止。
+11. **policy-bundle 跨字段一致性（business validation）**：以下约束跨越多个字段或依赖运行时上下文，超出 JSON Schema 表达能力，校验方 MUST 在 business 层强制执行：
+    - `token_policy.default_ttl_seconds` MUST ≤ `token_policy.max_ttl_seconds`（跨字段数值比较，JSON Schema 无算术表达式能力）；
+    - `token_policy.replay_cache_retention_seconds` MUST ≥ `max_ttl_seconds + clock_skew_seconds`（跨字段算术运算）；
+    - `authorization_tiers[*].allowed_scopes` 中的每个 scope MUST 存在于 `scope_registry`（跨数组 membership 检查）；
+    - `rules[*].scope` 中的每个 scope MUST 存在于 `scope_registry`（跨数组 membership 检查）。
+
+    以下约束已由 JSON Schema 结构化表达，不再是 business validation：
+    - `authorization_tiers` A0–A4 各精确出现一次：由 `contains` + `minContains:1` + `maxContains:1` + `maxItems:5` 结构约束；
+    - A5 不得出现在 `authorization_tiers` 数组：由 tier enum 限制为 A0–A4；
+    - A5 由独立 `a5_policy` 对象表达，三 const 字段由 Schema const 约束；
+    - `adapter_priority_order` 六级固定顺序：由 `prefixItems` const + `items:false` + `minItems/maxItems:6` 结构约束；
+    - `enabled_adapters` 仅为启用集合（封闭 enum + uniqueItems + minItems:1）；运行时按 `adapter_priority_order` 固定顺序过滤；
+    - 各 tier 的 `allowed_scopes` 禁止上级 scope：由 per-tier `not/anyOf/type:array/contains` 结构约束；
+    - `budgets` 各层 token/USD 绝对上限：由 per-scope `if/then` 条件 Schema 约束；
+    - `default_decision_ladder` 五步阶梯固定顺序：由 `prefixItems` const + `items:false` 约束；
+    - `release_gates.required_severity_filter` 必须为阻断值（`block_high_critical` 或 `block_all`）：由封闭 enum 约束（`none` 已删除）。
+    - `sender_role` / `recipient_role` 必须命中 PROTOCOL §4.2 穷尽覆盖 V1.1 §6 的封闭角色注册表：由共享 `role_identifier` Schema 约束，全部 17 种消息类型共同继承；10 个此前未覆盖的精确逻辑角色与 `worker.primary` sender routing 新增 positive fixtures，`reviewer` / `evidence_verifier` / `policy.engine` 由既有 positive fixtures 覆盖。
+
+---
+
+## 8. Fail-closed 校验顺序
+
+校验方 MUST 按以下顺序校验，**任一失败即整体拒绝并按 `PROTOCOL.md` §12.1 记录脱敏审计事件**，MUST NOT 跳过、猜测或部分接受：
+
+1. **语法层**：UTF-8 JSON 解析；失败 → 拒绝（`validation`）。
+2. **dialect 层**：选定 Schema bundle 已完成 dialect / meta-schema 检查（每个 Schema 文件声明 `$schema: "https://json-schema.org/draft/2020-12/schema"`）；业务实例 MUST NOT 自带 `$schema` 字段，其 dialect 由校验方选定的 Schema 决定；失败 → 拒绝。
+3. **版本层**：`schema_version` 在支持集合内；`protocol_version` 协商区间重叠（PROTOCOL §1）；失败 → 拒绝（`protocol_incompatible`）。
+4. **结构层**：Schema 校验（必填、类型、封闭枚举、条件必填、`additionalProperties`）；失败 → 拒绝（`validation`）。
+5. **完整性层**：canonical hash 重算比对（envelope `content_hash`、detached `target_hash`）；失败 → 拒绝。
+6. **签名层**：签名容器形式检查（JWS 三段 / detached manifest）、`alg` 白名单；detached manifest 按 `arh-detached-signature-v1` 重构 canonical preimage，JWS 按 RFC 7515 重构 signing input；随后验签并确认 `kid` 在可信钥集且未撤销；失败 → 拒绝（`authentication`）。
+7. **时间与注册表层**：`iat/nbf/exp/TTL`、clock skew、issuer/audience/scope 注册表；失败 → 拒绝（`authorization`）。
+8. **状态层**：撤销清单、replay cache、生命周期迁移白名单、session 复用禁止；失败 → 拒绝。
+9. **授权上下文层**：绑定对象与政策裁决一致性（`policy_bundle_hash` / `policy_decision_id` / 三层授权上限）；失败 → 拒绝（`authorization` / `policy_denied`）。
+
+> 注：JWS wire-format Schema（`capability-token.schema.json`）仅校验 compact serialization 字符串模式（三段 base64url + 86 字符签名段）。protected header 与 claims 的解码内容校验在第 6 层（签名层）的解码步骤执行，由 `capability-token-protected-header.schema.json` 与 `capability-token-claims.schema.json` 分别约束。fixture 中 `expected_violation.layer = "decoded-header"` 标明该层失败。
+
+---
+
+## 9. 规范文本与 Schema 冲突裁决
+
+冲突裁决顺序（高 → 低）：
+
+1. 已批准 V1.1（`AGENT_RELAY_HUB_PROJECT_PROPOSAL_v1.1.md`）
+2. 已批准规范性 prose：`PROTOCOL.md`、`SECURITY.md`、`ARCHITECTURE.md`
+3. 本文件（`MACHINE_READABLE_CONTRACTS.md`，经批准后）
+4. `CONTRACTS/` 内各 JSON Schema
+5. `CONTRACTS/conformance/` fixtures（仅设计验收向量，不构成规范）
+
+- 任何下层与上层冲突时 MUST 以上层为准并修正下层；冲突涉及权限、安全、协议、阶段边界时 MUST 走独立 ADR 审核（`SOURCE_OF_TRUTH.md` §9、§10）。
+- 实现/校验方 MUST NOT 自行选择有利解释；发现冲突 MUST 停止并按治理流程上报。
+
+---
+
+## 10. Fixture / conformance 证据规则
+
+1. `CONTRACTS/conformance/` 下的 fixtures 为**非执行型设计验收向量**：仅用于表达"该校验路径必须接受/拒绝"，供未来实现期 conformance 测试引用。
+2. 每个 fixture 为单个 JSON 文件，外壳字段：`fixture_id`、`target_schema`、`expected`（`valid` / `invalid`）、`expected_violation`（invalid 时必填：`layer` = `schema` / `business` / `decoded-header`，`rule` 描述命中的规范条款）、`note`、`instance`（被校验对象）。
+3. fixtures **MUST NOT** 包含真实密钥、测试私钥、真实 token 或真实有效签名；哈希与签名字段为结构示例（如 `sha256:` + 模式化 hex），`note` MUST 标注"结构示例，非密码学有效证据"。
+4. `expected=invalid` 的 fixture MUST 能被第 8 节校验顺序中的**恰好一层**确定性捕获；fixture 的 `expected_violation.layer` 标明该层（`schema` = 第 4 层结构校验；`business` = 第 5–9 层不变量校验；`decoded-header` = 第 6 层签名层的 JWS 解码内容校验）。
+5. fixtures 不替代独立审核与运行时测试。当前 Schema Meta-Validation 与 Fixture Execution 已通过外部验证环境（Ajv 8.20.0 Draft 2020-12）运行并 PASS；Crypto/Runtime Validation 仍 UNVALIDATED（无实现）。
+6. **business-layer fixtures 必须包含确定性上下文**：对于依赖运行时状态（replay、revocation、session 历史、active policy bundle hash、detached signature manifest 等）才能判定的 fixture，MUST 在 `validation_context` 字段中提供完整的判定上下文，使校验方仅依赖文件内的 `instance` + `validation_context` 即可确定性地接受或拒绝。
+7. `validation_context` 允许字段包括但不限于：`evaluation_time`（NumericDate）、`accepted_jti_state`（已接受 jti 列表）、`recovered_replay_state`（从持久化恢复的 replay 状态）、`revocation_list`（当前有效撤销清单）、`prior_session_history`（历史会话列表）、`policy_bundle_content`（当前 policy bundle 完整内容）、`detached_signature_manifest`（detached signature sidecar）、`expected_computed_target_hash`（预期计算哈希）、`active_policy_bundle_hash`（当前加载的 policy bundle 哈希）、`invocation_binding_context`（绑定上下文：workflow_id / job_id / adapter_id / session_id）。
+8. `expected=invalid` 的 business fixture MUST 在 `expected_violation` 中标明触发拒绝的具体 `validation_context` 字段与判定规则。
+
+---
+
+## 11. 当前状态
+
+- 本契约包为 **APPROVED** 设计契约与 Phase 0 Source of Truth；仍未实现（`Crypto/Runtime Validation Status: UNVALIDATED`）。
+- Schema Meta-Validation（12/12 Schema 通过 Ajv 8.20.0 Draft 2020-12 **strict mode** 编译）与 Fixture Execution（40/40 valid PASS、120/120 invalid 正确处理：105 schema、13 business、2 decoded-header）已在隔离的仓库外验证环境运行并 PASS；Business Semantic Validation 为上述 13 个确定性 business vectors（包含 tier/rule scope→registry membership），不包含已由 Schema 结构化表达的 tier/budget/A5/loop/routing/ladder 检查。以上验证结果为 **executor self-check**，不等于独立审核；**仓库内未安装任何验证依赖**。
+- 本契约包已由 Reviewer-2 对 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 独立审核 `PASS`（review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`，评论 `5051429528`），并由 `GOVERNANCE_APPROVAL_0007.md` 批准；`GOVERNANCE_APPROVAL_0005.md` 仍保留给第四包视觉产物且当前不存在。
+- `P0-CAPABILITY-TOKEN-SIGNING-CONTRACT` 与 `P0-MACHINE-READABLE-CONTRACTS` 已晋级为 **OWNER_APPROVED**。所有 Phase 0 实质性条件由主矩阵登记为满足，因此 Overall Status 为 `READY_FOR_CLOSURE`，但 Phase 0 仍 `OPEN`，且本批准不创建 closure；Phase 1 仍 `NOT AUTHORIZED`；`NO PRODUCT CODE`；ADR-0003 为 `ACCEPTED`。

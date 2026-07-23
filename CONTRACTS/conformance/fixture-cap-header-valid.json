@@ -1,0 +1,12 @@
+{
+  "fixture_id": "cap-header-valid",
+  "target_schema": "CONTRACTS/capability-token-protected-header.schema.json",
+  "expected": "valid",
+  "note": "结构示例，非密码学有效证据",
+  "instance": {
+    "alg": "ES256",
+    "typ": "arh-cap+jwt",
+    "kid": "arh-key-01",
+    "key_purpose": "capability_token"
+  }
+}

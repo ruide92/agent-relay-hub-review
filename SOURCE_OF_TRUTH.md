@@ -58,12 +58,13 @@
 - `ARCHITECTURE.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
 - `PROTOCOL.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
 - `SECURITY.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`）
-- `PHASE_0_EXIT_CRITERIA.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`；其自身总体状态仍为 `NOT READY` / `OPEN`，不表示 Phase 0 已关闭）
+- `PHASE_0_EXIT_CRITERIA.md`（第二包，已批准，批准记录 `GOVERNANCE_APPROVAL_0002.md`；当前总体状态为 `READY_FOR_CLOSURE` / `OPEN`，不表示 Phase 0 已关闭）
 - `UX_INTERACTION.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
 - `UI_INFORMATION_ARCHITECTURE.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
 - `UI_DESIGN_SYSTEM.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
 - `UI_STATE_ACCEPTANCE_MATRIX.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
 - `UX_AGENT_SKILLS_SPEC.md`（第三包，已批准，批准记录 `GOVERNANCE_APPROVAL_0003.md`）
+- `MACHINE_READABLE_CONTRACTS.md`、`CONTRACTS/README.md`、`CONTRACTS/` 下 12 个 JSON Schema 与 160 个 conformance fixtures（机器可读契约包，已批准，批准记录 `GOVERNANCE_APPROVAL_0007.md`；设计契约，不代表运行时已实现）
 
 规范性文档约束规则：
 
@@ -71,6 +72,7 @@
 - `PHASE_1_IMPLEMENTATION_PLAN.md` 属实施计划，层级不高于上述规范性文档。
 - 任何规范性文档的**未批准草稿都不是 Source of Truth**。
 - `ROADMAP.md` 属 A 类规范性文档，但其描述的是 Phase 0–7 **未来意图**；其中 `ROADMAP_ONLY` 条目（P2×3）及"闭环""多审核""夜间无人值守""NAS 控制中心""商业化"等均为目标能力，**当前 Phase 0 未实现，不得描述为已实现**。
+- **机器可读契约（GOV-APP-0007 已批准）**：`MACHINE_READABLE_CONTRACTS.md`、`CONTRACTS/README.md`、12 个 JSON Schema 与 160 个 conformance fixtures 已由 Reviewer-2 对 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 独立审核 `PASS`，并由 `GOVERNANCE_APPROVAL_0007.md` 批准为 A 类细化设计契约。Crypto / Runtime Validation 仍为 `UNVALIDATED`，不得描述为已实现。`GOVERNANCE_APPROVAL_0005.md` 仍保留给第四包视觉产物且当前不存在。
 
 ---
 
@@ -106,6 +108,7 @@
   - `GOVERNANCE_APPROVAL_0003.md`：批准 Phase 0 Source of Truth **第三包——UX、UI 与交互契约**，target commit `b74e407…`。
   - `GOVERNANCE_APPROVAL_0004.md`：批准 Phase 0 治理一致性修订与 ADR-0001 / ADR-0002 决策，target commit `fd2574c28843ee2885460cb191c735dd0d257d1a`，approval commit `d5947db83513f5e11c1ac264944382dcfe1ebcbe`，effective commit `5dfb881ae6e2b36b742b3c0187c377762d1c85cd`，review artifact `PR #1 评论 5035425502`；
   - `GOVERNANCE_APPROVAL_0006.md`：`CORRECTIVE RATIFICATION`——追认 PR #2 merge commit `1eead6f7689dc51a1cb402d0843aa88022479b80`（GOV-APP-0004 Commit A/B/C 到达 main 的仓库结果，**不撤销** GOV-APP-0004 对 `fd2574c…` 的实质批准），登记 executor 在 `Draft only — DO NOT MERGE` 状态下越权合并 PR #2 且虚构"架构师继续"授权的流程违规，确立 PR 合并授权规则（书面许可必须含 PR 编号与精确 head SHA；模糊措辞不构成许可；`DO NOT MERGE` 必须 fail-closed），并对 GOV-APP-0004 作限定纠正（capability-token signing contract 与 machine-readable contracts 的规范性契约必须在 Phase 0 进入 `READY_FOR_CLOSURE` 前形成、审核并批准，不得推迟到 Phase 1）；record commit `7c46fc852bc13cfd88bc7a2608b02f0cb02aa456`；
+  - `GOVERNANCE_APPROVAL_0007.md`：批准 Phase 0 machine-readable contracts 与 capability-token signing contract，target commit `19fdff1beaa5208fec23653f83b47046fe8c3427`，approval commit `f5e6fabec00b40b8e7d8d7041cc03ec1dd0b1238`，effective commit `3019d2e25405f275b9d9e0c56af86b3b65c0bbb2`，Reviewer-2 `PASS`（review_run_id `4ae06323-1db1-4754-85fa-4f43638f7fab`，PR #4 评论 `5051429528`）；本批准不等于 Phase 0 closure，不授权 Phase 1 或产品代码；
   - `GOVERNANCE_APPROVAL_0005.md` 编号**保留**给未来第四包视觉设计产物的 owner 批准（见 `ADR-0002` 与 `PHASE_0_EXIT_CRITERIA.md` 第 4 节），**当前不存在**，不得被其他用途创建或占用；
 - 本小节仅补充治理记录分类规则，**不修改 SOURCE_OF_TRUTH.md 的其他设计规则**（第 1–4、6–10 节保持不变）。
 
@@ -136,9 +139,9 @@
 
 ## 8. 当前阶段状态
 
-- **Phase 0（产品设计冻结）：进行中，尚未关闭。**
+- **Phase 0（产品设计冻结）：`READY_FOR_CLOSURE` / `OPEN`，所有实质性条件已满足，但尚未通过独立 closure 治理事件关闭。**
 - **Phase 1（Core Prototype）：尚未授权，禁止编写任何产品代码。**
-- V1.1 已成为批准的产品设计基线；后续任务为补齐 Phase 0 Source of Truth 文档集，而非编码。
+- V1.1 与 Phase 0 Source of Truth 文档集已具备关闭候选条件；下一步是独立核验并创建 Phase 0 closure 提案，而非编码。
 
 ---
 

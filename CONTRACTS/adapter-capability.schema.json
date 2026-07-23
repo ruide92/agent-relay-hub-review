@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/adapter-capability.schema.json",
+  "title": "Adapter Capability Report",
+  "type": "object",
+  "required": ["schema_version", "adapter_id", "session_id", "supported_protocol_versions", "capability_set"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "supported_protocol_versions": {
+      "type": "array",
+      "items": { "$ref": "common-defs.schema.json#/$defs/protocol_version_v1" },
+      "minItems": 1
+    },
+    "capability_set": {
+      "type": "array",
+      "items": { "$ref": "common-defs.schema.json#/$defs/capability_flag" },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "Closed capability flag registry; minItems 1; delivery_semantics and max_payload_size are separate top-level properties, NOT capability flags"
+    },
+    "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
+    "max_payload_size": { "type": "integer", "minimum": 0 },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "capability_set MUST NOT contain supports_exactly_once_claim",
+      "properties": {
+        "capability_set": {
+          "not": {
+            "type": "array",
+            "contains": { "const": "supports_exactly_once_claim" }
+          }
+        }
+      }
+    },
+    {
+      "description": "supports_reconciliation requires delivery_semantics=at_least_once_attempts",
+      "if": { "properties": { "capability_set": { "type": "array", "contains": { "const": "supports_reconciliation" } } } },
+      "then": {
+        "required": ["delivery_semantics"],
+        "properties": { "delivery_semantics": { "const": "at_least_once_attempts" } }
+      }
+    },
+    {
+      "description": "execute capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "type": "array", "contains": { "const": "execute" } } } },
+      "then": {
+        "required": ["delivery_semantics", "max_payload_size"],
+        "properties": {
+          "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
+          "max_payload_size": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    {
+      "description": "send capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "type": "array", "contains": { "const": "send" } } } },
+      "then": {
+        "required": ["delivery_semantics", "max_payload_size"],
+        "properties": {
+          "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
+          "max_payload_size": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    {
+      "description": "upload_artifact capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "type": "array", "contains": { "const": "upload_artifact" } } } },
+      "then": {
+        "required": ["delivery_semantics", "max_payload_size"],
+        "properties": {
+          "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
+          "max_payload_size": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    {
+      "description": "stream capability requires delivery_semantics and max_payload_size",
+      "if": { "properties": { "capability_set": { "type": "array", "contains": { "const": "stream" } } } },
+      "then": {
+        "required": ["delivery_semantics", "max_payload_size"],
+        "properties": {
+          "delivery_semantics": { "$ref": "common-defs.schema.json#/$defs/delivery_semantics" },
+          "max_payload_size": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/arp-envelope.schema.json",
+  "title": "ARP Message Envelope",
+  "type": "object",
+  "required": [
+    "protocol_version", "schema_version", "message_id", "sender_role",
+    "recipient_role", "message_type", "created_at", "security_classification", "integrity"
+  ],
+  "properties": {
+    "protocol_version": { "$ref": "common-defs.schema.json#/$defs/protocol_version_v1" },
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "message_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "sender_role": { "$ref": "common-defs.schema.json#/$defs/role_identifier" },
+    "recipient_role": { "$ref": "common-defs.schema.json#/$defs/role_identifier" },
+    "message_type": { "$ref": "common-defs.schema.json#/$defs/message_type" },
+    "created_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+    "security_classification": { "$ref": "common-defs.schema.json#/$defs/security_classification" },
+    "workflow_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "workflow_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "job_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "correlation_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "delivery_attempt_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "idempotency_key": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "target": {
+      "type": "object",
+      "required": ["repository"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "branch": { "type": "string" },
+        "revision": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "sha256", "uri"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
+          "uri": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "payload": { "type": "object", "additionalProperties": true },
+    "expires_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+    "resume_token": { "type": "string", "minLength": 1 },
+    "checkpoint": { "type": "string", "minLength": 1 },
+    "supersedes_message_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "integrity": {
+      "type": "object",
+      "required": ["hash_algorithm", "content_hash"],
+      "properties": {
+        "hash_algorithm": { "type": "string", "const": "SHA-256" },
+        "content_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex" },
+        "signature_algorithm": { "type": "string", "enum": ["ES256"] },
+        "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
+        "key_purpose": { "type": "string", "const": "envelope" },
+        "signature": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "If signature is present, signature_algorithm, key_id, and key_purpose MUST be present",
+          "if": { "required": ["signature"], "properties": { "signature": { "type": "string", "minLength": 1 } } },
+          "then": {
+            "required": ["signature_algorithm", "key_id", "key_purpose"],
+            "properties": {
+              "signature_algorithm": { "type": "string", "enum": ["ES256"] },
+              "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
+              "key_purpose": { "type": "string", "const": "envelope" }
+            }
+          }
+        },
+        {
+          "description": "If signature is NOT present, signature_algorithm, key_id, and key_purpose MUST NOT be present",
+          "if": { "not": { "required": ["signature"] } },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["signature_algorithm"] },
+                { "required": ["key_id"] },
+                { "required": ["key_purpose"] }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "capability_token_ref": { "$ref": "common-defs.schema.json#/$defs/capability_token_ref" },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,39 @@
+{
+  "fixture_id": "invalid-finding-no-status",
+  "target_schema": "CONTRACTS/arp-message.schema.json",
+  "expected": "invalid",
+  "note": "review.finding missing finding_status (now required)",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "review.finding payload required: finding_status"
+  },
+  "instance": {
+    "protocol_version": 1,
+    "schema_version": "1.0.0",
+    "message_id": "MSG-001",
+    "sender_role": "reviewer",
+    "recipient_role": "worker.primary",
+    "message_type": "review.finding",
+    "created_at": "2026-07-22T00:00:00Z",
+    "security_classification": "INTERNAL",
+    "workflow_id": "WF-001",
+    "workflow_version": "1.0.0",
+    "job_id": "JOB-001",
+    "correlation_id": "CORR-001",
+    "capability_token_ref": {
+      "jti": "01234567-89ab-4def-8123-abcdef123456",
+      "token_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    },
+    "payload": {
+      "finding_id": "F-001",
+      "fingerprint": "fp-001",
+      "severity_candidates": [
+        "HIGH"
+      ]
+    },
+    "integrity": {
+      "hash_algorithm": "SHA-256",
+      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+    }
+  }
+}

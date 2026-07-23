@@ -1,0 +1,19 @@
+{
+  "fixture_id": "revocation-valid",
+  "target_schema": "CONTRACTS/capability-token-revocation.schema.json",
+  "expected": "valid",
+  "note": "结构示例，非密码学有效证据",
+  "instance": {
+    "schema_version": "1.0.0",
+    "list_id": "rl-001",
+    "list_version": 1,
+    "issuer": "arh:policy-engine",
+    "revoked_jtis": [
+      {
+        "jti": "01234567-89ab-4def-8123-abcdef123456",
+        "revoked_at": "2026-07-22T00:00:00Z",
+        "reason": "manual_revoke"
+      }
+    ]
+  }
+}

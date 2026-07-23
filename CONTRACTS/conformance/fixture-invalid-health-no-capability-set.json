@@ -1,0 +1,18 @@
+{
+  "fixture_id": "invalid-health-no-capability-set",
+  "target_schema": "CONTRACTS/health-check.schema.json",
+  "expected": "invalid",
+  "note": "Missing capability_set",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "capability_set required with minItems 1"
+  },
+  "instance": {
+    "schema_version": "1.0.0",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
+    "status": "healthy",
+    "last_success_time": "2026-07-22T00:00:00Z",
+    "version": "1.0.0"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "fixture_id": "message-result-external-state-unknown-valid",
+  "target_schema": "CONTRACTS/arp-message.schema.json",
+  "expected": "valid",
+  "note": "结构示例，非密码学有效证据；external_state_unknown 正确进入 RECONCILIATION_REQUIRED",
+  "instance": {
+    "protocol_version": 1,
+    "schema_version": "1.0.0",
+    "message_id": "MSG-001",
+    "sender_role": "policy.engine",
+    "recipient_role": "worker.primary",
+    "message_type": "result",
+    "created_at": "2026-07-22T00:00:00Z",
+    "security_classification": "INTERNAL",
+    "workflow_id": "WF-001",
+    "workflow_version": "1.0.0",
+    "job_id": "JOB-001",
+    "correlation_id": "CORR-001",
+    "artifacts": [
+      {
+        "name": "build.log",
+        "sha256": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        "uri": "file:///tmp/build.log"
+      }
+    ],
+    "capability_token_ref": {
+      "jti": "01234567-89ab-4def-8123-abcdef123456",
+      "token_hash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    },
+    "payload": {
+      "result_status": "error",
+      "error_code": "E-EXTERNAL-UNKNOWN",
+      "category": "external_state_unknown",
+      "retriable": false,
+      "retry_after": 0,
+      "safe_to_retry": false,
+      "external_state_known": false,
+      "details": "schema violation",
+      "evidence": [
+        "E-001"
+      ],
+      "terminal_recommendation": "RECONCILIATION_REQUIRED"
+    },
+    "integrity": {
+      "hash_algorithm": "SHA-256",
+      "content_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+    }
+  }
+}

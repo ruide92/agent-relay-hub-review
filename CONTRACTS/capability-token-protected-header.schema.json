@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/capability-token-protected-header.schema.json",
+  "title": "Capability Token JWS Protected Header (Decoded View)",
+  "type": "object",
+  "required": ["alg", "typ", "kid", "key_purpose"],
+  "properties": {
+    "alg": { "type": "string", "const": "ES256", "description": "ECDSA P-256 / SHA-256; alg=none is FORBIDDEN" },
+    "typ": { "type": "string", "const": "arh-cap+jwt", "description": "Project-specific type; not generic JWT" },
+    "kid": { "$ref": "common-defs.schema.json#/$defs/key_id", "description": "Key identifier for verification key lookup" },
+    "key_purpose": { "type": "string", "const": "capability_token", "description": "MUST be capability_token; distinct from policy_bundle/sbom/revocation" }
+  },
+  "additionalProperties": false
+}

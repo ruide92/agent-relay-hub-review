@@ -117,7 +117,14 @@ Code Status: NO PRODUCT CODE
 
 ### 4.2 公共必填字段语义
 
-- `sender_role` / `recipient_role`：MUST 为已定义角色（如 `worker.primary`、`reviewer.security`、`policy.engine`）。
+- `sender_role` / `recipient_role`：MUST 命中以下封闭角色注册表；未登记角色族 MUST fail-closed。V1.1 §6 逻辑角色到 wire role 的映射为穷尽式映射：
+  - `owner` → `owner`；`trigger` → `trigger`；`coordinator` → `coordinator`；`planner` → `planner`；
+  - `reviewer` → `reviewer` 或 `reviewer.<specialty>`（如 `reviewer.security`）；
+  - `evidence_verifier` → `evidence_verifier` 或 `evidence_verifier.<specialty>`（如 `evidence_verifier.security`）；
+  - `adjudicator` → `adjudicator`；`worker` → `worker` 或 `worker.<role>`（如 `worker.primary`）；
+  - `messenger` → `messenger`；`repository` → `repository`；`release_gate` → `release_gate`；`monitor` → `monitor`；`notifier` → `notifier`。
+  - `policy.engine` 是 `policy.decision` 消息使用的固定内部服务标识，**不是**任何 V1.1 §6 逻辑角色的替代编码；承担 `release_gate` 逻辑职责时仍 MUST 使用 `release_gate`。
+  - `<role>` / `<specialty>` 每段 MUST 匹配 `[a-z][a-z0-9_-]*`；不得以任意非空字符串代替角色注册，也不得把未登记角色静默映射到 `worker.*` 或 `policy.engine`。
 - `target`：描述作用对象；MUST 在能力 / 政策允许范围内。
 - `attempt`：delivery_attempt 序号，从 1 递增。
 - `expires_at`：消息过期时间；过期消息 MUST NOT 被当作新结果处理（V1.1 §11）。
@@ -310,7 +317,21 @@ terminal_recommendation
 规则：
 
 - `external_state_known=false` 时 MUST NOT 自动盲重试；MUST 进入对账或安全终态。
-- `terminal_recommendation` 由政策引擎裁决，MUST 映射到 V1.1 §8.2 已有终态之一。
+- `terminal_recommendation` 由政策引擎裁决；除外部状态未知时使用 `RECONCILIATION_REQUIRED` 外，MUST 映射到 V1.1 §8.2 已有终态。固定非重试类别的映射如下，Schema MUST 同步约束：
+
+| category | retriable / safe_to_retry | terminal_recommendation |
+|---|---|---|
+| `validation` | `false / false` | `BLOCKED_REDESIGN_REQUIRED` |
+| `authentication` | `false / false` | `BLOCKED_AUTH_EXPIRED` |
+| `authorization` | `false / false` | `BLOCKED_AUTH_EXPIRED` |
+| `capability` | `false / false` | `FAILED_EXTERNAL_DEPENDENCY` |
+| `external_state_unknown` | `false / false`，且 `external_state_known=false` | `RECONCILIATION_REQUIRED` |
+| `policy_denied` | `false / false` | `CANCELLED_BY_POLICY` |
+| `budget_exhausted` | `false / false` | `BLOCKED_BUDGET_EXHAUSTED` |
+| `protocol_incompatible` | `false / false` | `FAILED_EXTERNAL_DEPENDENCY` |
+| `cancelled` | `false / false` | `CANCELLED_BY_POLICY` |
+
+`timeout` / `transport` / `internal` 仍由上下文和政策裁决；但 `retriable=true` 时 MUST 同时满足 `safe_to_retry=true` 与 `external_state_known=true`。`external_state_known=false` 时 MUST 设置 `retriable=false`、`safe_to_retry=false` 并进入 `RECONCILIATION_REQUIRED`。
 
 ### 8.1 自动重试前置条件
 
@@ -393,3 +414,46 @@ terminal_recommendation
 - 该记录 MUST 包含：message_id（如安全）、sender / session、schema / error code、内容哈希、拒绝原因、时间、policy decision ID；
 - MUST NOT 记录 secret、Cookie、storage state 或原始敏感 payload；
 - 旧消息（如已接受后需替代）仍保留在 Event Ledger，新消息用新 `message_id` + `supersedes_message_id` 关联（见 §4.4）。
+
+---
+
+## 13. 机器可读契约映射（GOV-APP-0007，APPROVED DESIGN）
+
+> 本节已随 target `19fdff1beaa5208fec23653f83b47046fe8c3427` 通过独立审核，并由 `GOVERNANCE_APPROVAL_0007.md` 批准为 Phase 0 设计契约；不代表运行时已实现。
+> 语义服从已批准 V1.1 与本文件 §1–§12 既有内容，不得与之冲突。
+
+### 13.1 Prose ↔ Schema 映射
+
+| Prose 节 | 对应 Schema | 映射关系 |
+|---|---|---|
+| §1 协议版本 | `arp-envelope.schema.json` → `protocol_version` | 常量 `1`，Schema 校验确保 |
+| §2 标识符 | `arp-envelope.schema.json` → 标识符字段 | 字段定义与唯一性规则一致 |
+| §3 时间和序列化 | `common-defs.schema.json` → `utc_rfc3339` / `schema_version_v1` | 时间格式与 schema_version 规则一致 |
+| §4 Envelope | `arp-envelope.schema.json` | 公共必填、条件必填、integrity、未知字段保留 |
+| §5 消息类型 | `arp-message.schema.json` | 各 message_type 的条件 payload 约束 |
+| §6 适配器能力协商 | `adapter-capability.schema.json` | 能力字段封闭枚举；禁止 `supports_exactly_once_claim` |
+| §7 生命周期 | `adapter-lifecycle-event.schema.json` | 状态枚举与迁移白名单 |
+| §8 错误模型 | `arp-message.schema.json` → `result` message payload | 错误通过 `result` 消息 payload 中 `result_status=error/failure` 条件要求完整错误对象（`error_code`、`category`、`retriable`、`retry_after`、`safe_to_retry`、`external_state_known`、`details`、`evidence`、`terminal_recommendation`）；`category` 枚举与 §8 完整对齐（12 类：validation/authentication/authorization/capability/timeout/transport/external_state_unknown/policy_denied/budget_exhausted/protocol_incompatible/internal/cancelled）；不使用独立 `error` 消息类型 |
+| §9 Cancel/Resume/Heartbeat/Health | `health-check.schema.json` | 健康检查必含 `capability_set` |
+| §10 投递语义 | `arp-message.schema.json` → delivery.status | outbox 状态枚举 |
+| §11 Finding/Evidence | `arp-message.schema.json` → review.finding / evidence payload | finding/evidence 必填字段 |
+| §12 安全约束 | `arp-envelope.schema.json` → `security_classification` /禁止字段 | 禁止明文密钥 |
+
+### 13.2 Canonicalization 与 content_hash
+
+- Envelope 层 canonical hash 规则见 §4.3（不变）。
+- 机器可读契约的 canonicalization 规则见 `MACHINE_READABLE_CONTRACTS.md` §6：envelope 层使用排除 content_hash/signature 的 canonical JSON（§4.3），token 层使用 JCS（RFC 8785）+ JWS，两层各自独立。
+- 校验方 MUST NOT 混用 envelope 层与 token 层的 canonicalization。
+
+### 13.3 Capability Token 在 ARP 中的携带位置
+
+- Capability token MUST 通过独立的安全通道或受控信令传递。
+- **MUST NOT** 将完整 token 字符串作为 ARP envelope `payload` 的普通字段。
+- 在 ARP envelope 中引用 token 时，MUST 仅含 `jti`（token ID）与 token 哈希（`sha256:<hex>`），不得包含完整 token 字符串。
+- **MUST NOT** 将完整 token 写入 Event Ledger、日志或截图。
+- Token 的 wire format、签名容器、claims 与校验链见 `DECISIONS/ADR-0003-…`（ACCEPTED）与 `CONTRACTS/capability-token.schema.json`。
+
+### 13.4 Schema 冲突裁决
+
+- 规范文本与 Schema 冲突时以规范文本（V1.1 → 本 PROTOCOL §1–§12 → `MACHINE_READABLE_CONTRACTS.md` → Schema）为准，不可下层覆盖上层（见 `MACHINE_READABLE_CONTRACTS.md` §9）。
+- 本节映射不改变 §1–§12 的任何既有语义。

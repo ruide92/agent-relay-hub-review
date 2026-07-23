@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/capability-token-revocation.schema.json",
+  "title": "Capability Token Revocation List (Content Only — Signed via Sidecar Manifest)",
+  "type": "object",
+  "required": ["schema_version", "list_id", "list_version", "issuer", "revoked_jtis"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "list_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "list_version": { "type": "integer", "minimum": 1, "description": "Monotonically increasing; stale lists rejected (anti-rollback)" },
+    "issuer": { "type": "string", "const": "arh:policy-engine" },
+    "revoked_jtis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["jti", "revoked_at", "reason"],
+        "properties": {
+          "jti": { "$ref": "common-defs.schema.json#/$defs/jti_v4" },
+          "revoked_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+          "reason": { "type": "string", "enum": ["key_compromised", "token_abused", "policy_change", "session_terminated", "manual_revoke"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false,
+  "description": "Content only; signed via external sidecar signature-manifest with key_purpose=capability_token_revocation. No embedded target_hash or signature_manifest_ref. target_hash = SHA-256 of this content's JCS canonical bytes."
+}

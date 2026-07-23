@@ -1,0 +1,11 @@
+{
+  "fixture_id": "invalid-alg-none",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
+  "expected": "invalid",
+  "note": "alg=none is forbidden",
+  "expected_violation": {
+    "layer": "decoded-header",
+    "rule": "Decoded header: alg must be const ES256 — alg=none fails"
+  },
+  "instance": "eyJhbGciOiJub25lIiwia2V5X3B1cnBvc2UiOiJjYXBhYmlsaXR5X3Rva2VuIiwia2lkIjoiYXJoLWtleS0wMSIsInR5cCI6ImFyaC1jYXArand0In0.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
+}

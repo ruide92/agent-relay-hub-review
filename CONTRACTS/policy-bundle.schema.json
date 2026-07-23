@@ -1,0 +1,1178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/policy-bundle.schema.json",
+  "title": "Policy Bundle (Content Only — Signed via Sidecar Manifest)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "policy_version",
+    "authorization_tiers",
+    "a5_policy",
+    "scope_registry",
+    "default_decision_ladder",
+    "rules",
+    "budgets",
+    "loop_limits",
+    "path_boundaries",
+    "domain_boundaries",
+    "credential_boundaries",
+    "routing",
+    "release_gates",
+    "token_policy",
+    "safe_mode",
+    "degraded_behavior",
+    "adapter_allowlists"
+  ],
+  "properties": {
+    "schema_version": {
+      "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+    },
+    "bundle_id": {
+      "$ref": "common-defs.schema.json#/$defs/identifier"
+    },
+    "policy_version": {
+      "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+    },
+    "authorization_tiers": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "tier",
+          "allowed_scopes"
+        ],
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "A0",
+              "A1",
+              "A2",
+              "A3",
+              "A4"
+            ]
+          },
+          "allowed_scopes": {
+            "type": "array",
+            "items": {
+              "$ref": "common-defs.schema.json#/$defs/scope_registry"
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "description": "A0: MUST NOT contain scopes above A0 (review:request, plan:generate, workflow:execute, artifact:write, message:send, git:commit, git:push, pr:create, deploy:staging)",
+            "if": {
+              "properties": {
+                "tier": {
+                  "const": "A0"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "allowed_scopes": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "review:request"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "plan:generate"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "workflow:execute"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "artifact:write"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "message:send"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:commit"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:push"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "pr:create"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "A1: MUST NOT contain scopes above A1 (workflow:execute, artifact:write, message:send, git:commit, git:push, pr:create, deploy:staging)",
+            "if": {
+              "properties": {
+                "tier": {
+                  "const": "A1"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "allowed_scopes": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "workflow:execute"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "artifact:write"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "message:send"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:commit"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:push"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "pr:create"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "A2: MUST NOT contain scopes above A2 (git:commit, git:push, pr:create, deploy:staging)",
+            "if": {
+              "properties": {
+                "tier": {
+                  "const": "A2"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "allowed_scopes": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:commit"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:push"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "pr:create"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "A3: MUST NOT contain A4 scope (deploy:staging)",
+            "if": {
+              "properties": {
+                "tier": {
+                  "const": "A3"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "allowed_scopes": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "type": "array",
+          "description": "Exactly one A0 tier",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "const": "A0"
+              }
+            },
+            "required": [
+              "tier"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "description": "Exactly one A1 tier",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "const": "A1"
+              }
+            },
+            "required": [
+              "tier"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "description": "Exactly one A2 tier",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "const": "A2"
+              }
+            },
+            "required": [
+              "tier"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "description": "Exactly one A3 tier",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "const": "A3"
+              }
+            },
+            "required": [
+              "tier"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "description": "Exactly one A4 tier",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tier": {
+                "const": "A4"
+              }
+            },
+            "required": [
+              "tier"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ],
+      "description": "Authorization tier to scope mapping per V1.1 §4.2. MUST contain exactly one each of A0, A1, A2, A3, A4 (enforced via contains + minContains/maxContains). A5 is forbidden in tiers array; defined separately in a5_policy. Each tier's allowed_scopes MUST NOT contain scopes above that tier's level."
+    },
+    "a5_policy": {
+      "type": "object",
+      "required": [
+        "default_deny",
+        "capability_token_grantable",
+        "requires_explicit_owner_authorization"
+      ],
+      "properties": {
+        "default_deny": {
+          "type": "boolean",
+          "const": true,
+          "description": "A5 is default-deny; MUST be true"
+        },
+        "capability_token_grantable": {
+          "type": "boolean",
+          "const": false,
+          "description": "Capability tokens MUST NOT be granted at A5; MUST be false"
+        },
+        "requires_explicit_owner_authorization": {
+          "type": "boolean",
+          "const": true,
+          "description": "A5 requires explicit owner authorization; MUST be true"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Explicit A5 policy: A5 is default_deny, not capability-token-grantable, requires explicit owner authorization"
+    },
+    "scope_registry": {
+      "type": "array",
+      "items": {
+        "$ref": "common-defs.schema.json#/$defs/scope_registry"
+      },
+      "uniqueItems": true,
+      "description": "Allowed scopes in this policy version; MUST be consistent with authorization_tiers allowed_scopes (business validation for cross-field consistency)"
+    },
+    "default_decision_ladder": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        {
+          "const": "safe_skip"
+        },
+        {
+          "const": "conservative_default"
+        },
+        {
+          "const": "equivalent_fallback"
+        },
+        {
+          "const": "degraded_completion"
+        },
+        {
+          "const": "blocked_needs_policy_decision"
+        }
+      ],
+      "items": false,
+      "description": "V1.1 §4.3.1 ordered 5-step decision ladder. Fixed order: [safe_skip, conservative_default, equivalent_fallback, degraded_completion, blocked_needs_policy_decision]. Each step is a const string; no additional items allowed. Simple 'allow' MUST NOT bypass this ladder."
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "effect"
+        ],
+        "properties": {
+          "rule_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "effect": {
+            "type": "string",
+            "enum": [
+              "allow",
+              "deny",
+              "degraded"
+            ]
+          },
+          "authorization_tier_ceiling": {
+            "type": "string",
+            "enum": [
+              "A0",
+              "A1",
+              "A2",
+              "A3",
+              "A4"
+            ]
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "$ref": "common-defs.schema.json#/$defs/scope_registry"
+            },
+            "uniqueItems": true
+          },
+          "adapter_whitelist": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "description": "effect=allow MUST specify authorization_tier_ceiling and non-empty scope",
+            "if": {
+              "properties": {
+                "effect": {
+                  "const": "allow"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "authorization_tier_ceiling",
+                "scope"
+              ],
+              "properties": {
+                "authorization_tier_ceiling": {
+                  "type": "string",
+                  "enum": [
+                    "A0",
+                    "A1",
+                    "A2",
+                    "A3",
+                    "A4"
+                  ]
+                },
+                "scope": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "common-defs.schema.json#/$defs/scope_registry"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
+                }
+              }
+            }
+          },
+          {
+            "description": "A0 ceiling: rule scope MUST NOT contain scopes above A0",
+            "if": {
+              "properties": {
+                "authorization_tier_ceiling": {
+                  "const": "A0"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "scope": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "review:request"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "plan:generate"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "workflow:execute"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "artifact:write"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "message:send"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:commit"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:push"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "pr:create"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "A1 ceiling: rule scope MUST NOT contain scopes above A1",
+            "if": {
+              "properties": {
+                "authorization_tier_ceiling": {
+                  "const": "A1"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "scope": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "workflow:execute"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "artifact:write"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "message:send"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:commit"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:push"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "pr:create"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "A2 ceiling: rule scope MUST NOT contain scopes above A2",
+            "if": {
+              "properties": {
+                "authorization_tier_ceiling": {
+                  "const": "A2"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "scope": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:commit"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "git:push"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "pr:create"
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "A3 ceiling: rule scope MUST NOT contain deploy:staging (A4 scope)",
+            "if": {
+              "properties": {
+                "authorization_tier_ceiling": {
+                  "const": "A3"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "scope": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "contains": {
+                          "const": "deploy:staging"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "description": "Policy rules; minItems 1. effect=allow MUST specify authorization_tier_ceiling and non-empty scope. Rule scope items MUST be within the ceiling's tier (enforced via per-ceiling forbidden-scope allOf). rule scope items MUST be in scope_registry (business validation for cross-field consistency)."
+    },
+    "budgets": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "budget_id",
+          "scope",
+          "max_tokens",
+          "max_usd"
+        ],
+        "properties": {
+          "budget_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "per_workflow",
+              "per_project_daily",
+              "global_daily"
+            ]
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_usd": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "description": "per_workflow: max_tokens <= 2000000, max_usd <= 10",
+            "if": {
+              "properties": {
+                "scope": {
+                  "const": "per_workflow"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "max_tokens": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2000000
+                },
+                "max_usd": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 10
+                }
+              }
+            }
+          },
+          {
+            "description": "per_project_daily: max_tokens <= 10000000, max_usd <= 50",
+            "if": {
+              "properties": {
+                "scope": {
+                  "const": "per_project_daily"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "max_tokens": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10000000
+                },
+                "max_usd": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 50
+                }
+              }
+            }
+          },
+          {
+            "description": "global_daily: max_tokens <= 50000000, max_usd <= 200",
+            "if": {
+              "properties": {
+                "scope": {
+                  "const": "global_daily"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "max_tokens": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 50000000
+                },
+                "max_usd": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 200
+                }
+              }
+            }
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "type": "array",
+          "description": "Exactly one per_workflow budget",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "const": "per_workflow"
+              }
+            },
+            "required": [
+              "scope"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "description": "Exactly one per_project_daily budget",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "const": "per_project_daily"
+              }
+            },
+            "required": [
+              "scope"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "type": "array",
+          "description": "Exactly one global_daily budget",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "const": "global_daily"
+              }
+            },
+            "required": [
+              "scope"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ],
+      "description": "Three-layer budget per V1.1 §9.1; MUST contain exactly one each of per_workflow, per_project_daily, global_daily (enforced via contains + minContains/maxContains + maxItems:3). Each layer expresses both max_tokens and max_usd. Absolute ceilings enforced via per-scope conditional Schema constraints."
+    },
+    "loop_limits": {
+      "type": "object",
+      "required": [
+        "max_delivery_attempts",
+        "max_adapter_switches",
+        "max_fix_rounds",
+        "max_workflow_execution_seconds",
+        "max_step_execution_seconds"
+      ],
+      "properties": {
+        "max_delivery_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "max_adapter_switches": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "max_fix_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "max_workflow_execution_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "max_step_execution_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14400
+        }
+      },
+      "additionalProperties": false
+    },
+    "path_boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Allowed path prefixes per V1.1 §15"
+    },
+    "domain_boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Allowed domain whitelist per V1.1 §15"
+    },
+    "credential_boundaries": {
+      "type": "object",
+      "required": [
+        "store",
+        "allowed_references"
+      ],
+      "properties": {
+        "store": {
+          "type": "string",
+          "enum": [
+            "windows_credential_manager",
+            "vault"
+          ]
+        },
+        "allowed_references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "routing": {
+      "type": "object",
+      "required": [
+        "adapter_priority_order",
+        "enabled_adapters"
+      ],
+      "properties": {
+        "adapter_priority_order": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            {
+              "const": "official_api_sdk"
+            },
+            {
+              "const": "cli"
+            },
+            {
+              "const": "webhook"
+            },
+            {
+              "const": "playwright_dom"
+            },
+            {
+              "const": "uia"
+            },
+            {
+              "const": "visual_coordinate"
+            }
+          ],
+          "items": false,
+          "description": "Fixed V1.1 unified adapter priority order. MUST be exactly [official_api_sdk, cli, webhook, playwright_dom, uia, visual_coordinate]. Enforced via prefixItems const + items:false + minItems/maxItems:6. Runtime selects adapters by filtering enabled_adapters in this fixed order."
+        },
+        "enabled_adapters": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "official_api_sdk",
+              "cli",
+              "webhook",
+              "playwright_dom",
+              "uia",
+              "visual_coordinate"
+            ]
+          },
+          "description": "Set of enabled adapter types. MUST be non-empty subset of the six V1.1 adapter types. Runtime selects by filtering in adapter_priority_order sequence."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Routing priority per V1.1 §10.5 / §16.1. adapter_priority_order is a fixed const array enforcing the unified priority. enabled_adapters is the active subset. No runtime reordering allowed."
+    },
+    "release_gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "gate_id",
+          "gate_type",
+          "required_severity_filter"
+        ],
+        "properties": {
+          "gate_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "gate_type": {
+            "type": "string",
+            "enum": [
+              "verifier_evidence",
+              "external_verifiable",
+              "finding_resolution"
+            ]
+          },
+          "required_severity_filter": {
+            "type": "string",
+            "enum": [
+              "block_high_critical",
+              "block_all"
+            ],
+            "description": "Severity filter for release gate. MUST be block_high_critical or block_all. 'none' is forbidden — unconditional gates are rejected."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Release gates; each gate MUST specify required_severity_filter with a blocking value (block_high_critical or block_all). Unconditional or bypassable gates are rejected."
+    },
+    "token_policy": {
+      "type": "object",
+      "required": [
+        "max_ttl_seconds",
+        "default_ttl_seconds",
+        "clock_skew_seconds",
+        "replay_cache_retention_seconds"
+      ],
+      "properties": {
+        "max_ttl_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "default_ttl_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "clock_skew_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 300
+        },
+        "replay_cache_retention_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false,
+      "description": "Token TTL policy. default_ttl_seconds MUST <= max_ttl_seconds (business validation). replay_cache_retention_seconds MUST >= max_ttl_seconds + clock_skew_seconds (business validation). These are cross-field ordering constraints not expressible in a single Schema object without self-referential comparison."
+    },
+    "safe_mode": {
+      "type": "object",
+      "required": [
+        "trigger",
+        "allowed_actions"
+      ],
+      "properties": {
+        "trigger": {
+          "type": "string",
+          "enum": [
+            "policy_integrity_failure",
+            "trust_root_failure",
+            "manual"
+          ]
+        },
+        "allowed_actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "A0_diagnostic"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "degraded_behavior": {
+      "type": "object",
+      "required": [
+        "on_capability_loss",
+        "on_adapter_crash_threshold",
+        "crash_observation_window_minutes",
+        "circuit_breaker_cooldown_minutes"
+      ],
+      "properties": {
+        "on_capability_loss": {
+          "type": "string",
+          "enum": [
+            "reroute",
+            "safe_terminal"
+          ]
+        },
+        "on_adapter_crash_threshold": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Crash threshold count (V1.1 §9.1: 1-10)"
+        },
+        "crash_observation_window_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60,
+          "description": "Crash observation window in minutes (V1.1 §9.1: 1-60 minutes)"
+        },
+        "circuit_breaker_cooldown_minutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 1440,
+          "description": "Circuit breaker cooldown in minutes (V1.1 §9.1: 5 minutes to 24 hours = 1440 minutes)"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Degraded behavior per V1.1 §9.1. Includes crash observation window (1-60 min), crash threshold (1-10), and circuit-breaker cooldown (5 min to 24h = 1440 min)."
+    },
+    "adapter_allowlists": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "adapter_type",
+          "allowed_capabilities"
+        ],
+        "properties": {
+          "adapter_type": {
+            "type": "string"
+          },
+          "allowed_capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "common-defs.schema.json#/$defs/capability_flag"
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "$ref": "common-defs.schema.json#/$defs/extensions_container"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Policy bundle content only; signed via external sidecar signature-manifest. No embedded target_hash or signature_manifest. target_hash = SHA-256 of this content's JCS canonical bytes (no self-reference exclusion). Remaining business validation: token_policy.default_ttl<=max_ttl, replay_cache_retention>=max_ttl+clock_skew, scope_registry consistency with tiers."
+}

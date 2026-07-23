@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/health-check.schema.json",
+  "title": "Health Check Result",
+  "type": "object",
+  "required": ["schema_version", "adapter_id", "session_id", "status", "last_success_time", "capability_set", "version"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "adapter_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "session_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "status": { "type": "string", "enum": ["healthy", "degraded", "failed"] },
+    "last_success_time": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+    "capability_set": {
+      "type": "array",
+      "items": { "$ref": "common-defs.schema.json#/$defs/capability_flag" },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "Non-empty capability set using closed capability_flag registry"
+    },
+    "version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false
+}

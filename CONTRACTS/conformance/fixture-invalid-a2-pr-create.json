@@ -1,0 +1,30 @@
+{
+  "fixture_id": "invalid-a2-pr-create",
+  "target_schema": "CONTRACTS/capability-token-claims.schema.json",
+  "expected": "invalid",
+  "note": "A2 + pr:create — forbidden above A2",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "A2 tier allOf: scope must NOT contain pr:create"
+  },
+  "instance": {
+    "iss": "arh:policy-engine",
+    "aud": "arh:core",
+    "sub": "adapter-01",
+    "iat": 1784678400,
+    "nbf": 1784678400,
+    "exp": 1784679300,
+    "jti": "01234567-89ab-4def-8123-abcdef123456",
+    "scope": [
+      "workflow:execute",
+      "pr:create"
+    ],
+    "max_authorization_tier": "A2",
+    "workflow_id": "WF-001",
+    "job_id": "JOB-001",
+    "adapter_id": "ad-01",
+    "session_id": "s-01",
+    "policy_bundle_hash": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "policy_decision_id": "pd-01"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/capability-token.schema.json",
+  "title": "Capability Token Wire Format (JWS Compact Serialization)",
+  "type": "string",
+  "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]{86}$",
+  "description": "JWS Compact Serialization string: BASE64URL(protected_header).BASE64URL(payload).BASE64URL(signature). Three dot-separated base64url segments. The protected header MUST decode to capability-token-protected-header schema; payload MUST decode to capability-token-claims schema; signature segment MUST be exactly 86 base64url chars (64-byte raw R||S for ES256, no padding). Decoded views are validated separately (see MACHINE_READABLE_CONTRACTS.md §8, ADR-0003 §2.12). alg=none is FORBIDDEN."
+}

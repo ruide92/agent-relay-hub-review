@@ -1,0 +1,11 @@
+{
+  "fixture_id": "invalid-wrong-typ",
+  "target_schema": "CONTRACTS/capability-token.schema.json",
+  "expected": "invalid",
+  "note": "typ=JWT not arh-cap+jwt",
+  "expected_violation": {
+    "layer": "decoded-header",
+    "rule": "Decoded header: typ must be const arh-cap+jwt"
+  },
+  "instance": "eyJhbGciOiJFUzI1NiIsImtleV9wdXJwb3NlIjoiY2FwYWJpbGl0eV90b2tlbiIsImtpZCI6ImFyaC1rZXktMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhcmg6cG9saWN5LWVuZ2luZSJ9.QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ"
+}

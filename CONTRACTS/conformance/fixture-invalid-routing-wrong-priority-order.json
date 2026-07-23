@@ -1,0 +1,213 @@
+{
+  "fixture_id": "invalid-routing-wrong-priority-order",
+  "target_schema": "CONTRACTS/policy-bundle.schema.json",
+  "expected": "invalid",
+  "note": "adapter_priority_order has visual_coordinate first instead of official_api_sdk — prefixItems[0] must be official_api_sdk",
+  "expected_violation": {
+    "layer": "schema",
+    "rule": "routing.adapter_priority_order prefixItems[0]: const official_api_sdk"
+  },
+  "instance": {
+    "schema_version": "1.0.0",
+    "bundle_id": "pb-001",
+    "policy_version": "1.0.0",
+    "authorization_tiers": [
+      {
+        "tier": "A0",
+        "allowed_scopes": [
+          "workflow:read",
+          "artifact:read",
+          "message:receive",
+          "adapter:health_check"
+        ]
+      },
+      {
+        "tier": "A1",
+        "allowed_scopes": [
+          "workflow:read",
+          "artifact:read",
+          "message:receive",
+          "review:request",
+          "plan:generate",
+          "adapter:health_check"
+        ]
+      },
+      {
+        "tier": "A2",
+        "allowed_scopes": [
+          "workflow:read",
+          "artifact:read",
+          "artifact:write",
+          "message:send",
+          "message:receive",
+          "workflow:execute",
+          "review:request",
+          "plan:generate",
+          "adapter:health_check"
+        ]
+      },
+      {
+        "tier": "A3",
+        "allowed_scopes": [
+          "workflow:read",
+          "workflow:execute",
+          "artifact:read",
+          "artifact:write",
+          "message:send",
+          "message:receive",
+          "review:request",
+          "plan:generate",
+          "git:commit",
+          "git:push",
+          "pr:create",
+          "adapter:health_check"
+        ]
+      },
+      {
+        "tier": "A4",
+        "allowed_scopes": [
+          "workflow:read",
+          "workflow:execute",
+          "artifact:read",
+          "artifact:write",
+          "message:send",
+          "message:receive",
+          "review:request",
+          "plan:generate",
+          "git:commit",
+          "git:push",
+          "pr:create",
+          "deploy:staging",
+          "adapter:health_check"
+        ]
+      }
+    ],
+    "a5_policy": {
+      "default_deny": true,
+      "capability_token_grantable": false,
+      "requires_explicit_owner_authorization": true
+    },
+    "scope_registry": [
+      "workflow:read",
+      "workflow:execute",
+      "artifact:read",
+      "artifact:write",
+      "message:send",
+      "message:receive",
+      "review:request",
+      "plan:generate",
+      "git:commit",
+      "git:push",
+      "pr:create",
+      "deploy:staging",
+      "adapter:health_check"
+    ],
+    "rules": [
+      {
+        "rule_id": "r-001",
+        "effect": "allow",
+        "authorization_tier_ceiling": "A3",
+        "scope": [
+          "workflow:execute",
+          "git:commit"
+        ],
+        "description": "allow workflow execution + git commit at A3"
+      }
+    ],
+    "budgets": [
+      {
+        "budget_id": "b-wf",
+        "scope": "per_workflow",
+        "max_tokens": 2000000,
+        "max_usd": 10
+      },
+      {
+        "budget_id": "b-pd",
+        "scope": "per_project_daily",
+        "max_tokens": 10000000,
+        "max_usd": 50
+      },
+      {
+        "budget_id": "b-gd",
+        "scope": "global_daily",
+        "max_tokens": 50000000,
+        "max_usd": 200
+      }
+    ],
+    "loop_limits": {
+      "max_delivery_attempts": 10,
+      "max_adapter_switches": 10,
+      "max_fix_rounds": 5,
+      "max_workflow_execution_seconds": 86400,
+      "max_step_execution_seconds": 14400
+    },
+    "path_boundaries": [
+      "/src/",
+      "/docs/"
+    ],
+    "domain_boundaries": [
+      "api.example.com"
+    ],
+    "credential_boundaries": {
+      "store": "vault",
+      "allowed_references": [
+        "ref-01"
+      ]
+    },
+    "routing": {
+      "adapter_priority_order": [
+        "visual_coordinate",
+        "cli",
+        "webhook",
+        "playwright_dom",
+        "uia",
+        "official_api_sdk"
+      ],
+      "enabled_adapters": [
+        "official_api_sdk",
+        "cli"
+      ]
+    },
+    "release_gates": [
+      {
+        "gate_id": "g-001",
+        "gate_type": "verifier_evidence",
+        "required_severity_filter": "block_high_critical"
+      }
+    ],
+    "token_policy": {
+      "max_ttl_seconds": 3600,
+      "default_ttl_seconds": 900,
+      "clock_skew_seconds": 60,
+      "replay_cache_retention_seconds": 3720
+    },
+    "safe_mode": {
+      "trigger": "policy_integrity_failure",
+      "allowed_actions": [
+        "A0_diagnostic"
+      ]
+    },
+    "degraded_behavior": {
+      "on_capability_loss": "reroute",
+      "on_adapter_crash_threshold": 3,
+      "crash_observation_window_minutes": 10,
+      "circuit_breaker_cooldown_minutes": 15
+    },
+    "adapter_allowlists": [
+      {
+        "adapter_type": "git",
+        "allowed_capabilities": [
+          "send",
+          "receive"
+        ]
+      }
+    ],
+    "default_decision_ladder": [
+      "safe_skip",
+      "conservative_default",
+      "equivalent_fallback",
+      "degraded_completion",
+      "blocked_needs_policy_decision"
+    ]
+  }
+}

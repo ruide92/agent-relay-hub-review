@@ -1,0 +1,1384 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/arp-message.schema.json",
+  "title": "ARP Message Types and Conditional Constraints",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "arp-envelope.schema.json"
+    },
+    {
+      "description": "review.finding MUST have sender_role=reviewer",
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "review.finding"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sender_role": {
+            "type": "string",
+            "pattern": "^reviewer(?:\\.[a-z][a-z0-9_-]*)*$",
+            "description": "Sender role for review.finding MUST be reviewer or a reviewer sub-role (e.g. reviewer.security, reviewer.ux)"
+          }
+        },
+        "required": [
+          "sender_role"
+        ]
+      }
+    },
+    {
+      "description": "evidence MUST have sender_role=evidence_verifier",
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "evidence"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sender_role": {
+            "type": "string",
+            "pattern": "^evidence_verifier(?:\\.[a-z][a-z0-9_-]*)*$",
+            "description": "Sender role for evidence MUST be evidence_verifier or an evidence_verifier sub-role (e.g. evidence_verifier.security)"
+          }
+        },
+        "required": [
+          "sender_role"
+        ]
+      }
+    },
+    {
+      "description": "policy.decision MUST have sender_role=policy.engine",
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "policy.decision"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sender_role": {
+            "const": "policy.engine"
+          }
+        },
+        "required": [
+          "sender_role"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "command"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "target",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "target": {
+            "type": "object",
+            "required": [
+              "repository"
+            ],
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1
+              },
+              "branch": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "command_type",
+              "parameters"
+            ],
+            "properties": {
+              "command_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "result"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "artifacts",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "sha256",
+                "uri"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "$ref": "common-defs.schema.json#/$defs/sha256_hex"
+                },
+                "uri": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "result_status"
+            ],
+            "properties": {
+              "result_status": {
+                "type": "string",
+                "enum": [
+                  "success",
+                  "failure",
+                  "partial",
+                  "error"
+                ]
+              },
+              "error_code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "validation",
+                  "authentication",
+                  "authorization",
+                  "capability",
+                  "timeout",
+                  "transport",
+                  "external_state_unknown",
+                  "policy_denied",
+                  "budget_exhausted",
+                  "protocol_incompatible",
+                  "internal",
+                  "cancelled"
+                ]
+              },
+              "retriable": {
+                "type": "boolean"
+              },
+              "retry_after": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "safe_to_retry": {
+                "type": "boolean"
+              },
+              "external_state_known": {
+                "type": "boolean"
+              },
+              "details": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "$ref": "common-defs.schema.json#/$defs/identifier"
+                }
+              },
+              "terminal_recommendation": {
+                "type": "string",
+                "enum": [
+                  "BLOCKED_REDESIGN_REQUIRED",
+                  "BLOCKED_AUTH_EXPIRED",
+                  "BLOCKED_BUDGET_EXHAUSTED",
+                  "BLOCKED_NEEDS_POLICY_DECISION",
+                  "QUARANTINED_SECURITY_RISK",
+                  "FAILED_EXTERNAL_DEPENDENCY",
+                  "CANCELLED_BY_POLICY",
+                  "POLICY_INTEGRITY_SAFE_MODE",
+                  "RECONCILIATION_REQUIRED"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "description": "When result_status is error or failure, the full error object is required",
+                "if": {
+                  "properties": {
+                    "result_status": {
+                      "enum": [
+                        "error",
+                        "failure"
+                      ]
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "error_code",
+                    "category",
+                    "retriable",
+                    "retry_after",
+                    "safe_to_retry",
+                    "external_state_known",
+                    "details",
+                    "evidence",
+                    "terminal_recommendation"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "validation",
+                        "authentication",
+                        "authorization",
+                        "capability",
+                        "timeout",
+                        "transport",
+                        "external_state_unknown",
+                        "policy_denied",
+                        "budget_exhausted",
+                        "protocol_incompatible",
+                        "internal",
+                        "cancelled"
+                      ]
+                    },
+                    "retriable": {
+                      "type": "boolean"
+                    },
+                    "retry_after": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "safe_to_retry": {
+                      "type": "boolean"
+                    },
+                    "external_state_known": {
+                      "type": "boolean"
+                    },
+                    "details": {
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "common-defs.schema.json#/$defs/identifier"
+                      }
+                    },
+                    "terminal_recommendation": {
+                      "type": "string",
+                      "enum": [
+                        "BLOCKED_REDESIGN_REQUIRED",
+                        "BLOCKED_AUTH_EXPIRED",
+                        "BLOCKED_BUDGET_EXHAUSTED",
+                        "BLOCKED_NEEDS_POLICY_DECISION",
+                        "QUARANTINED_SECURITY_RISK",
+                        "FAILED_EXTERNAL_DEPENDENCY",
+                        "CANCELLED_BY_POLICY",
+                        "POLICY_INTEGRITY_SAFE_MODE",
+                        "RECONCILIATION_REQUIRED"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "description": "external_state_known=false MUST be non-retriable and enter reconciliation",
+                "if": {
+                  "required": ["external_state_known"],
+                  "properties": {
+                    "external_state_known": {
+                      "const": false
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "retriable": {
+                      "const": false
+                    },
+                    "safe_to_retry": {
+                      "const": false
+                    },
+                    "terminal_recommendation": {
+                      "const": "RECONCILIATION_REQUIRED"
+                    }
+                  }
+                }
+              },
+              {
+                "description": "retriable=true requires both safe_to_retry=true and known external state",
+                "if": {
+                  "required": ["retriable"],
+                  "properties": { "retriable": { "const": true } }
+                },
+                "then": {
+                  "properties": {
+                    "safe_to_retry": { "const": true },
+                    "external_state_known": { "const": true }
+                  }
+                }
+              },
+              {
+                "description": "validation is non-retriable and maps to BLOCKED_REDESIGN_REQUIRED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "validation" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_REDESIGN_REQUIRED" } } }
+              },
+              {
+                "description": "authentication is non-retriable and maps to BLOCKED_AUTH_EXPIRED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "authentication" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_AUTH_EXPIRED" } } }
+              },
+              {
+                "description": "authorization is non-retriable and maps to BLOCKED_AUTH_EXPIRED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "authorization" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_AUTH_EXPIRED" } } }
+              },
+              {
+                "description": "capability is non-retriable and maps to FAILED_EXTERNAL_DEPENDENCY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "capability" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "FAILED_EXTERNAL_DEPENDENCY" } } }
+              },
+              {
+                "description": "external_state_unknown is non-retriable, marks state unknown, and enters reconciliation",
+                "if": { "required": ["category"], "properties": { "category": { "const": "external_state_unknown" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "external_state_known": { "const": false }, "terminal_recommendation": { "const": "RECONCILIATION_REQUIRED" } } }
+              },
+              {
+                "description": "policy_denied is non-retriable and maps to CANCELLED_BY_POLICY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "policy_denied" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "CANCELLED_BY_POLICY" } } }
+              },
+              {
+                "description": "budget_exhausted is non-retriable and maps to BLOCKED_BUDGET_EXHAUSTED",
+                "if": { "required": ["category"], "properties": { "category": { "const": "budget_exhausted" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "BLOCKED_BUDGET_EXHAUSTED" } } }
+              },
+              {
+                "description": "protocol_incompatible is non-retriable and maps to FAILED_EXTERNAL_DEPENDENCY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "protocol_incompatible" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "FAILED_EXTERNAL_DEPENDENCY" } } }
+              },
+              {
+                "description": "cancelled is non-retriable and maps to CANCELLED_BY_POLICY",
+                "if": { "required": ["category"], "properties": { "category": { "const": "cancelled" } } },
+                "then": { "properties": { "retriable": { "const": false }, "safe_to_retry": { "const": false }, "terminal_recommendation": { "const": "CANCELLED_BY_POLICY" } } }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "status"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "running",
+                  "completed",
+                  "failed",
+                  "cancelled",
+                  "degraded"
+                ]
+              },
+              "progress_percent": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "review.finding"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "finding_id",
+              "fingerprint",
+              "severity_candidates",
+              "finding_status"
+            ],
+            "properties": {
+              "finding_id": {
+                "$ref": "common-defs.schema.json#/$defs/identifier"
+              },
+              "fingerprint": {
+                "type": "string",
+                "minLength": 1
+              },
+              "severity_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "CRITICAL",
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW",
+                    "INFO"
+                  ]
+                },
+                "minItems": 1
+              },
+              "finding_status": {
+                "type": "string",
+                "enum": [
+                  "OPEN",
+                  "RESOLVED",
+                  "DEFERRED",
+                  "WONT_FIX"
+                ]
+              },
+              "unresolved_reason": {
+                "type": "string"
+              },
+              "reevaluation_condition": {
+                "type": "string"
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "$ref": "common-defs.schema.json#/$defs/identifier"
+                }
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "description": "DEFERRED finding MUST include unresolved_reason and reevaluation_condition",
+                "if": {
+                  "properties": {
+                    "finding_status": {
+                      "const": "DEFERRED"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "unresolved_reason",
+                    "reevaluation_condition"
+                  ],
+                  "properties": {
+                    "unresolved_reason": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "reevaluation_condition": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "evidence"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "artifacts",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "sha256",
+                "uri"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "$ref": "common-defs.schema.json#/$defs/sha256_hex"
+                },
+                "uri": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "evidence_id",
+              "artifact_id",
+              "verifier"
+            ],
+            "properties": {
+              "evidence_id": {
+                "$ref": "common-defs.schema.json#/$defs/identifier"
+              },
+              "artifact_id": {
+                "$ref": "common-defs.schema.json#/$defs/identifier"
+              },
+              "verifier": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "policy.decision"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "policy_decision_id",
+              "policy_version",
+              "decision"
+            ],
+            "properties": {
+              "policy_decision_id": {
+                "$ref": "common-defs.schema.json#/$defs/identifier"
+              },
+              "policy_version": {
+                "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "allow",
+                  "deny",
+                  "degraded"
+                ]
+              },
+              "authorization_tier_ceiling": {
+                "type": "string",
+                "enum": [
+                  "A0",
+                  "A1",
+                  "A2",
+                  "A3",
+                  "A4"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "description": "decision=allow MUST include authorization_tier_ceiling",
+                "if": {
+                  "properties": {
+                    "decision": {
+                      "const": "allow"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "authorization_tier_ceiling"
+                  ],
+                  "properties": {
+                    "authorization_tier_ceiling": {
+                      "type": "string",
+                      "enum": [
+                        "A0",
+                        "A1",
+                        "A2",
+                        "A3",
+                        "A4"
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "delivery.status"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "delivery_attempt_id",
+          "idempotency_key",
+          "attempt",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "delivery_attempt_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "idempotency_key": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "outbox_status"
+            ],
+            "properties": {
+              "outbox_status": {
+                "type": "string",
+                "enum": [
+                  "PREPARED",
+                  "DISPATCHING",
+                  "ACKNOWLEDGED",
+                  "VERIFIED",
+                  "RECONCILIATION_REQUIRED"
+                ]
+              },
+              "external_state_known": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "reconciliation.request"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "delivery_attempt_id",
+          "idempotency_key",
+          "attempt",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "delivery_attempt_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "idempotency_key": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "reconciliation_mode"
+            ],
+            "properties": {
+              "reconciliation_mode": {
+                "type": "string",
+                "enum": [
+                  "query_external_state",
+                  "retry_delivery",
+                  "mark_as_verification_required"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "reconciliation.result"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "delivery_attempt_id",
+          "idempotency_key",
+          "attempt",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "delivery_attempt_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "idempotency_key": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "reconciliation_outcome",
+              "confirmed_external_state"
+            ],
+            "properties": {
+              "reconciliation_outcome": {
+                "type": "string",
+                "enum": [
+                  "acknowledged",
+                  "dispatched",
+                  "verification_required",
+                  "failed"
+                ]
+              },
+              "confirmed_external_state": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "audit.event"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "event_type"
+            ],
+            "properties": {
+              "event_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "event_data": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "capability_token_ref": {
+                "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "cancellation"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "target",
+          "capability_token_ref",
+          "payload"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "target": {
+            "type": "object",
+            "required": [
+              "repository"
+            ],
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1
+              },
+              "branch": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "reason",
+              "cascade"
+            ],
+            "properties": {
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cascade": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "resume"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "workflow_id",
+          "workflow_version",
+          "job_id",
+          "correlation_id",
+          "target",
+          "resume_token",
+          "checkpoint",
+          "capability_token_ref"
+        ],
+        "properties": {
+          "workflow_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "workflow_version": {
+            "$ref": "common-defs.schema.json#/$defs/schema_version_v1"
+          },
+          "job_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "correlation_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "target": {
+            "type": "object",
+            "required": [
+              "repository"
+            ],
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1
+              },
+              "branch": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          },
+          "resume_token": {
+            "type": "string",
+            "minLength": 1
+          },
+          "checkpoint": {
+            "type": "string",
+            "minLength": 1
+          },
+          "capability_token_ref": {
+            "$ref": "common-defs.schema.json#/$defs/capability_token_ref"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "heartbeat"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "adapter_id",
+          "session_id",
+          "payload"
+        ],
+        "properties": {
+          "adapter_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "session_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "health_signal": {
+                "type": "string",
+                "enum": [
+                  "nominal",
+                  "degraded",
+                  "critical"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "capability.negotiation"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "adapter_id",
+          "session_id",
+          "payload"
+        ],
+        "properties": {
+          "adapter_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "session_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "payload": {
+            "$ref": "adapter-capability.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "lifecycle"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "adapter_id",
+          "session_id",
+          "payload"
+        ],
+        "properties": {
+          "adapter_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "session_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "payload": {
+            "$ref": "adapter-lifecycle-event.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "health_check"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "adapter_id",
+          "session_id",
+          "payload"
+        ],
+        "properties": {
+          "adapter_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "session_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "payload": {
+            "$ref": "health-check.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "message_type": {
+            "const": "capability_change"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "adapter_id",
+          "session_id",
+          "payload"
+        ],
+        "properties": {
+          "adapter_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "session_id": {
+            "$ref": "common-defs.schema.json#/$defs/identifier"
+          },
+          "payload": {
+            "type": "object",
+            "required": [
+              "capability_set_before",
+              "capability_set_after"
+            ],
+            "properties": {
+              "capability_set_before": {
+                "type": "array",
+                "items": {
+                  "$ref": "common-defs.schema.json#/$defs/capability_flag"
+                },
+                "uniqueItems": true
+              },
+              "capability_set_after": {
+                "type": "array",
+                "items": {
+                  "$ref": "common-defs.schema.json#/$defs/capability_flag"
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ]
+}

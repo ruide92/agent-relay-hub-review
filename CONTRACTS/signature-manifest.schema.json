@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-relay-hub.dev/contracts/v1/signature-manifest.schema.json",
+  "title": "Detached Signature Manifest (Sidecar)",
+  "type": "object",
+  "required": ["schema_version", "manifest_id", "signatures"],
+  "properties": {
+    "schema_version": { "$ref": "common-defs.schema.json#/$defs/schema_version_v1" },
+    "manifest_id": { "$ref": "common-defs.schema.json#/$defs/identifier" },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["preimage_profile", "target_type", "target_id", "target_hash", "key_id", "key_purpose", "algorithm", "signed_at", "signature_value"],
+        "properties": {
+          "preimage_profile": { "type": "string", "const": "arh-detached-signature-v1", "description": "Canonical signing-preimage profile defined by SECURITY.md §8.2 and MACHINE_READABLE_CONTRACTS.md §6" },
+          "target_type": { "type": "string", "enum": ["policy_bundle", "sbom", "capability_token_revocation"] },
+          "target_id": { "$ref": "common-defs.schema.json#/$defs/identifier", "description": "Identifier of the signed content artifact (e.g. bundle_id, revocation list_id)" },
+          "target_hash": { "$ref": "common-defs.schema.json#/$defs/sha256_hex", "description": "SHA-256 of the content artifact's JCS canonical bytes; no self-reference exclusion" },
+          "key_id": { "$ref": "common-defs.schema.json#/$defs/key_id" },
+          "key_purpose": { "type": "string", "enum": ["policy_bundle", "sbom", "capability_token_revocation"], "description": "MUST match target_type; capability_token MUST NOT use this manifest (uses JWS)" },
+          "algorithm": { "type": "string", "const": "ES256", "description": "ECDSA P-256 / SHA-256; alg=none FORBIDDEN" },
+          "signed_at": { "$ref": "common-defs.schema.json#/$defs/utc_rfc3339" },
+          "signature_value": { "type": "string", "pattern": "^[A-Za-z0-9_-]{86}$", "description": "Detached ES256 signature over the SECURITY.md §8.2 arh-detached-signature-v1 canonical preimage: raw R||S (64 bytes) encoded as unpadded base64url, producing exactly 86 characters. MUST NOT be empty. Fixture values are structural placeholders, not cryptographically valid signatures." }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          { "if": { "properties": { "key_purpose": { "const": "policy_bundle" } } }, "then": { "properties": { "target_type": { "const": "policy_bundle" } } } },
+          { "if": { "properties": { "key_purpose": { "const": "sbom" } } }, "then": { "properties": { "target_type": { "const": "sbom" } } } },
+          { "if": { "properties": { "key_purpose": { "const": "capability_token_revocation" } } }, "then": { "properties": { "target_type": { "const": "capability_token_revocation" } } } }
+        ]
+      }
+    },
+    "extensions": { "$ref": "common-defs.schema.json#/$defs/extensions_container" }
+  },
+  "additionalProperties": false
+}
